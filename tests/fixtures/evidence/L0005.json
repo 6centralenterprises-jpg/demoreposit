@@ -1,0 +1,10 @@
+{
+  "lead_id": "L0005",
+  "researched_at": "2026-10-01",
+  "stage": "screened_out",
+  "identity": {"status": "confirmed", "business_name": "Miami Example Maids", "is_service_provider": true, "note": "", "source": "https://google.example/miami"},
+  "niche": {"value": "house cleaning", "source": "https://google.example/miami"},
+  "serves_target": {"value": false, "areas": "Miami-Dade only", "quote": "", "source": "https://google.example/miami"},
+  "red_flags": [],
+  "notes": ""
+}

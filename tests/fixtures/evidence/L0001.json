@@ -1,0 +1,26 @@
+{
+  "lead_id": "L0001",
+  "researched_at": "2026-10-01",
+  "stage": "deep",
+  "identity": {"status": "confirmed", "business_name": "Sparkle Example Cleaning LLC", "is_service_provider": true,
+               "note": "Website and Yelp list the same phone", "source": "https://sparkleexample.test/about"},
+  "niche": {"value": "house cleaning", "source": "https://sparkleexample.test/"},
+  "serves_target": {"value": true, "areas": "Chicago north and west sides", "quote": "serving all of Chicago", "source": "https://sparkleexample.test/areas"},
+  "online_presence": {"website_url": "https://sparkleexample.test", "website_working": true, "directory_profiles": ["https://yelp.example/sparkle"]},
+  "reviews": [
+    {"platform": "Google", "rating": 4.9, "count": 212, "method": "search", "source": "https://google.example/sparkle"},
+    {"platform": "Yelp", "rating": 4.5, "count": 38, "method": "search", "source": "https://yelp.example/sparkle"}
+  ],
+  "complaints": {"status": "none_found", "checked_sources": ["https://bbb.example/sparkle"], "items": []},
+  "established": {"year_started": 2017, "evidence": "since 2017", "source": "https://sparkleexample.test/about", "registration": null},
+  "size": {"value": "6-15", "is_franchise_or_national": false, "evidence": "team of 9 cleaners", "source": "https://sparkleexample.test/about"},
+  "insured": {"value": true, "quote": "fully insured and bonded", "source": "https://sparkleexample.test/faq"},
+  "other_trust": {"checked": true, "signals": [{"signal": "bonded", "quote": "fully insured and bonded", "source": "https://sparkleexample.test/faq"}]},
+  "license": {"required": false, "number": null, "status": null, "source": null},
+  "activity": {"last_active": "2026-09", "responds_to_reviews": true, "evidence": "owner replies to Google reviews", "source": "https://google.example/sparkle"},
+  "red_flags": [],
+  "contact": {"email": "hello@sparkleexample.test", "email_publicly_listed_at": "https://sparkleexample.test/contact", "phone": "(773) 555-0101", "contact_page": "https://sparkleexample.test/contact"},
+  "opener": {"text": "Celebrated 200+ five-star Google reviews this summer", "source": "https://sparkleexample.test/news"},
+  "sources_checked": ["https://sparkleexample.test/"],
+  "notes": ""
+}

@@ -1,0 +1,13 @@
+# This repository is PUBLIC. Lead files and research output contain business
+# contact details — they must never be committed.
+runs/
+uploads/
+*.csv
+*.xlsx
+*.xls
+*.tsv
+*.jsonl
+!tests/fixtures/*.csv
+
+__pycache__/
+.pytest_cache/

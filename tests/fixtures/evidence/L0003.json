@@ -1,0 +1,23 @@
+{
+  "lead_id": "L0003",
+  "researched_at": "2026-10-01",
+  "stage": "deep",
+  "identity": {"status": "confirmed", "business_name": "Northside Example Detailing", "is_service_provider": true,
+               "note": "Google profile and Instagram share phone", "source": "https://google.example/northside"},
+  "niche": {"value": "car detailing", "source": "https://google.example/northside"},
+  "serves_target": {"value": true, "areas": "Chicago and north suburbs", "quote": "", "source": "https://google.example/northside"},
+  "online_presence": {"website_url": "", "website_working": null, "directory_profiles": ["https://google.example/northside"]},
+  "reviews": [{"platform": "Google", "rating": 4.9, "count": 41, "method": "search", "source": "https://google.example/northside"}],
+  "complaints": {"status": "not_checked", "checked_sources": [], "items": []},
+  "established": {"year_started": null, "evidence": "", "source": null, "registration": null},
+  "size": {"value": null, "is_franchise_or_national": null, "evidence": "", "source": null},
+  "insured": {"value": true, "quote": "insured", "source": null},
+  "other_trust": {"checked": false, "signals": []},
+  "license": {"required": false, "number": null, "status": null, "source": null},
+  "activity": {"last_active": null, "responds_to_reviews": null, "evidence": "", "source": null},
+  "red_flags": [],
+  "contact": {"email": "", "email_publicly_listed_at": "", "phone": "(312) 555-0123", "contact_page": ""},
+  "opener": {"text": "", "source": null},
+  "sources_checked": [],
+  "notes": "Website blocked by network policy"
+}

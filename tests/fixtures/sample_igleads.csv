@@ -1,0 +1,8 @@
+username,full_name,email,phone,bio,followers,following,posts,verified,profile_url,source
+sparkle_example_clean,Sparkle Example Cleaning,hello@sparkleexample.test,773-555-0101,"Chicago house cleaning ✨ Insured & bonded | Book: https://sparkleexample.test",1.2k,300,410,false,https://www.instagram.com/sparkle_example_clean/,chicago cleaning
+sparkle_example_two,Sparkle Example Cleaning 2,HELLO@sparkleexample.test,,Second account,90,10,4,false,,chicago cleaning
+northside_detail_example,Northside Example Detailing,northsidedetail.example@gmail.com,,"Mobile auto detailing across Chicagoland 📞 312-555-0123",2300,500,220,false,https://www.instagram.com/northside_detail_example/,chicago detailing
+example_pest_pros,Example Pest Pros,info@examplepestpros.test,(847) 555-0144,"Pest control & termite treatment - Chicago, IL",640,80,95,false,https://www.instagram.com/example_pest_pros/,chicago pest
+miami_example_maids,Miami Example Maids,,305-555-0199,"House cleaning Miami FL | linktr.ee/miamiexamplemaids",800,100,60,false,https://www.instagram.com/miami_example_maids/,cleaning
+jamie_example_life,Jamie Example,,,"Lifestyle | travel | coffee",15000,900,1200,false,https://www.instagram.com/jamie_example_life/,lifestyle
+,,,,,,,,,,

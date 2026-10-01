@@ -1,0 +1,8 @@
+{
+  "lead_id": "L0006",
+  "researched_at": "2026-10-01",
+  "stage": "screened_out",
+  "identity": {"status": "confirmed", "business_name": "Jamie Example", "is_service_provider": false, "note": "Personal lifestyle account", "source": "https://instagram.example/jamie_example_life"},
+  "red_flags": [],
+  "notes": ""
+}

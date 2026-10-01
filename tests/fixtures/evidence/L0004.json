@@ -1,0 +1,23 @@
+{
+  "lead_id": "L0004",
+  "researched_at": "2026-10-01",
+  "stage": "deep",
+  "identity": {"status": "confirmed", "business_name": "Example Pest Pros Inc.", "is_service_provider": true,
+               "note": "Website and BBB match", "source": "https://examplepestpros.test/"},
+  "niche": {"value": "pest control", "source": "https://examplepestpros.test/"},
+  "serves_target": {"value": true, "areas": "Chicago", "quote": "", "source": "https://examplepestpros.test/"},
+  "online_presence": {"website_url": "https://examplepestpros.test", "website_working": true, "directory_profiles": []},
+  "reviews": [{"platform": "Google", "rating": 4.8, "count": 90, "method": "search", "source": "https://google.example/pestpros"}],
+  "complaints": {"status": "none_found", "checked_sources": ["https://bbb.example/pestpros"], "items": []},
+  "established": {"year_started": 2012, "evidence": "since 2012", "source": "https://examplepestpros.test/about", "registration": null},
+  "size": {"value": "1-5", "is_franchise_or_national": false, "evidence": "owner plus 3 techs", "source": "https://examplepestpros.test/about"},
+  "insured": {"value": true, "quote": "licensed and insured", "source": "https://examplepestpros.test/"},
+  "other_trust": {"checked": true, "signals": []},
+  "license": {"required": true, "number": null, "status": null, "source": null},
+  "activity": {"last_active": "2026-09-20", "responds_to_reviews": false, "evidence": "", "source": "https://google.example/pestpros"},
+  "red_flags": [],
+  "contact": {"email": "info@examplepestpros.test", "email_publicly_listed_at": "https://examplepestpros.test/contact", "phone": "(847) 555-0144", "contact_page": ""},
+  "opener": {"text": "", "source": null},
+  "sources_checked": [],
+  "notes": "Says licensed but no license number shown; IDPH lookup blocked"
+}
