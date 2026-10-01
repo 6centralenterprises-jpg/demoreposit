@@ -1,3 +1,8 @@
+# 6 Central Enterprises tools
+
+- **Partner Qualification Engine** (below)
+- **[Local Intel](gbp_intel/README.md)**: our in-house GMB Crush / GMB Everywhere alternative
+
 # Partner Qualification Engine
 
 *A 6 Central Enterprises shared-services tool*

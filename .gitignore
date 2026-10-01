@@ -11,3 +11,7 @@ uploads/
 
 __pycache__/
 .pytest_cache/
+
+# Local Intel: API keys and the local database stay on your machine.
+.env
+data/

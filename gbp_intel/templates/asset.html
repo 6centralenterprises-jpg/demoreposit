@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ asset.name or "Asset" }}{% endblock %}
+{% block content %}
+<p><a href="/assets">&larr; All assets</a></p>
+<h1>{{ asset.name or "(unnamed)" }}</h1>
+<p class="lead">{{ asset.project }}{% if asset.city %} · {{ asset.city }}{% endif %}</p>
+<dl>
+  {% if asset.website %}<dt>Website</dt><dd><a href="{{ asset.website }}" rel="noopener" target="_blank">{{ asset.website }}</a></dd>{% endif %}
+  {% if asset.maps_url %}<dt>Maps link</dt><dd><a href="{{ asset.maps_url }}" rel="noopener" target="_blank">{{ asset.maps_url[:80] }}</a></dd>{% endif %}
+  {% if asset.notes %}<dt>Notes</dt><dd>{{ asset.notes }}</dd>{% endif %}
+</dl>
+
+{% if asset.place_id %}
+<section class="card">
+  <h2>Google profile</h2>
+  {% if place %}
+  <dl>
+    <dt>Name on Google</dt><dd>{{ place.displayName }}</dd>
+    <dt>Primary type</dt><dd>{{ place.primaryTypeDisplayName or place.primaryType or "—" }}</dd>
+    <dt>Address</dt><dd>{{ place.formattedAddress or "Service-area business (no address shown)" }}</dd>
+    <dt>Rating</dt><dd>{% if place.rating %}{{ place.rating }} from {{ place.userRatingCount }} reviews{% else %}No reviews yet{% endif %}</dd>
+    <dt>Phone</dt><dd>{{ place.nationalPhoneNumber or "—" }}</dd>
+    <dt>Website on profile</dt><dd>{{ place.websiteUri or "None listed" }}</dd>
+    <dt>Status</dt><dd>{{ place.businessStatus or "—" }}</dd>
+    {% if place.regularOpeningHours %}<dt>Hours</dt><dd>{{ place.regularOpeningHours | join("<br>") | safe }}</dd>{% endif %}
+    <dt>Fetched</dt><dd>{{ place.fetched_at }} (Google's terms let us keep this for 30 days)</dd>
+  </dl>
+  {% else %}
+  <p class="muted">Matched to a Google profile. No recent data is stored; refresh to pull it.</p>
+  {% endif %}
+  <div class="actions">
+    <form method="post" action="/assets/{{ asset.id }}/refresh"><button {% if not places_ready %}disabled{% endif %}>Refresh from Google</button></form>
+    <form method="post" action="/assets/{{ asset.id }}/unmatch"><button class="secondary">Unmatch</button></form>
+  </div>
+</section>
+{% else %}
+<section class="card">
+  <h2>Find this business on Google</h2>
+  {% if error %}<p class="banner warn">{{ error }}</p>{% endif %}
+  {% if candidates %}
+  <p class="muted">Results for "{{ query }}". Pick ours.</p>
+  <ul class="candidates">
+    {% for c in candidates %}
+    <li>
+      <form method="post" action="/assets/{{ asset.id }}/match">
+        <input type="hidden" name="place_id" value="{{ c.id }}">
+        <strong>{{ c.displayName }}</strong> · {{ c.primaryTypeDisplayName or c.primaryType or "" }}<br>
+        <span class="muted">{{ c.formattedAddress or "No address shown" }}</span>
+        <button>This is ours</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+  {% elif places_ready %}
+  <p class="muted">No Google results for "{{ query or "(nothing to search)" }}". Add a business name and city to this asset, or it may not have a profile yet.</p>
+  {% endif %}
+</section>
+{% endif %}
+
+<form method="post" action="/assets/{{ asset.id }}/delete" onsubmit="return confirm('Delete this asset?')">
+  <button class="danger">Delete asset</button>
+</form>
+{% endblock %}
