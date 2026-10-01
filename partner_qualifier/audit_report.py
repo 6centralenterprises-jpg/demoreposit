@@ -163,8 +163,8 @@ def build_audit_book(path, rows, markets, run):
             out.append(f"- No real website ({seo.get('website_type')}). Customers can't find them in Google search "
                        "results, only through Instagram, directories or word of mouth.")
         elif seo.get("organic_keywords") is not None:
-            out += [f"- Ranks for **{seo.get('organic_keywords'):,}** searches: {seo.get('top10_keywords')} on page 1, "
-                    f"{seo.get('top3_keywords')} in the top 3",
+            out += [f"- Ranks for **{seo.get('organic_keywords'):,}** searches: {seo.get('top10_keywords', '?')} on page 1, "
+                    f"{seo.get('top3_keywords', '?')} in the top 3",
                     f"- About **{(seo.get('est_monthly_traffic') or 0):,} visitors/month** (estimate), "
                     f"worth about ${(seo.get('traffic_value_usd') or 0):,.0f}/month in ads"]
             if authority:

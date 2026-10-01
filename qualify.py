@@ -24,7 +24,7 @@ import sys
 from datetime import date, datetime
 from pathlib import Path
 
-from partner_qualifier.audit import audit_partner, load_markets, rank_partners
+from partner_qualifier.audit import audit_partner, load_markets, market_for, rank_partners
 from partner_qualifier.audit_report import build_audit_book, build_audit_workbook
 from partner_qualifier.normalize import domain_of, normalize, read_rows, website_kind
 from partner_qualifier.report import build_workbook, write_partner_csv
@@ -275,7 +275,7 @@ def cmd_audit_report(args):
         audit = json.loads(path.read_text())
         evidence = json.loads((out / "evidence" / f"{lead_id}.json").read_text())
         niche = audit.get("niche") or results[lead_id]["niche"]
-        market = markets.get((niche or "").lower()) or next(iter(markets.values()), None)
+        market = market_for(niche, markets)  # None when this niche has no market file yet
         rows.append(audit_partner(leads[lead_id], evidence, results[lead_id], audit, market, sender))
     if not rows:
         sys.exit("No audit files yet in runs/<run>/audits/.")

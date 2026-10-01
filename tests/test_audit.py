@@ -107,3 +107,10 @@ def test_audit_end_to_end(tmp_path, monkeypatch):
                     "### What they're doing right", "### What they're doing wrong", "### Custom email"):
         assert heading in book
     assert (tmp_path / "out" / "t_partner_audit_book.md").exists()
+
+
+def test_partner_without_matching_market_is_not_compared_to_another_niche():
+    from partner_qualifier.audit import market_for
+    markets = {"house cleaning": load("market/house-cleaning.json")}
+    assert market_for("house cleaning", markets) is markets["house cleaning"]
+    assert market_for("car detailing", markets) is None
