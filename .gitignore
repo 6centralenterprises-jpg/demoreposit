@@ -11,3 +11,6 @@ uploads/
 
 __pycache__/
 .pytest_cache/
+
+# Real sender details stay local; config/sender.example.json is the template.
+config/sender.json

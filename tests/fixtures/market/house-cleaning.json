@@ -1,0 +1,24 @@
+{
+  "niche": "house cleaning",
+  "market": "Chicago, IL",
+  "researched_at": "2026-10-01",
+  "keywords": [
+    {"keyword": "house cleaning chicago", "volume": 14800, "cpc": 12.26, "intent": "commercial"},
+    {"keyword": "move out cleaning chicago", "volume": 6600, "cpc": 14.31, "intent": "commercial"},
+    {"keyword": "maid service chicago", "volume": 2400, "cpc": 11.0, "intent": "commercial"},
+    {"keyword": "deep cleaning chicago", "volume": 1300, "cpc": 10.5, "intent": "commercial"}
+  ],
+  "serps": [
+    {"keyword": "house cleaning chicago", "source": "openrush:inspect_serp@2026-10-01",
+     "local_pack": [{"name": "Big Example Maids", "url": "https://bigexamplemaids.test/", "rating": 4.9, "reviews": 1500},
+                    {"name": "Example Shine Co", "url": "https://exampleshine.test/", "rating": 4.8, "reviews": 600},
+                    {"name": "Sparkle Example Cleaning", "url": "https://sparkleexample.test/", "rating": 4.9, "reviews": 215}],
+     "organic": [{"position": 1, "domain": "yelp.example", "title": "Top 10 cleaners"}], "directories": ["yelp.example"]},
+    {"keyword": "move out cleaning chicago", "source": "openrush:inspect_serp@2026-10-01",
+     "local_pack": [{"name": "Big Example Maids", "url": "https://bigexamplemaids.test/", "rating": 4.9, "reviews": 1500},
+                    {"name": "Example Shine Co", "url": "https://exampleshine.test/", "rating": 4.8, "reviews": 600},
+                    {"name": "Example Fresh Homes", "url": "https://examplefresh.test/", "rating": 4.7, "reviews": 300}],
+     "organic": [], "directories": []}
+  ],
+  "notes": ""
+}

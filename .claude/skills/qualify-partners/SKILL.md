@@ -70,6 +70,10 @@ python3 qualify.py score --run <run> --out-dir /mnt/user-data/outputs
   - every **DO NOT CONTACT** (license not verified)
   - the most common "To verify" gaps
 
+Then offer the next step: a full audit of the MESSAGE partners with the
+`audit-partners` skill. It covers Google reputation, SEO, keywords,
+competition, what each does right and wrong, and a custom email draft.
+
 ## Verdicts
 
 | Verdict | Meaning |

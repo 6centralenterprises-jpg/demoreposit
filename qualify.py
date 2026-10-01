@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 """Partner qualification pipeline for 6 Central Enterprises.
 
-    python3 qualify.py prepare <leads file> [--market "Chicago, IL"] [--limit N]
-    python3 qualify.py status  --run <run id>
-    python3 qualify.py score   --run <run id> [--out-dir DIR]
+    python3 qualify.py prepare      <leads file> [--market "Chicago, IL"] [--limit N]
+    python3 qualify.py status       --run <run id>
+    python3 qualify.py score        --run <run id> [--out-dir DIR]
+    python3 qualify.py audit-plan   --run <run id> [--top 20] [--include-verify]
+    python3 qualify.py audit-report --run <run id> [--out-dir DIR]
 
 `prepare` cleans the lead file and splits it into research batches. The
 partner-researcher agent then writes one evidence file per lead into
 runs/<run>/evidence/. `score` turns that evidence into the ranked report.
+`audit-plan` picks the qualified partners for a full audit (Google
+reputation, SEO, keywords, competition, custom email); the market-analyst
+and partner-auditor agents write runs/<run>/market/ and runs/<run>/audits/;
+`audit-report` builds the audit workbook and audit book.
 Nothing here contacts anyone.
 """
 import argparse
@@ -18,12 +24,20 @@ import sys
 from datetime import date, datetime
 from pathlib import Path
 
-from partner_qualifier.normalize import normalize, read_rows
+from partner_qualifier.audit import audit_partner, load_markets, rank_partners
+from partner_qualifier.audit_report import build_audit_book, build_audit_workbook
+from partner_qualifier.normalize import domain_of, normalize, read_rows, website_kind
 from partner_qualifier.report import build_workbook, write_partner_csv
 from partner_qualifier.rubric import has_source, score
 
 ROOT = Path(__file__).resolve().parent
 RUNS = ROOT / "runs"
+CONFIG = ROOT / "config"
+
+# OpenRush credits per call (from describe_capabilities), used for the audit estimate.
+CREDITS = {"research_keywords": 3, "inspect_serp": 2, "inspect_domain": 9, "audit_site": 9,
+           "inspect_backlinks": 9, "inspect_search_visibility": 10}
+MARKET_SERPS = 4
 
 # Sections the researcher fills in that must carry a source when they assert something.
 SOURCED_SECTIONS = ["identity", "niche", "serves_target", "insured", "size", "established",
@@ -169,6 +183,122 @@ def cmd_score(args):
     print(f"\nReport: {xlsx}\nPartner sheet CSV: {csv_path}")
 
 
+def slugify(text):
+    return re.sub(r"[^a-z0-9]+", "-", (text or "").lower()).strip("-") or "general"
+
+
+def load_sender():
+    for name in ("sender.json", "sender.example.json"):
+        path = CONFIG / name
+        if path.exists():
+            return json.loads(path.read_text())
+    return {"name": "Terell John", "title": "Founder", "company": "6 Central Enterprises",
+            "phone": "[YOUR PHONE]", "mailing_address": "[YOUR MAILING ADDRESS]"}
+
+
+def cmd_audit_plan(args):
+    out = run_dir(args.run)
+    if not (out / "results.json").exists():
+        sys.exit("Run `score` first: audits are only for qualified partners.")
+    run = json.loads((out / "run.json").read_text())
+    leads = {l["lead_id"]: l for l in load_jsonl(out / "leads.jsonl")}
+    results = json.loads((out / "results.json").read_text())
+    picks = sorted((r for r in results if r["verdict"] == "MESSAGE"),
+                   key=lambda r: (-r["score"], -r["review_total"]))
+    if args.include_verify:
+        picks += sorted((r for r in results if r["verdict"] == "VERIFY" and r["max_possible"] >= 8),
+                        key=lambda r: (-r["max_possible"], -r["score"]))
+    picks = picks[:args.top]
+    if not picks:
+        sys.exit("No MESSAGE partners to audit yet (try --include-verify).")
+
+    batch_dir = out / "audit_batches"
+    batch_dir.mkdir(exist_ok=True)
+    for old in batch_dir.glob("batch_*.json"):
+        old.unlink()
+    (out / "audits").mkdir(exist_ok=True)
+    (out / "market").mkdir(exist_ok=True)
+    (out / "seo_cache").mkdir(exist_ok=True)
+
+    entries, niches, with_site = [], {}, 0
+    for r in picks:
+        lead = leads[r["lead_id"]]
+        evidence = json.loads((out / "evidence" / f"{r['lead_id']}.json").read_text())
+        site = (evidence.get("online_presence") or {}).get("website_url") or lead.get("website") or ""
+        domain = domain_of(site) if site and website_kind(site) == "own_site" else ""
+        niche = r["niche"] or "general"
+        niches.setdefault(niche, []).append(r["lead_id"])
+        with_site += bool(domain)
+        entries.append({"lead_id": r["lead_id"], "business_name": r["business_name"], "niche": niche,
+                        "domain_to_audit": domain, "market_file": f"runs/{args.run}/market/{slugify(niche)}.json",
+                        "qualification": {k: r[k] for k in ("verdict", "score", "why", "contact", "website")},
+                        "lead": lead, "evidence": evidence})
+    batches = [entries[i:i + args.batch_size] for i in range(0, len(entries), args.batch_size)]
+    for n, batch in enumerate(batches, start=1):
+        (batch_dir / f"batch_{n:02d}.json").write_text(json.dumps(
+            {"run_id": args.run, "market": run["market"], "partners": batch}, indent=2))
+
+    missing_markets = [n for n in niches if not (out / "market" / f"{slugify(n)}.json").exists()]
+    market_credits = len(missing_markets) * (CREDITS["research_keywords"] + MARKET_SERPS * CREDITS["inspect_serp"])
+    low = with_site * (CREDITS["inspect_domain"] + CREDITS["audit_site"])
+    high = with_site * sum(CREDITS[k] for k in ("inspect_domain", "audit_site", "inspect_backlinks",
+                                                 "inspect_search_visibility"))
+    plan = {"partners": [e["lead_id"] for e in entries], "niches": niches, "missing_markets": missing_markets,
+            "batches": len(batches), "estimated_credits": [market_credits + low, market_credits + high]}
+    (out / "audit_plan.json").write_text(json.dumps(plan, indent=2))
+
+    print(f"Audit plan for {args.run}: {len(entries)} partners in {len(batches)} batch(es)")
+    for e in entries:
+        print(f"  {e['lead_id']}  {e['business_name']}  [{e['niche']}]  site: {e['domain_to_audit'] or 'none'}")
+    print("Market research needed for: " + (", ".join(missing_markets) or "none (already done)"))
+    print(f"Estimated OpenRush credits: {market_credits + low}-{market_credits + high} "
+          f"({with_site} partner site(s) to audit; partners without a site cost 0)")
+
+
+def cmd_audit_report(args):
+    out = run_dir(args.run)
+    run = json.loads((out / "run.json").read_text())
+    plan_path = out / "audit_plan.json"
+    if not plan_path.exists():
+        sys.exit("Run `audit-plan` first.")
+    plan = json.loads(plan_path.read_text())
+    leads = {l["lead_id"]: l for l in load_jsonl(out / "leads.jsonl")}
+    results = {r["lead_id"]: r for r in json.loads((out / "results.json").read_text())}
+    markets = load_markets(out / "market")
+    sender = load_sender()
+    rows, missing = [], []
+    for lead_id in plan["partners"]:
+        path = out / "audits" / f"{lead_id}.json"
+        if not path.exists():
+            missing.append(lead_id)
+            continue
+        audit = json.loads(path.read_text())
+        evidence = json.loads((out / "evidence" / f"{lead_id}.json").read_text())
+        niche = audit.get("niche") or results[lead_id]["niche"]
+        market = markets.get((niche or "").lower()) or next(iter(markets.values()), None)
+        rows.append(audit_partner(leads[lead_id], evidence, results[lead_id], audit, market, sender))
+    if not rows:
+        sys.exit("No audit files yet in runs/<run>/audits/.")
+    rows = rank_partners(rows)
+    xlsx, book = out / "partner_audits.xlsx", out / "partner_audit_book.md"
+    build_audit_workbook(xlsx, rows, markets)
+    build_audit_book(book, rows, markets, run)
+    if args.out_dir:
+        dest = Path(args.out_dir)
+        dest.mkdir(parents=True, exist_ok=True)
+        for f in (xlsx, book):
+            shutil.copy(f, dest / f"{args.run}_{f.name}")
+
+    print(f"Audited {len(rows)} partner(s)" + (f"; still missing: {', '.join(missing)}" if missing else ""))
+    for rank, r in enumerate(rows, start=1):
+        e = r["email"]
+        print(f"  {rank}. {r['business_name']}: {r['quadrant']} | quality {r['quality']}/10, need {r['need']}/10 "
+              f"| email: {e['status']}" + (f" ({'; '.join(e['failed'] + e['warnings'])})" if e["failed"] or e["warnings"] else ""))
+    if "[YOUR" in sender["phone"] + sender["mailing_address"]:
+        print("\nNote: add your phone and mailing address in config/sender.json (copy config/sender.example.json).")
+    print(f"\nWorkbook: {xlsx}\nAudit book: {book}")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -186,6 +316,16 @@ def main():
     c.add_argument("--run", required=True)
     c.add_argument("--out-dir", help="also copy the report here")
     c.set_defaults(func=cmd_score)
+    a = sub.add_parser("audit-plan", help="pick qualified partners for a full audit")
+    a.add_argument("--run", required=True)
+    a.add_argument("--top", type=int, default=20)
+    a.add_argument("--include-verify", action="store_true", help="also audit VERIFY leads that could reach 8+")
+    a.add_argument("--batch-size", type=int, default=3)
+    a.set_defaults(func=cmd_audit_plan)
+    r = sub.add_parser("audit-report", help="build the audit workbook and audit book")
+    r.add_argument("--run", required=True)
+    r.add_argument("--out-dir", help="also copy the outputs here")
+    r.set_defaults(func=cmd_audit_report)
     args = parser.parse_args()
     args.func(args)
 

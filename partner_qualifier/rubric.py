@@ -92,9 +92,9 @@ def _complaints(ev, _today):
         return 0, "not_met", f"{len(unresolved)} unresolved: {unresolved[0].get('summary', '')}", unresolved[0]["source"]
     if items:
         return 1, "met", f"{len(items)} complaint(s), all resolved", items[0]["source"]
-    if c.get("status") == "none_found" and checked:
-        return 1, "met", f"None found ({len(checked)} source(s) checked)", checked[0]
-    return 0, "unknown", "Complaint history not checked", ""
+    if c.get("status") == "none_found" and len(checked) >= 2:
+        return 1, "met", f"None found ({len(checked)} sources checked)", checked[0]
+    return 0, "unknown", "Complaint history not checked in 2+ sources", ""
 
 
 def _presence(ev, _today):

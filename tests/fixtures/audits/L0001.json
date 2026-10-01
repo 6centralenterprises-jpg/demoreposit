@@ -1,0 +1,40 @@
+{
+  "lead_id": "L0001",
+  "audited_at": "2026-10-01",
+  "business_name": "Sparkle Example Cleaning LLC",
+  "niche": "house cleaning",
+  "google_reputation": {
+    "google_rating": 4.9, "google_review_count": 212, "google_source": "https://google.example/sparkle",
+    "other_platforms": [{"platform": "Yelp", "rating": 4.5, "count": 38, "source": "https://yelp.example/sparkle"}],
+    "praise_themes": [{"theme": "on time and thorough", "source": "https://yelp.example/sparkle"}],
+    "complaint_themes": [],
+    "owner_replies_to_reviews": true, "replies_source": "https://google.example/sparkle",
+    "latest_review": "2026-09", "latest_review_source": "https://google.example/sparkle"
+  },
+  "seo": {
+    "website": "https://sparkleexample.test", "website_type": "own_site",
+    "organic_keywords": 40, "top10_keywords": 2, "top3_keywords": 0,
+    "est_monthly_traffic": 300, "traffic_value_usd": 1200,
+    "traffic_mix": {"commercial": 0.6, "informational": 0.4, "transactional": 0.0},
+    "top_pages": [{"url": "https://sparkleexample.test/", "traffic": 200, "note": "home page"}],
+    "authority": {"domain_rank": 40, "referring_domains": 12, "spam_score": 5},
+    "onpage_score": 82,
+    "technical_issues": [{"issue": "missing meta descriptions", "severity": "medium", "pages": 5}],
+    "source": "openrush:inspect_domain@2026-10-01"
+  },
+  "keywords": {"ranking": [{"keyword": "house cleaning chicago", "position": 14, "volume": 14800, "url": "https://sparkleexample.test/"},
+                           {"keyword": "deep cleaning chicago", "position": 8, "volume": 1300, "url": "https://sparkleexample.test/deep"}],
+               "source": "openrush:inspect_search_visibility@2026-10-01"},
+  "competition": {"organic_competitors": [{"domain": "exampleshine.test", "shared_keywords": 22}],
+                  "position_summary": "Page 2 for the main Chicago cleaning search; Big Example Maids owns the map pack."},
+  "social": {"instagram_followers": 1200, "facebook_followers": null, "last_post": "2026-09", "source": "https://www.instagram.com/sparkle_example_clean/"},
+  "capacity_signals": [{"signal": "Bio says now booking new clients", "source": "https://www.instagram.com/sparkle_example_clean/"}],
+  "doing_right": [{"point": "Excellent reviews", "evidence": "4.9 stars from 212 Google reviews", "source": "https://google.example/sparkle"}],
+  "doing_wrong": [{"point": "Missing the biggest search", "evidence": "Position 14 for house cleaning chicago (14,800/mo)", "source": "openrush:inspect_search_visibility@2026-10-01"},
+                  {"point": "Unsourced claim", "evidence": "should be dropped", "source": ""}],
+  "email_angles": [{"angle": "Reviews", "hook": "212 Google reviews at 4.9 stars", "source": "https://google.example/sparkle"}],
+  "email": {"subject": "Paid cleaning jobs for Sparkle",
+            "body": "Hi Sparkle Example team,\n\nYour 212 Google reviews at 4.9 stars say a lot about your work. I'm Terell with 6 Central Enterprises. We find people who need house cleaning and send paid jobs to trusted local pros. You do the work, and we agree on the price up front. Are you open to taking on more jobs?",
+            "facts_used": [{"fact": "212 Google reviews at 4.9 stars", "source": "https://google.example/sparkle"}]},
+  "notes": ""
+}
