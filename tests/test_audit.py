@@ -75,6 +75,7 @@ def test_audit_partner_scores_fit():
     assert row["quadrant"] == "Good partner"
     assert row["google"]["via"] == "Google map pack (live)" and row["google"]["reviews"] == 215
     assert len(row["doing_wrong"]) == 1 and row["unsourced_points"] == 1  # unsourced point dropped
+    assert row["competes_on_google"] is True  # in the map pack for 1 of 2 searches checked
 
 
 def test_audit_end_to_end(tmp_path, monkeypatch):

@@ -271,6 +271,11 @@ def audit_partner(lead, evidence, result, audit, market, sender):
         best = max(pack_ratings, key=lambda h: h.get("reviews") or 0)
         google = {"rating": best["rating"], "reviews": best["reviews"], "source": best.get("source", ""),
                   "via": "Google map pack (live)"}
+    searches = len((market or {}).get("serps", []))
+    # In the map pack for half or more of the money searches: they compete with
+    # our brands for the same customers, and customers we send could book them
+    # directly next time.
+    competes = bool(searches) and len(hits) * 2 >= searches
     right = [p for p in audit.get("doing_right") or [] if has_ref(p)]
     wrong = [p for p in audit.get("doing_wrong") or [] if has_ref(p)]
     return {
@@ -287,6 +292,7 @@ def audit_partner(lead, evidence, result, audit, market, sender):
         "google": google,
         "reviews_total": partner_reviews(audit, evidence),
         "pack_hits": hits,
+        "competes_on_google": competes,
         "missing_keywords": missing_keywords(audit, market),
         "doing_right": right,
         "doing_wrong": wrong,

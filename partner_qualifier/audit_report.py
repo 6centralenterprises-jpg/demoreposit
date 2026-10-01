@@ -37,12 +37,13 @@ def build_audit_workbook(path, rows, markets):
             r["website"] or "none", seo.get("est_monthly_traffic"),
             sum(1 for k in (r["audit"].get("keywords") or {}).get("ranking") or [] if (k.get("position") or 99) <= 10),
             ", ".join(h["keyword"] for h in r["pack_hits"]) or "no",
+            "yes" if r["competes_on_google"] else "no",
             _first(r["doing_right"]), _first(r["doing_wrong"]), r["email"]["status"], r["contact"].get("best", ""),
         ])
     ws = _sheet(wb, "Best Partners",
                 ["Rank", "Business", "Fit", "Quality /10", "Need /10", "Visibility /10", "Google", "Reviews",
                  "Website", "Visitors/mo (est.)", "Page-1 money keywords", "In Google map pack for",
-                 "Biggest strength", "Biggest gap", "Email", "Best contact"],
+                 "Competes with us on Google", "Biggest strength", "Biggest gap", "Email", "Best contact"],
                 best, widths={"Business": 28, "Fit": 30, "Biggest strength": 45, "Biggest gap": 45,
                               "Best contact": 34, "In Google map pack for": 30, "Website": 28})
     from openpyxl.styles import PatternFill
@@ -141,6 +142,10 @@ def build_audit_book(path, rows, markets, run):
                 f"**{r['quadrant']}** · Quality {r['quality']}/10 · Need {r['need']}/10 · "
                 f"Visibility {r['visibility']}/10{'*' if r['visibility_estimated'] else ''} · {r['niche'] or ''}", "",
                 f"Contact: {r['contact'].get('best', '')} · Website: {r['website'] or 'none'}"]
+        if r["competes_on_google"]:
+            out += ["", "> **Heads up: they also compete with us on Google.** They're in the map pack for most "
+                    "money searches, so customers we send could book them directly next time. Cover "
+                    "customer ownership (non-circumvention) in the partner agreement before sending jobs."]
 
         out += ["", "### Google reputation"]
         g = r["google"]
