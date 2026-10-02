@@ -203,3 +203,17 @@ def play_for(score, niche, weakness, change):
     if score >= 55:
         return "Validate", "Strong numbers. Check the map pack in your market before committing."
     return "Watch", "Keep on the watchlist."
+
+
+def leaderboard(board):
+    """Rank markets by how open their map packs have been across every reading so far."""
+    rows = []
+    for market, readings in board.items():
+        if not readings:
+            continue
+        best = max(readings, key=lambda r: (r["weakness"], -r["median"]))
+        rows.append({"market": market, "openness": round(sum(r["weakness"] for r in readings) / len(readings), 2),
+                     "readings": len(readings), "last": max(r["date"] for r in readings),
+                     "best_query": best["query"], "best_median": best["median"]})
+    rows.sort(key=lambda r: (-r["openness"], -r["readings"]))
+    return rows

@@ -45,6 +45,27 @@ def payload(obj):
     return obj.get("data", obj) if isinstance(obj, dict) else obj
 
 
+def all_markets(cfg):
+    return cfg["markets"]["home"] + cfg["markets"]["roster"]
+
+
+def todays_markets(cfg, day):
+    """Home markets every day, plus the next few roster metros in rotation."""
+    roster = cfg["markets"]["roster"]
+    per_day = cfg["budget"]["rotating_markets_per_day"]
+    start = (datetime.strptime(day, "%Y-%m-%d").toordinal() * per_day) % len(roster) if roster else 0
+    rotating = [roster[(start + i) % len(roster)] for i in range(min(per_day, len(roster)))]
+    return ([dict(m, role="home") for m in cfg["markets"]["home"]]
+            + [dict(m, role="rotating") for m in rotating])
+
+
+def market_checks(plan, cfg):
+    """Which map-pack searches run in which market today."""
+    per_rotating = cfg["budget"]["rotating_checks_per_market"]
+    return [(m, plan["map_checks"] if m["role"] == "home" else plan["map_checks"][:per_rotating])
+            for m in plan["markets"]]
+
+
 def niche_index(cluster):
     index = {}
     for name, niche in cluster["niches"].items():
@@ -81,17 +102,21 @@ def cmd_plan(args):
     recap = cluster_id == "weekly-recap"
     credits = cfg["openrush_credits"]
     seeds = cluster["discovery_seeds"][:budget["openrush_research_seeds"]]
+    markets = todays_markets(cfg, day)
+    checks = sum(budget["openrush_map_pack_checks"] if m["role"] == "home" else budget["rotating_checks_per_market"]
+                 for m in markets)
     est = (len(seeds) * credits["research_keywords"]
            + (0 if recap else budget["openrush_deep_dives"] * credits["inspect_keyword"])
-           + budget["openrush_map_pack_checks"] * credits["inspect_serp"] * len(cfg["markets"]))
+           + checks * credits["inspect_serp"])
     plan = {"date": day, "weekday": weekday, "cluster": cluster_id, "label": cluster["label"],
             "recap": recap, "seeds": seeds, "keywords": keywords,
-            "markets": cfg["markets"], "estimate": {
+            "markets": markets, "estimate": {
                 "openrush_credits_max": est,
                 "semrush_units_max": 0 if recap else budget["semrush_keywords_per_day"] * cfg["semrush_units_per_keyword"]}}
     (out / "plan.json").write_text(json.dumps(plan, indent=2))
     print(f"{day} ({weekday}): {cluster['label']}")
     print(f"Run folder: {out}")
+    print("Markets today: " + ", ".join(f"{m['name']} ({m['role']})" for m in markets))
     if recap:
         print("Weekly recap: no new keyword research. Re-check the watchlist leaders' map packs.")
     else:
@@ -219,9 +244,9 @@ def cmd_screen(args):
     print("\nDeep dives (OpenRush inspect_keyword, save `data` to keywords/<slug>.json):")
     for k in plan["deep_dives"]:
         print(f"  {k}  ->  keywords/{scoring.slug(k)}.json")
-    print("Map-pack checks (OpenRush inspect_serp per market, save `data` to serp/<market-slug>__<slug>.json):")
-    for m in cfg["markets"]:
-        for q in plan["map_checks"]:
+    print("Map-pack checks (OpenRush inspect_serp, save `data` to the path shown):")
+    for m, queries in market_checks(plan, cfg):
+        for q in queries:
             print(f"  '{q}' @ {m['serp_location']}  ->  serp/{scoring.slug(m['name'])}__{scoring.slug(q)}.json")
 
 
@@ -240,7 +265,7 @@ def build(day, cfg):
     for path in sorted((out / "serp").glob("*.json")):
         data = payload(read_json(path))
         market_slug, _, q = path.stem.partition("__")
-        market = next((m["name"] for m in cfg["markets"] if scoring.slug(m["name"]) == market_slug), market_slug)
+        market = next((m["name"] for m in all_markets(cfg) if scoring.slug(m["name"]) == market_slug), market_slug)
         result = scoring.pack_weakness(data, cfg["own_brand_markers"])
         result.update(query=data.get("query") or q.replace("-", " "), market=market,
                       fetched_at=data.get("fetched_at"))
@@ -285,17 +310,28 @@ def build(day, cfg):
                 entry["last_pack"] = {"date": day, "median_reviews": checks[0].get("median_reviews"),
                                       "weakness": checks[0].get("weakness")}
 
+    # Market leaderboard: every map-pack reading, per market, so the best places surface over time.
+    board = prev.get("markets", {})
+    for checks in serps.values():
+        for c in checks:
+            if c.get("weakness") is None:
+                continue
+            readings = [r for r in board.get(c["market"], []) if not (r["date"] == day and r["query"] == c["query"])]
+            readings.append({"date": day, "query": c["query"], "median": c["median_reviews"], "weakness": c["weakness"]})
+            board[c["market"]] = readings[-60:]
+
     top = [{"keyword": o["keyword"], "score": o["score"], "label": o["label"], "play": o["play"]}
            for o in opportunities[:3]]
     briefs = [b for b in prev.get("briefs", []) if b.get("date") != day]
     briefs = ([{"date": day, "label": plan["label"], "top": top}] + briefs)[:MAX_HISTORY]
-    state = {"version": 1, "updated": day, "watchlist": watch, "briefs": briefs}
+    state = {"version": 1, "updated": day, "watchlist": watch, "briefs": briefs, "markets": board}
 
     own_sightings = [dict(p, query=c["query"], market=c["market"])
                      for checks in serps.values() for c in checks for p in c["pack"] if p["possibly_ours"]]
     tactic = cfg["playbook"][datetime.strptime(day, "%Y-%m-%d").toordinal() % len(cfg["playbook"])]
     brief = {"date": day, "weekday": plan["weekday"], "label": plan["label"], "recap": plan["recap"],
-             "markets": [m["name"] for m in cfg["markets"]], "opportunities": opportunities,
+             "markets": [m["name"] for m in plan["markets"]], "leaderboard": scoring.leaderboard(board),
+             "opportunities": opportunities,
              "serps": serps, "signals": signals, "own_sightings": own_sightings, "tactic": tactic,
              "spend": read_json(out / "spend.json", {}), "state": state}
     return brief

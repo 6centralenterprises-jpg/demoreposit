@@ -1,12 +1,187 @@
 {
   "_about": "Settings for the daily GBP Opportunity Scout. Edit markets, niches and budget here. Keyword data is national (US); map-pack checks run in the markets below.",
-  "markets": [
-    {
-      "name": "Chicago, IL",
-      "serp_location": "Chicago,Illinois,United States",
-      "state": "IL"
-    }
-  ],
+  "markets": {
+    "_about": "Home markets get every map-pack check every day. The roster rotates: a few metros a day, so all of them are covered about every 11 days. Edit freely.",
+    "home": [
+      {
+        "name": "Chicago, IL",
+        "serp_location": "Chicago,Illinois,United States",
+        "state": "IL"
+      }
+    ],
+    "roster": [
+      {
+        "name": "Houston, TX",
+        "serp_location": "Houston,Texas,United States",
+        "state": "TX"
+      },
+      {
+        "name": "Dallas, TX",
+        "serp_location": "Dallas,Texas,United States",
+        "state": "TX"
+      },
+      {
+        "name": "Fort Worth, TX",
+        "serp_location": "Fort Worth,Texas,United States",
+        "state": "TX"
+      },
+      {
+        "name": "Austin, TX",
+        "serp_location": "Austin,Texas,United States",
+        "state": "TX"
+      },
+      {
+        "name": "San Antonio, TX",
+        "serp_location": "San Antonio,Texas,United States",
+        "state": "TX"
+      },
+      {
+        "name": "Phoenix, AZ",
+        "serp_location": "Phoenix,Arizona,United States",
+        "state": "AZ"
+      },
+      {
+        "name": "Atlanta, GA",
+        "serp_location": "Atlanta,Georgia,United States",
+        "state": "GA"
+      },
+      {
+        "name": "Charlotte, NC",
+        "serp_location": "Charlotte,North Carolina,United States",
+        "state": "NC"
+      },
+      {
+        "name": "Raleigh, NC",
+        "serp_location": "Raleigh,North Carolina,United States",
+        "state": "NC"
+      },
+      {
+        "name": "Nashville, TN",
+        "serp_location": "Nashville,Tennessee,United States",
+        "state": "TN"
+      },
+      {
+        "name": "Orlando, FL",
+        "serp_location": "Orlando,Florida,United States",
+        "state": "FL"
+      },
+      {
+        "name": "Tampa, FL",
+        "serp_location": "Tampa,Florida,United States",
+        "state": "FL"
+      },
+      {
+        "name": "Jacksonville, FL",
+        "serp_location": "Jacksonville,Florida,United States",
+        "state": "FL"
+      },
+      {
+        "name": "Miami, FL",
+        "serp_location": "Miami,Florida,United States",
+        "state": "FL"
+      },
+      {
+        "name": "Ocala, FL",
+        "serp_location": "Ocala,Florida,United States",
+        "state": "FL"
+      },
+      {
+        "name": "Las Vegas, NV",
+        "serp_location": "Las Vegas,Nevada,United States",
+        "state": "NV"
+      },
+      {
+        "name": "Denver, CO",
+        "serp_location": "Denver,Colorado,United States",
+        "state": "CO"
+      },
+      {
+        "name": "Salt Lake City, UT",
+        "serp_location": "Salt Lake City,Utah,United States",
+        "state": "UT"
+      },
+      {
+        "name": "Boise, ID",
+        "serp_location": "Boise,Idaho,United States",
+        "state": "ID"
+      },
+      {
+        "name": "Indianapolis, IN",
+        "serp_location": "Indianapolis,Indiana,United States",
+        "state": "IN"
+      },
+      {
+        "name": "Columbus, OH",
+        "serp_location": "Columbus,Ohio,United States",
+        "state": "OH"
+      },
+      {
+        "name": "Kansas City, MO",
+        "serp_location": "Kansas City,Missouri,United States",
+        "state": "MO"
+      },
+      {
+        "name": "St. Louis, MO",
+        "serp_location": "St. Louis,Missouri,United States",
+        "state": "MO"
+      },
+      {
+        "name": "Oklahoma City, OK",
+        "serp_location": "Oklahoma City,Oklahoma,United States",
+        "state": "OK"
+      },
+      {
+        "name": "Greenville, SC",
+        "serp_location": "Greenville,South Carolina,United States",
+        "state": "SC"
+      },
+      {
+        "name": "Charleston, SC",
+        "serp_location": "Charleston,South Carolina,United States",
+        "state": "SC"
+      },
+      {
+        "name": "Washington, DC",
+        "serp_location": "Washington,District of Columbia,United States",
+        "state": "DC"
+      },
+      {
+        "name": "Philadelphia, PA",
+        "serp_location": "Philadelphia,Pennsylvania,United States",
+        "state": "PA"
+      },
+      {
+        "name": "New York, NY",
+        "serp_location": "New York,New York,United States",
+        "state": "NY"
+      },
+      {
+        "name": "Los Angeles, CA",
+        "serp_location": "Los Angeles,California,United States",
+        "state": "CA"
+      },
+      {
+        "name": "Seattle, WA",
+        "serp_location": "Seattle,Washington,United States",
+        "state": "WA"
+      },
+      {
+        "name": "Detroit, MI",
+        "serp_location": "Detroit,Michigan,United States",
+        "state": "MI"
+      },
+      {
+        "name": "Minneapolis, MN",
+        "serp_location": "Minneapolis,Minnesota,United States",
+        "state": "MN"
+      },
+      {
+        "name": "Milwaukee, WI",
+        "serp_location": "Milwaukee,Wisconsin,United States",
+        "state": "WI"
+      }
+    ]
+  },
   "own_brand_markers": [
     "TJ",
     "6 Central"
@@ -15,7 +190,9 @@
     "semrush_keywords_per_day": 45,
     "openrush_research_seeds": 2,
     "openrush_deep_dives": 5,
-    "openrush_map_pack_checks": 4
+    "openrush_map_pack_checks": 4,
+    "rotating_markets_per_day": 3,
+    "rotating_checks_per_market": 2
   },
   "openrush_credits": {
     "research_keywords": 3,

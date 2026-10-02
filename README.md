@@ -142,8 +142,8 @@ the researcher also read business websites, BBB and public license records.
 *A daily 6 Central Enterprises research agent*
 
 Every morning before 8 AM Central, the scout finds where demand for
-home-based service businesses is **rising** and where Google's map pack is
-**open enough** for a real local business to win. It publishes the brief
+home-based service businesses is **rising** and **which cities nationwide**
+have Google map packs open enough for a real local business to win. It publishes the brief
 to a private dashboard and sends a short summary by push and email.
 
 ## What it checks each day
@@ -153,7 +153,7 @@ to a private dashboard and sends a short summary by push and email.
 | Discovery | OpenRush `research_keywords` | What new searches are customers making in today's niches? |
 | Screen | Semrush `phrase_these` (up to 45 keywords) | Volume, CPC (a proxy for job value), 12-month curve, difficulty |
 | Deep dive | OpenRush `inspect_keyword` (top 5) | Is it really surging? Last 3 months vs the same 3 months last year, from 24 months of history |
-| Map pack | OpenRush `inspect_serp` in each market | Who holds the top 3 on Google Maps, and how many reviews they have |
+| Map pack | OpenRush `inspect_serp`: Chicago daily + 3 rotating metros | Who holds the top 3 on Google Maps, and how many reviews they have |
 | Signals | Web search (+ AccuWeather when available) | Freezes, storms, Google policy changes, news, each with a source |
 
 Volume data refreshes monthly, so each weekday covers a different group:
@@ -167,6 +167,21 @@ Volume data refreshes monthly, so each weekday covers a different group:
 | Fri | Home care & pets |
 | Sat | Emerging & discovery |
 | Sun | Weekly recap of the watchlist, with map packs re-checked |
+
+## Markets
+
+**Chicago** is checked every day. **34 large or fast-growing metros**
+nationwide rotate, 3 a day, so every one is covered about every 11 days:
+Houston, Dallas, Fort Worth, Austin, San Antonio, Phoenix, Atlanta,
+Charlotte, Raleigh, Nashville, Orlando, Tampa, Jacksonville, Miami, Ocala,
+Las Vegas, Denver, Salt Lake City, Boise, Indianapolis, Columbus, Kansas
+City, St. Louis, Oklahoma City, Greenville, Charleston, Washington DC,
+Philadelphia, New York, Los Angeles, Seattle, Detroit, Minneapolis and
+Milwaukee.
+
+The **Best markets so far** leaderboard ranks them by how open their map
+packs are across every check. It firms up after a few weeks, once each
+market has been checked across all business groups.
 
 ## Reading the brief
 
@@ -190,10 +205,10 @@ suspensions hurt the real businesses involved.
 
 ## Settings
 
-Edit `config/gbp_scout.json` to add markets (each gets its own map-pack
-checks), niches, keywords, brand markers or budget. The daily cost is about
-39 OpenRush credits and up to 450 Semrush API units (10 per keyword). A
-second market adds about 8 OpenRush credits a day.
+Edit `config/gbp_scout.json` to change the home markets, the rotating
+roster, niches, keywords, brand markers or budget. The daily cost is about
+51 OpenRush credits and up to 450 Semrush API units (10 per keyword). Each
+extra rotating metro per day adds about 4 OpenRush credits.
 
 ```bash
 python3 scout.py plan    --date 2026-10-02

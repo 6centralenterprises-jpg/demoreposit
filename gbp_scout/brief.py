@@ -181,6 +181,15 @@ def watchlist_rows(watch):
     return "\n".join(rows)
 
 
+def leaderboard_rows(rows):
+    out = []
+    for i, r in enumerate(rows[:25], 1):
+        out.append(f"""<tr><td class="n">{i}</td><td>{escape(r['market'])}</td><td class="n">{r['openness']:.2f}</td>
+<td class="n">{r['readings']}</td><td>{escape(r['best_query'])} <span class="muted">(median {num(r['best_median'])} reviews)</span></td>
+<td class="n">{escape(r['last'])}</td></tr>""")
+    return "\n".join(out)
+
+
 def render_html(b):
     opps = b["opportunities"]
     state_json = json.dumps(b["state"]).replace("</", "<\\/")
@@ -225,6 +234,10 @@ Google's video verification and suspension checks look for exactly this.</p></se
 
 <section><h2>Map pack check</h2><div class="grid2">{serp_panels(b['serps'])}</div></section>
 
+{f'''<section><h2>Best markets so far</h2><p class="muted" style="margin-bottom:10px">Ranked by map-pack openness across every check (1.00 = top 3 have under 20 reviews; 0.10 = hundreds). Chicago is checked daily; 34 national metros rotate, 3 a day. Early rankings compare different searches, so they firm up after a few weeks once every market has been checked across all business groups.</p><div class="table"><table>
+<thead><tr><th>#</th><th>Market</th><th>Openness</th><th>Checks</th><th>Most open search</th><th>Last checked</th></tr></thead>
+<tbody>{leaderboard_rows(b.get("leaderboard", []))}</tbody></table></div></section>''' if b.get("leaderboard") else ''}
+
 <section><h2>Timing signals</h2><div class="grid2">{signal_list(b['signals'])}</div></section>
 
 <section class="tactic"><span class="eyebrow">Profile tactic of the day</span><p>{escape(b['tactic'])}</p></section>
@@ -265,6 +278,10 @@ def render_summary(b):
     if weak:
         lines += ["", "Open map packs (few reviews to beat):"]
         lines += [f"- '{c['query']}' in {c['market']}: median {c['median_reviews']:g} reviews" for c in weak]
+    board = b.get("leaderboard") or []
+    if board:
+        lines += ["", "Most open markets so far: " + "; ".join(
+            f"{r['market']} ({r['openness']:.2f}, best: '{r['best_query']}' median {r['best_median']:g})" for r in board[:3])]
     if b["own_sightings"]:
         lines += ["", "Possibly ours in the map pack (confirm): "
                   + "; ".join(f"{s['name']} ({s['query']})" for s in b["own_sightings"])]

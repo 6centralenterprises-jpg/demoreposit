@@ -28,8 +28,11 @@ the brief.
   holding profiles, and suspensions also hurt the real businesses involved.
 - **Research only.** Never create or edit a profile, and never contact a
   business.
-- Stay inside the daily budget in `config/gbp_scout.json` (about 39 OpenRush
+- Stay inside the daily budget in `config/gbp_scout.json` (about 51 OpenRush
   credits and 450 Semrush units). Never re-run a call that succeeded.
+- **Markets:** Chicago is checked every day. A roster of 34 large or
+  fast-growing metros nationwide rotates, 3 a day (`plan` prints today's).
+  Rotating metros get the top 2 map-pack searches; Chicago gets all of them.
 
 ## Steps
 
@@ -72,8 +75,8 @@ is `runs/gbp/D/`.
    - Deep dives: `mcp__OpenRush__inspect_keyword`. Save only
      `{"keyword", "monthly_volume", "cpc_usd", "trend"}`, with all 24 trend
      points copied exactly, to the path shown.
-   - Map packs: `mcp__OpenRush__inspect_serp` with each market's
-     `serp_location`. Save `{"query", "location", "fetched_at",
+   - Map packs: `mcp__OpenRush__inspect_serp`, one call per line `screen`
+     prints (search @ location). Save `{"query", "location", "fetched_at",
      "local_pack": [{"title", "domain", "rating": {"value",
      "votes_count"}}], "organic": [{"position", "domain"}]}` to the path
      shown.
@@ -84,8 +87,8 @@ is `runs/gbp/D/`.
 
 7. **Timing signals.** Write `runs/gbp/D/signals.json`. Every item needs a
    real `source` URL; the code drops items without one. Use WebSearch:
-   - `weather`: freezes, storms, floods or heat in each market for the
-     next 7–10 days, and what demand they trigger (frozen pipes, tree
+   - `weather`: freezes, storms, floods or heat in today's markets (Chicago
+     plus the rotating metros) for the next 7–10 days, and what demand they trigger (frozen pipes, tree
      damage, water damage, furnace calls). Use AccuWeather tools if
      available. weather.gov is blocked in this environment.
    - `policy`: Google Business Profile changes (verification, suspensions,
@@ -116,6 +119,8 @@ is `runs/gbp/D/`.
     - one line: the day's cluster and the dashboard link
     - the top 3 moves from `summary.md`, each with its play and the one fact
       that matters most
+    - the 3 most open markets on the leaderboard, and any new market that
+      entered the top 5 today
     - any "possibly ours" map-pack sighting, as a question to confirm
     - one thing to watch that is 2–3 steps ahead (a season turning, a
       policy shift, a rising keyword moving up the watchlist)

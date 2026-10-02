@@ -100,3 +100,31 @@ def test_brief_escapes_text_and_round_trips_state(tmp_path, monkeypatch):
     scout.cmd_restore(Namespace(date="2026-10-03", html=str(page)))
     restored = json.loads((tmp_path / "2026-10-03" / "prev_state.json").read_text())
     assert restored == state
+
+
+def test_markets_rotate_and_keep_chicago_every_day():
+    cfg = scout.load_config()
+    seen = set()
+    for i in range(12):
+        day = f"2026-10-{i + 1:02d}"
+        markets = scout.todays_markets(cfg, day)
+        assert markets[0]["name"] == "Chicago, IL" and markets[0]["role"] == "home"
+        assert len(markets) == 1 + cfg["budget"]["rotating_markets_per_day"]
+        seen.update(m["name"] for m in markets if m["role"] == "rotating")
+    assert len(seen) == len(cfg["markets"]["roster"])  # whole roster covered in 12 days
+
+
+def test_rotating_markets_get_fewer_checks():
+    cfg = scout.load_config()
+    plan = {"markets": scout.todays_markets(cfg, "2026-10-02"), "map_checks": ["a", "b", "c", "d"]}
+    checks = dict((m["name"], q) for m, q in scout.market_checks(plan, cfg))
+    assert checks["Chicago, IL"] == ["a", "b", "c", "d"]
+    assert all(len(q) == 2 for name, q in checks.items() if name != "Chicago, IL")
+
+
+def test_leaderboard_ranks_open_markets_first():
+    board = {"Chicago, IL": [{"date": "d", "query": "tire", "median": 10, "weakness": 1.0}],
+             "Dallas, TX": [{"date": "d", "query": "tire", "median": 475, "weakness": 0.1}]}
+    rows = scoring.leaderboard(board)
+    assert [r["market"] for r in rows] == ["Chicago, IL", "Dallas, TX"]
+    assert rows[0]["best_query"] == "tire" and rows[0]["best_median"] == 10
