@@ -318,7 +318,8 @@ def build(day, cfg):
         entry = watch.get(o["keyword"], {"first_seen": day, "history": []})
         entry.update(niche=o["niche"], cluster=plan["label"], last_seen=day, label=o["label"],
                      score=o["score"], change=o["change"], play=o["play"])
-        entry["history"] = (entry["history"] + [[day, o["score"], o["change"]]])[-MAX_HISTORY:]
+        history = [h for h in entry["history"] if h[0] != day]  # a re-run replaces today's point
+        entry["history"] = (history + [[day, o["score"], o["change"]]])[-MAX_HISTORY:]
         watch[o["keyword"]] = entry
     for slug_key, checks in serps.items():  # recap days refresh map-pack readings on the watchlist
         for kw, entry in watch.items():
@@ -351,8 +352,23 @@ def build(day, cfg):
              "markets": [m["name"] for m in plan["markets"]], "leaderboard": scoring.leaderboard(board),
              "opportunities": opportunities,
              "serps": serps, "signals": signals, "kits": kits, "verification": cfg["verification"], "own_sightings": own_sightings, "tactic": tactic,
-             "spend": read_json(out / "spend.json", {}), "state": state}
+             "spend": spend_for(out, cfg), "state": state}
     return brief
+
+
+def spend_for(out, cfg):
+    """Tool-reported spend, falling back to counting saved results x the per-call costs in config."""
+    spend = dict(read_json(out / "spend.json", {}) or {})
+    costs = cfg["openrush_credits"]
+    if spend.get("openrush_credits") is None:
+        counted = sum(len(list((out / sub).glob("*.json"))) * costs[tool] for sub, tool in
+                      (("discovery", "research_keywords"), ("keywords", "inspect_keyword"), ("serp", "inspect_serp"))
+                      if (out / sub).is_dir())
+        spend["openrush_credits"] = f"~{counted} (counted)" if counted else None
+    if spend.get("semrush_units") is None and (out / "semrush.csv").exists():
+        rows = max(0, len((out / "semrush.csv").read_text().strip().splitlines()) - 1)
+        spend["semrush_units"] = f"~{rows * cfg['semrush_units_per_keyword']} (counted)"
+    return {k: v for k, v in spend.items() if v is not None}
 
 
 def cmd_build(args):

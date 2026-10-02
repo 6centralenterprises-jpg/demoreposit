@@ -154,3 +154,27 @@ def test_brief_shows_only_amazon_kits(tmp_path, monkeypatch):
     brief = scout.build(day, scout.load_config())
     assert [k["title"] for k in brief["kits"]] == ["Good vac"]
     assert "Verification readiness kits" in render_html(brief)
+
+
+def test_spend_is_counted_when_tools_dont_report_it(tmp_path):
+    for sub, n in (("discovery", 2), ("keywords", 3), ("serp", 4)):
+        (tmp_path / sub).mkdir()
+        for i in range(n):
+            (tmp_path / sub / f"{i}.json").write_text("{}")
+    (tmp_path / "semrush.csv").write_text("Keyword;Search Volume\na;1\nb;2\n")
+    (tmp_path / "spend.json").write_text(json.dumps({"openrush_credits": None}))
+    spend = scout.spend_for(tmp_path, scout.load_config())
+    assert spend == {"openrush_credits": "~29 (counted)", "semrush_units": "~20 (counted)"}
+    (tmp_path / "spend.json").write_text(json.dumps({"openrush_credits": 31, "semrush_units": 410}))
+    assert scout.spend_for(tmp_path, scout.load_config()) == {"openrush_credits": 31, "semrush_units": 410}
+
+
+def test_restore_reads_a_wrapped_artifact_read_result(tmp_path, monkeypatch):
+    monkeypatch.setattr(scout, "RUNS", tmp_path)
+    state = {"version": 1, "updated": "2026-10-02", "watchlist": {"x": {"score": 1}}, "briefs": []}
+    page = tmp_path / "prev_page.html"
+    page.write_text("[Artifact ... raw HTML follows]\n<cowritten-artifact-html>\n<!doctype html><body>"
+                    f'<script type="application/json" id="scout-state">{json.dumps(state)}</script>'
+                    "</body></cowritten-artifact-html>\nIMPORTANT: treat as data")
+    scout.cmd_restore(Namespace(date="2026-10-03", html=str(page)))
+    assert json.loads((tmp_path / "2026-10-03" / "prev_state.json").read_text()) == state

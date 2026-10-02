@@ -40,11 +40,15 @@ Use today's date in America/Chicago as `D` (YYYY-MM-DD). The run folder
 is `runs/gbp/D/`.
 
 1. **Restore memory.** Read the dashboard with the Artifact tool
-   (`action: "read"`, the URL above). Then run:
+   (`action: "read"`, the URL above). If the result names a saved file, use
+   that path. If it returns the HTML inline instead, write the whole returned
+   page (it must include the `<script ... id="scout-state">` block, copied
+   exactly) to `runs/gbp/D/prev_page.html` and use that. Then run:
    ```bash
-   python3 scout.py restore --date D --html <saved page path from the read result>
+   python3 scout.py restore --date D --html <page path>
    ```
-   If the read fails, carry on with an empty watchlist and note it.
+   Never retype the state by hand. If the read fails, carry on with an empty
+   watchlist and note it.
 
 2. **Plan.** `python3 scout.py plan --date D`. It prints today's cluster
    (Mon water & plumbing, Tue mobile auto, Wed outdoor & seasonal, Thu HVAC
@@ -80,7 +84,9 @@ is `runs/gbp/D/`.
      "local_pack": [{"title", "domain", "rating": {"value",
      "votes_count"}}], "organic": [{"position", "domain"}]}` to the path
      shown.
-   Run independent calls in parallel.
+   Run independent calls in parallel. If a call is denied (permission
+   prompt or classifier) or errors, don't retry it in a loop: skip it, save
+   nothing for it, and list it under "tool that failed" in the report.
 
 6. **Recap only (Sunday).** `python3 scout.py screen --date D` lists the
    watchlist leaders to re-check. Run those map-pack checks as in step 5.
@@ -102,14 +108,17 @@ is `runs/gbp/D/`.
    {"weather": [{"summary": "...", "source": "https://..."}], "policy": [], "news": [], "season": []}
    ```
    Also write `runs/gbp/D/spend.json` with
-   `{"openrush_credits": N, "semrush_units": N}` from the usage the tools
-   reported.
+   `{"openrush_credits": N, "semrush_units": N}` only for usage a tool
+   actually reported. Leave a value out if no tool reported it; `build`
+   then counts the saved results × the per-call costs in config and marks
+   it "(counted)".
 
 7b. **Verification-readiness kits (Amazon).** `plan` printed today's kit
    searches (the day's niches plus rotating basics, up to 10). For each, run
    WebSearch with `allowed_domains: ["amazon.com"]` and pick the clearest
    matching product listing (a `/dp/` product page, not a search page, when
-   one is shown). Save to `runs/gbp/D/kits.json`:
+   one is shown). Run every search `plan` listed; if one finds no product
+   page, say so in the report rather than dropping it silently. Save to `runs/gbp/D/kits.json`:
    ```json
    [{"niche": "cleaning", "proof": "exists", "item": "Commercial backpack vacuum",
      "title": "ProTeam ProVac FS 6 Commercial Backpack Vacuum", "url": "https://www.amazon.com/.../dp/..."}]

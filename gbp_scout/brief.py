@@ -238,8 +238,8 @@ Google's video verification and suspension checks look for exactly this.</p></se
                    f"{escape(', '.join(t['keyword'] for t in x['top']) or 'recap')}</li>"
                    for x in b["state"]["briefs"][1:15])
     spend = b.get("spend") or {}
-    spend_text = (f"Spent today: {spend.get('openrush_credits', '?')} OpenRush credits, "
-                  f"{spend.get('semrush_units', '?')} Semrush API units." if spend else "")
+    spend_text = (f"Spent today: {spend.get('openrush_credits', 'unknown')} OpenRush credits, "
+                  f"{spend.get('semrush_units', 'unknown')} Semrush API units." if spend else "")
     table = f"""<div class="table"><table>
 <thead><tr><th>Keyword</th><th>Score</th><th>Trend</th><th>YoY</th><th>MoM</th><th>Data month</th><th>Vol (OpenRush)</th>
 <th>Vol (Semrush)</th><th>CPC</th><th>Map pack</th><th>Play</th><th>Parts</th></tr></thead>
