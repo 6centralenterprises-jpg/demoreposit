@@ -134,3 +134,74 @@ python3 -m pytest -q
 Research quality depends on the session's network access. With limited
 access, research runs through web search only. **Full** network access lets
 the researcher also read business websites, BBB and public license records.
+
+---
+
+# GBP Opportunity Scout
+
+*A daily 6 Central Enterprises research agent*
+
+Every morning before 8 AM Central, the scout finds where demand for
+home-based service businesses is **rising** and where Google's map pack is
+**open enough** for a real local business to win. It publishes the brief
+to a private dashboard and sends a short summary by push and email.
+
+## What it checks each day
+
+| Step | Tool | What it answers |
+|---|---|---|
+| Discovery | OpenRush `research_keywords` | What new searches are customers making in today's niches? |
+| Screen | Semrush `phrase_these` (up to 45 keywords) | Volume, CPC (a proxy for job value), 12-month curve, difficulty |
+| Deep dive | OpenRush `inspect_keyword` (top 5) | Is it really surging? Last 3 months vs the same 3 months last year, from 24 months of history |
+| Map pack | OpenRush `inspect_serp` in each market | Who holds the top 3 on Google Maps, and how many reviews they have |
+| Signals | Web search (+ AccuWeather when available) | Freezes, storms, Google policy changes, news, each with a source |
+
+Volume data refreshes monthly, so each weekday covers a different group:
+
+| Day | Group |
+|---|---|
+| Mon | Water, restoration & plumbing |
+| Tue | Mobile auto (tire, roadside, mechanic, detailing) |
+| Wed | Outdoor & seasonal (tree, gutters, holiday lights, snow) |
+| Thu | HVAC, energy & home upgrades |
+| Fri | Home care & pets |
+| Sat | Emerging & discovery |
+| Sun | Weekly recap of the watchlist, with map packs re-checked |
+
+## Reading the brief
+
+- **Score (0–100):** demand 25 + job value 20 + momentum 20 + map-pack
+  openness 25 + home-based fit 10. Every part is shown.
+- **Surging / Rising / Steady / Cooling:** +25% / +10% / flat / −15% or
+  worse vs the same months last year. "(seasonal)" means only the 12-month
+  curve was available, which can't tell a trend from a season.
+- **Plays:** *Own it* (launch a real 6 Central service), *Partner & manage*
+  (set up or manage real operators' profiles; they stay the owner),
+  *Validate*, *Watch*.
+- **Possibly ours:** a map-pack listing whose name matches a 6 Central
+  brand marker. Confirm it is set up correctly.
+
+## Guardrails
+
+The scout never creates or edits a profile and never contacts anyone.
+Every play assumes a real business that does the work from a real base.
+Google bars lead-generation companies from Business Profiles, and
+suspensions hurt the real businesses involved.
+
+## Settings
+
+Edit `config/gbp_scout.json` to add markets (each gets its own map-pack
+checks), niches, keywords, brand markers or budget. The daily cost is about
+39 OpenRush credits and up to 450 Semrush API units (10 per keyword). A
+second market adds about 8 OpenRush credits a day.
+
+```bash
+python3 scout.py plan    --date 2026-10-02
+python3 scout.py batch   --date 2026-10-02
+python3 scout.py screen  --date 2026-10-02
+python3 scout.py build   --date 2026-10-02
+python3 scout.py restore --date 2026-10-03 --html <published brief>
+```
+
+Run data stays in `runs/gbp/`, which is never committed. This repository
+is public, and the strategy should stay private.
