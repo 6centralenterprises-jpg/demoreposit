@@ -87,7 +87,7 @@ def test_audit_end_to_end(tmp_path, monkeypatch):
     for f in (FIXTURES / "evidence").glob("*.json"):
         shutil.copy(f, run / "evidence" / f.name)
     qualify.cmd_score(Namespace(run="t", out_dir=None))
-    qualify.cmd_audit_plan(Namespace(run="t", top=20, include_verify=True, batch_size=3))
+    qualify.cmd_audit_plan(Namespace(run="t", top=20, include_verify=True, all=False, batch_size=3))
     plan = json.loads((run / "audit_plan.json").read_text())
     assert plan["partners"] == ["L0001", "L0003"]  # MESSAGE first, then VERIFY that could reach 8+
     assert plan["missing_markets"] == ["house cleaning", "car detailing"]
@@ -115,3 +115,24 @@ def test_partner_without_matching_market_is_not_compared_to_another_niche():
     markets = {"house cleaning": load("market/house-cleaning.json")}
     assert market_for("house cleaning", markets) is markets["house cleaning"]
     assert market_for("car detailing", markets) is None
+
+
+def test_audit_plan_all_takes_every_real_business(tmp_path, monkeypatch):
+    monkeypatch.setattr(qualify, "RUNS", tmp_path)
+    qualify.cmd_prepare(Namespace(file=str(FIXTURES / "sample_igleads.csv"), market="Chicago, IL",
+                                  run="t", batch_size=5, limit=None))
+    run = tmp_path / "t"
+    for f in (FIXTURES / "evidence").glob("*.json"):
+        shutil.copy(f, run / "evidence" / f.name)
+    qualify.cmd_score(Namespace(run="t", out_dir=None))
+    results = {r["lead_id"]: r for r in json.loads((run / "results.json").read_text())}
+    qualify.cmd_audit_plan(Namespace(run="t", top=50, include_verify=False, all=True, batch_size=50))
+    plan = json.loads((run / "audit_plan.json").read_text())
+    not_real = ("Duplicate", "Could not confirm a real", "Not a local service provider")
+    expected = {i for i, r in results.items() if r["verdict"] not in ("DO NOT CONTACT", "NOT RESEARCHED")
+                and not (r["verdict"] == "SKIP" and r["reason"].startswith(not_real))}
+    assert set(plan["partners"]) == expected
+    assert plan["partners"][0] == "L0001"  # MESSAGE partners still come first
+    batch = json.loads((run / "audit_batches" / "batch_01.json").read_text())
+    for p in batch["partners"]:
+        assert p["terell_decides"] == (results[p["lead_id"]]["verdict"] in ("HOLD", "SKIP"))

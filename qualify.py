@@ -4,7 +4,7 @@
     python3 qualify.py prepare      <leads file> [--market "Chicago, IL"] [--limit N]
     python3 qualify.py status       --run <run id>
     python3 qualify.py score        --run <run id> [--out-dir DIR]
-    python3 qualify.py audit-plan   --run <run id> [--top 20] [--include-verify]
+    python3 qualify.py audit-plan   --run <run id> [--top 20] [--include-verify] [--all]
     python3 qualify.py audit-report --run <run id> [--out-dir DIR]
 
 `prepare` cleans the lead file and splits it into research batches. The
@@ -208,6 +208,13 @@ def cmd_audit_plan(args):
     if args.include_verify:
         picks += sorted((r for r in results if r["verdict"] == "VERIFY" and r["max_possible"] >= 8),
                         key=lambda r: (-r["max_possible"], -r["score"]))
+    if getattr(args, "all", False):
+        # Every real business: skip only duplicates, non-businesses and unlicensed license-required niches.
+        not_real = ("Duplicate", "Could not confirm a real", "Not a local service provider")
+        rest = [r for r in results if r["verdict"] in ("VERIFY", "HOLD", "SKIP")
+                and not (r["verdict"] == "SKIP" and r["reason"].startswith(not_real))]
+        order = {"VERIFY": 0, "HOLD": 1, "SKIP": 2}
+        picks += sorted(rest, key=lambda r: (order[r["verdict"]], -r["score"], -r["review_total"]))
     picks = picks[:args.top]
     if not picks:
         sys.exit("No MESSAGE partners to audit yet (try --include-verify).")
@@ -232,6 +239,7 @@ def cmd_audit_plan(args):
         entries.append({"lead_id": r["lead_id"], "business_name": r["business_name"], "niche": niche,
                         "domain_to_audit": domain, "market_file": f"runs/{args.run}/market/{slugify(niche)}.json",
                         "qualification": {k: r[k] for k in ("verdict", "score", "why", "contact", "website")},
+                        "terell_decides": r["verdict"] in ("HOLD", "SKIP"),
                         "lead": lead, "evidence": evidence})
     batches = [entries[i:i + args.batch_size] for i in range(0, len(entries), args.batch_size)]
     for n, batch in enumerate(batches, start=1):
@@ -320,6 +328,8 @@ def main():
     a.add_argument("--run", required=True)
     a.add_argument("--top", type=int, default=20)
     a.add_argument("--include-verify", action="store_true", help="also audit VERIFY leads that could reach 8+")
+    a.add_argument("--all", action="store_true",
+                   help="audit every real business; HOLD and low scorers are marked for Terell to decide")
     a.add_argument("--batch-size", type=int, default=3)
     a.set_defaults(func=cmd_audit_plan)
     r = sub.add_parser("audit-report", help="build the audit workbook and audit book")
