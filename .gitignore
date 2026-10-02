@@ -14,3 +14,7 @@ __pycache__/
 
 # Real sender details stay local; config/sender.example.json is the template.
 config/sender.json
+
+# Real list config (personal Gmail addresses) and opt-outs stay local.
+config/email_lists.json
+outreach/

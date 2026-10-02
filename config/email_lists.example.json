@@ -1,0 +1,8 @@
+{
+  "own_domains": ["example-brand.com"],
+  "own_addresses": ["founder@example-brand.com", "yourname@gmail.com"],
+  "blocked_senders": [
+    {"entry": "spammer@example.net", "reason": "Repeated spam"}
+  ],
+  "restrict_send_to_approved_partners": false
+}

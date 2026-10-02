@@ -189,6 +189,8 @@ def score(lead, ev, market):
     """Score one lead. `ev` is the researcher's evidence dict, or None if not researched."""
     if lead.get("screen") == "skip_duplicate":
         return _result(lead, "SKIP", f"Duplicate of {lead['duplicate_of']}")
+    if lead.get("screen") == "skip_opted_out":
+        return _result(lead, "DO NOT CONTACT", "Asked not to be contacted (opt-out list)")
     if not ev:
         return _result(lead, "NOT RESEARCHED", "Research not run yet")
 

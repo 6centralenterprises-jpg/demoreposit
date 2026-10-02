@@ -26,6 +26,11 @@ pip install -q -r requirements.txt
 python3 qualify.py prepare "<file>" --market "Chicago, IL"
 ```
 
+It also checks every lead against the opt-out list (the local file plus
+AgentMail's send block list when `AGENTMAIL_API_KEY` is set and reachable).
+Anyone who opted out is marked DO NOT CONTACT and never researched. Tell the
+user which source the check used; the summary prints it.
+
 This removes duplicates and sorts leads by research priority: location
 match, niche match, real website, business email. It writes
 `runs/<run>/batches/batch_NN.json`. Report the printed summary to the user.

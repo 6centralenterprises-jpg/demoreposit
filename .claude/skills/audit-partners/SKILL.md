@@ -73,3 +73,12 @@ address, then the required opt-out line. The details come from
 `config/sender.json`, which is gitignored. Copy `config/sender.example.json`
 to create it. Until it exists, the drafts show `[YOUR PHONE]` and
 `[YOUR MAILING ADDRESS]`.
+
+## Opt-outs
+
+When anyone replies "no thanks", asks to stop, or hard-bounces, run
+`python3 qualify.py optout <their email> --reason "<what they said>" --source "<reply date>"`
+right away. It blocks them in AgentMail for both send and reply, and every
+future `prepare` marks them DO NOT CONTACT. Do this without waiting for
+approval: it's the promise the opt-out line makes. Never use a bare free-mail
+domain (gmail.com and similar); the command refuses it.

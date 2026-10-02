@@ -103,6 +103,38 @@ Put your phone and mailing address for the signature in
 `config/sender.json`. Copy `config/sender.example.json` to create it. It
 stays out of git.
 
+## Email allow and block lists (AgentMail)
+
+Organization-wide lists keep outreach clean and honor every opt-out:
+
+| Type, direction | What goes on it | How it's kept up to date |
+|---|---|---|
+| block, send | Anyone who asked not to be contacted, plus hard bounces | `qualify.py optout` adds them right away |
+| block, reply | The same people, so no agent writes back to them | Same command |
+| allow, receive | Our own domains and addresses | `config/email_lists.json` |
+| block, receive | Spam senders | `config/email_lists.json` |
+| allow, send | Optional: only MESSAGE partners from a scored run | Off until `restrict_send_to_approved_partners` is true |
+
+```bash
+cp config/email_lists.example.json config/email_lists.json   # add your domains and addresses
+python3 qualify.py lists                 # shows what would change
+python3 qualify.py lists --apply         # adds the missing entries
+python3 qualify.py optout someone@biz.com --reason "Replied no thanks" --source "reply 2026-10-02"
+```
+
+- `lists` only ever **adds**. Entries on AgentMail that aren't in the config
+  are listed and left alone.
+- A bare free-mail domain (`gmail.com`, `yahoo.com`...) is refused anywhere:
+  it would match every partner who uses Gmail. Use full addresses.
+- Every `prepare` checks new leads against the opt-out list, so someone who
+  opted out is never researched or messaged again.
+- Needs `AGENTMAIL_API_KEY` in the environment and network access to
+  `api.agentmail.to`. The key is read by the SDK and never printed.
+- `config/email_lists.json` and `outreach/` (the local opt-out file) are
+  gitignored. AgentMail's send block list is the lasting copy of opt-outs.
+- On an unverified AgentMail organization, sending is limited to the send
+  allow list, so check the account is verified before relying on outreach.
+
 ## Rules built in
 
 - Business-facing information only. No owners' personal accounts or private
@@ -128,6 +160,8 @@ python3 qualify.py status --run <run>
 python3 qualify.py score  --run <run> --out-dir /mnt/user-data/outputs
 python3 qualify.py audit-plan   --run <run> --top 20        # prints credit estimate
 python3 qualify.py audit-report --run <run> --out-dir /mnt/user-data/outputs
+python3 qualify.py lists [--run <run>] [--apply]
+python3 qualify.py optout <email> --reason "..."
 python3 -m pytest -q
 ```
 

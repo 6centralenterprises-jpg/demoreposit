@@ -6,6 +6,8 @@
     python3 qualify.py score        --run <run id> [--out-dir DIR]
     python3 qualify.py audit-plan   --run <run id> [--top 20] [--include-verify]
     python3 qualify.py audit-report --run <run id> [--out-dir DIR]
+    python3 qualify.py optout       <email or domain> [--reason TEXT] [--source TEXT]
+    python3 qualify.py lists        [--run <run id>] [--apply]
 
 `prepare` cleans the lead file and splits it into research batches. The
 partner-researcher agent then writes one evidence file per lead into
@@ -14,6 +16,9 @@ runs/<run>/evidence/. `score` turns that evidence into the ranked report.
 reputation, SEO, keywords, competition, custom email); the market-analyst
 and partner-auditor agents write runs/<run>/market/ and runs/<run>/audits/;
 `audit-report` builds the audit workbook and audit book.
+`optout` records someone who asked not to be contacted and blocks them in
+AgentMail right away. `lists` shows how the AgentMail allow and block lists
+differ from config/email_lists.json, and adds what's missing with --apply.
 Nothing here contacts anyone.
 """
 import argparse
@@ -26,6 +31,7 @@ from pathlib import Path
 
 from partner_qualifier.audit import audit_partner, load_markets, market_for, rank_partners
 from partner_qualifier.audit_report import build_audit_book, build_audit_workbook
+from partner_qualifier import email_lists
 from partner_qualifier.normalize import domain_of, normalize, read_rows, website_kind
 from partner_qualifier.report import build_workbook, write_partner_csv
 from partner_qualifier.rubric import has_source, score
@@ -33,6 +39,7 @@ from partner_qualifier.rubric import has_source, score
 ROOT = Path(__file__).resolve().parent
 RUNS = ROOT / "runs"
 CONFIG = ROOT / "config"
+SUPPRESSION = ROOT / "outreach" / "suppression.jsonl"  # opt-outs; never committed
 
 # OpenRush credits per call (from describe_capabilities), used for the audit estimate.
 CREDITS = {"research_keywords": 3, "inspect_serp": 2, "inspect_domain": 9, "audit_site": 9,
@@ -63,6 +70,12 @@ def cmd_prepare(args):
     leads = normalize(rows, args.market)
     if not leads:
         sys.exit("No leads found in the file — check that it has a header row.")
+    suppressed, source_note = load_suppressed()
+    opted_out = 0
+    for lead in leads:
+        if lead["screen"] == "research" and email_lists.is_suppressed(lead["email"], suppressed):
+            lead["screen"] = "skip_opted_out"
+            opted_out += 1
 
     slug = re.sub(r"[^a-z0-9]+", "-", source.stem.lower()).strip("-")[:40] or "leads"
     run_id = args.run or f"{date.today().isoformat()}_{slug}"
@@ -103,7 +116,9 @@ def cmd_prepare(args):
     print(f"Run: {run_id}")
     print(f"Rows read: {len(rows)} | leads: {len(leads)} | to research: {len(queue)} "
           f"| duplicates: {sum(l['screen'] == 'skip_duplicate' for l in leads)} "
-          f"| deferred: {sum(l['screen'] == 'deferred' for l in leads)}")
+          f"| deferred: {sum(l['screen'] == 'deferred' for l in leads)} "
+          f"| opted out: {opted_out}")
+    print(f"Opt-out check: {source_note}")
     print(f"Niche guesses: {tally('niche_guess')}")
     print(f"Location hints for {args.market}: {tally('location_hint')}")
     print(f"Email types: {tally('email_type')}")
@@ -299,6 +314,83 @@ def cmd_audit_report(args):
     print(f"\nWorkbook: {xlsx}\nAudit book: {book}")
 
 
+def load_suppressed():
+    """Opt-outs from the local file, plus AgentMail's send block list when it can be reached."""
+    try:
+        client = email_lists.make_client()
+        return email_lists.suppressed_entries(SUPPRESSION, client), "local opt-out file + AgentMail send block list"
+    except Exception as exc:
+        note = f"local opt-out file only (AgentMail not checked: {str(exc)[:120]})"
+        return email_lists.suppressed_entries(SUPPRESSION), note
+
+
+def approved_partners(run_id):
+    """(email, name) for every MESSAGE partner in a scored run."""
+    out = run_dir(run_id)
+    if not (out / "results.json").exists():
+        sys.exit(f"Run `score` for {run_id} first.")
+    leads = {l["lead_id"]: l for l in load_jsonl(out / "leads.jsonl")}
+    return [(leads[r["lead_id"]]["email"], r["business_name"])
+            for r in json.loads((out / "results.json").read_text()) if r["verdict"] == "MESSAGE"]
+
+
+def print_entries(title, entries):
+    if entries:
+        print(f"\n{title} ({len(entries)}):")
+        for e in entries:
+            line = f"  {e['type']:5} {e['direction']:7} {e['entry']}"
+            print(line + (f"  ({e['error']})" if e.get("error") else f"  [{e['reason']}]" if e.get("reason") else ""))
+
+
+def cmd_optout(args):
+    try:
+        record = email_lists.add_suppression(SUPPRESSION, args.entry, args.reason, args.source)
+    except ValueError as exc:
+        sys.exit(str(exc))
+    entry = email_lists.clean_entry(args.entry)[0]
+    print(f"Recorded opt-out: {entry}" if record else f"{entry} was already on the opt-out list.")
+    record = record or next(r for r in email_lists.read_suppression(SUPPRESSION) if r["entry"] == entry)
+    wanted = [{"direction": d, "type": t, "entry": entry, "reason": email_lists.opt_out_reason(record)}
+              for d, t in email_lists.OPT_OUT_LISTS]
+    try:
+        report = email_lists.sync(email_lists.make_client(), wanted, apply=True)
+    except Exception as exc:
+        sys.exit(f"Saved locally, but AgentMail was not updated: {str(exc)[:200]}\n"
+                 f"Run `python3 qualify.py lists --apply` once AgentMail is reachable.")
+    print_entries("Blocked in AgentMail", report["added"])
+    print_entries("Already blocked", report["already"])
+    print_entries("Failed", report["failed"])
+    if report["failed"]:
+        sys.exit(1)
+
+
+def cmd_lists(args):
+    config = email_lists.load_config(CONFIG / "email_lists.json")
+    if config is None:
+        print("No config/email_lists.json yet (copy config/email_lists.example.json). Showing opt-outs only.")
+    partners = approved_partners(args.run) if args.run else []
+    if args.run and not (config or {}).get("restrict_send_to_approved_partners"):
+        print("Note: --run has no effect until restrict_send_to_approved_partners is true in the config.")
+    entries, problems = email_lists.desired_entries(config, email_lists.read_suppression(SUPPRESSION), partners)
+    for p in problems:
+        print(f"Skipped: {p}")
+    try:
+        client = email_lists.make_client()
+        report = email_lists.sync(client, entries, apply=args.apply)
+    except Exception as exc:
+        print_entries("Entries the lists should hold", entries)
+        sys.exit(f"\nCould not reach AgentMail: {str(exc)[:200]}")
+    if args.apply:
+        print_entries("Added", report["added"])
+        print_entries("Failed", report["failed"])
+    else:
+        print_entries("Would add (run again with --apply)", report["to_add"])
+    print(f"\nAlready in place: {len(report['already'])}")
+    print_entries("On AgentMail but not in the config (left alone; remove by hand if wrong)", report["extra"])
+    if report["failed"]:
+        sys.exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -326,6 +418,15 @@ def main():
     r.add_argument("--run", required=True)
     r.add_argument("--out-dir", help="also copy the outputs here")
     r.set_defaults(func=cmd_audit_report)
+    o = sub.add_parser("optout", help="record an opt-out and block it in AgentMail right away")
+    o.add_argument("entry", help="email address (or the business's own domain)")
+    o.add_argument("--reason", default="Asked not to be contacted")
+    o.add_argument("--source", default="", help="where it came from, e.g. 'reply 2026-10-02'")
+    o.set_defaults(func=cmd_optout)
+    li = sub.add_parser("lists", help="compare AgentMail allow/block lists with the config")
+    li.add_argument("--run", help="scored run whose MESSAGE partners may be added to the send allow list")
+    li.add_argument("--apply", action="store_true", help="add the missing entries (never deletes)")
+    li.set_defaults(func=cmd_lists)
     args = parser.parse_args()
     args.func(args)
 
