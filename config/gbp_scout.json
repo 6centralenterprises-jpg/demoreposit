@@ -436,6 +436,19 @@
             "rodent control near me",
             "pest control near me"
           ]
+        },
+        "decks and patios": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 5,
+          "licensed": true,
+          "keywords": [
+            "deck builders near me",
+            "deck repair near me",
+            "deck installation near me",
+            "deck resurfacing",
+            "pergola installation near me",
+            "patio cover installation"
+          ]
         }
       }
     },
