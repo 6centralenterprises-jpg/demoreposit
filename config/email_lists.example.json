@@ -1,6 +1,13 @@
 {
-  "own_domains": ["example-brand.com"],
-  "own_addresses": ["founder@example-brand.com", "yourname@gmail.com"],
+  "own_domains": [
+    "6cpartners.com",
+    "deepbreathhousecleaning.com",
+    "quietwallpestcontrol.com",
+    "freshseatsmobiledetailing.com",
+    "allstarmobilecardetailingservice.com",
+    "tjsnationwideroadsideservice.com"
+  ],
+  "own_addresses": ["yourname@gmail.com"],
   "blocked_senders": [
     {"entry": "spammer@example.net", "reason": "Repeated spam"}
   ],

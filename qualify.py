@@ -8,6 +8,10 @@
     python3 qualify.py audit-report --run <run id> [--out-dir DIR]
     python3 qualify.py optout       <email or domain> [--reason TEXT] [--source TEXT]
     python3 qualify.py lists        [--run <run id>] [--apply]
+    python3 qualify.py inboxes      [--apply]
+    python3 qualify.py drafts       --run <run id> [--apply]
+    python3 qualify.py send         --run <run id> <lead id>... [--apply]
+    python3 qualify.py triage       [--apply]
 
 `prepare` cleans the lead file and splits it into research batches. The
 partner-researcher agent then writes one evidence file per lead into
@@ -19,6 +23,9 @@ and partner-auditor agents write runs/<run>/market/ and runs/<run>/audits/;
 `optout` records someone who asked not to be contacted and blocks them in
 AgentMail right away. `lists` shows how the AgentMail allow and block lists
 differ from config/email_lists.json, and adds what's missing with --apply.
+`inboxes`, `drafts`, `send` and `triage` run outreach from config/outreach.json:
+drafts wait in AgentMail until Terell approves them by lead id, and replies
+are sorted (opt-outs and bounces are blocked right away).
 Nothing here contacts anyone.
 """
 import argparse
@@ -31,7 +38,7 @@ from pathlib import Path
 
 from partner_qualifier.audit import audit_partner, load_markets, market_for, rank_partners
 from partner_qualifier.audit_report import build_audit_book, build_audit_workbook
-from partner_qualifier import email_lists
+from partner_qualifier import email_lists, outreach
 from partner_qualifier.normalize import domain_of, normalize, read_rows, website_kind
 from partner_qualifier.report import build_workbook, write_partner_csv
 from partner_qualifier.rubric import has_source, score
@@ -270,9 +277,8 @@ def cmd_audit_plan(args):
           f"({with_site} partner site(s) to audit; partners without a site cost 0)")
 
 
-def cmd_audit_report(args):
-    out = run_dir(args.run)
-    run = json.loads((out / "run.json").read_text())
+def build_audit_rows(out):
+    """Every audited partner in a run, ranked. Returns (rows, missing lead ids, markets, sender)."""
     plan_path = out / "audit_plan.json"
     if not plan_path.exists():
         sys.exit("Run `audit-plan` first.")
@@ -292,9 +298,15 @@ def cmd_audit_report(args):
         niche = audit.get("niche") or results[lead_id]["niche"]
         market = market_for(niche, markets)  # None when this niche has no market file yet
         rows.append(audit_partner(leads[lead_id], evidence, results[lead_id], audit, market, sender))
+    return rank_partners(rows), missing, markets, sender
+
+
+def cmd_audit_report(args):
+    out = run_dir(args.run)
+    run = json.loads((out / "run.json").read_text())
+    rows, missing, markets, sender = build_audit_rows(out)
     if not rows:
         sys.exit("No audit files yet in runs/<run>/audits/.")
-    rows = rank_partners(rows)
     xlsx, book = out / "partner_audits.xlsx", out / "partner_audit_book.md"
     build_audit_workbook(xlsx, rows, markets)
     build_audit_book(book, rows, markets, run)
@@ -391,6 +403,111 @@ def cmd_lists(args):
         sys.exit(1)
 
 
+def load_outreach():
+    return json.loads((CONFIG / "outreach.json").read_text())
+
+
+def agentmail_or_exit():
+    try:
+        return email_lists.make_client()
+    except Exception as exc:
+        sys.exit(f"Could not reach AgentMail: {str(exc)[:200]}")
+
+
+def block_opt_out(client, entry, reason, source):
+    """Record an opt-out and block it for send and reply. Returns a short status line."""
+    try:
+        record = email_lists.add_suppression(SUPPRESSION, entry, reason, source)
+    except ValueError as exc:
+        return f"not blocked ({exc})"
+    record = record or next(r for r in email_lists.read_suppression(SUPPRESSION) if r["entry"] == entry)
+    wanted = [{"direction": d, "type": t, "entry": record["entry"], "reason": email_lists.opt_out_reason(record)}
+              for d, t in email_lists.OPT_OUT_LISTS]
+    report = email_lists.sync(client, wanted, apply=True)
+    return "blocked" if not report["failed"] else f"block failed: {report['failed'][0]['error']}"
+
+
+def cmd_inboxes(args):
+    config = load_outreach()
+    client = agentmail_or_exit()
+    existing, missing = outreach.plan_inboxes(client, config["inboxes"])
+    for spec in existing:
+        print(f"  exists   {spec['address']}")
+    for spec in missing:
+        if args.apply:
+            try:
+                outreach.create_inbox(client, spec)
+                print(f"  created  {spec['address']}  ({spec['display_name']})")
+            except Exception as exc:
+                print(f"  FAILED   {spec['address']}: {str(exc)[:200]}")
+        else:
+            print(f"  missing  {spec['address']}  ({spec['display_name']}): {spec['purpose']}")
+    if missing and not args.apply:
+        print("\nRun again with --apply to create the missing inboxes.")
+
+
+def cmd_drafts(args):
+    out = run_dir(args.run)
+    rows, _, _, _ = build_audit_rows(out)
+    config = load_outreach()
+    suppressed, note = load_suppressed()
+    ready, skipped = outreach.draft_candidates(rows, suppressed)
+    print(f"Opt-out check: {note}")
+    for s in skipped:
+        print(f"  skip   {s['lead_id']}  {s['business_name']}: {s['why']}")
+    if not ready:
+        sys.exit("No drafts ready.")
+    client = agentmail_or_exit()
+    inbox = config["sender_inbox"]
+    done = outreach.existing_lead_labels(client, inbox)
+    for item in ready:
+        if outreach.lead_label(args.run, item["lead_id"]) in done:
+            print(f"  have   {item['lead_id']}  {item['business_name']}: already drafted or sent")
+        elif args.apply:
+            outreach.create_draft(client, inbox, args.run, item)
+            print(f"  draft  {item['lead_id']}  {item['business_name']} -> {item['to']}  \"{item['subject']}\"")
+        else:
+            print(f"  would  {item['lead_id']}  {item['business_name']} -> {item['to']}  \"{item['subject']}\"")
+    print(f"\nDrafts wait in {inbox} until you approve them: "
+          f"python3 qualify.py send --run {args.run} <lead id>... --apply")
+
+
+def cmd_send(args):
+    run_dir(args.run)
+    config = load_outreach()
+    client = agentmail_or_exit()
+    suppressed = email_lists.suppressed_entries(SUPPRESSION, client)
+    for lead_id, status in outreach.send_approved(client, config, args.run, args.lead_ids, suppressed, apply=args.apply):
+        print(f"  {lead_id}: {status}")
+    if not config.get("warmup_start"):
+        print('\nWarm-up cap applies until "warmup_start" (first send date) is set in config/outreach.json.')
+    if not args.apply:
+        print("Nothing sent. Run again with --apply to send.")
+
+
+def cmd_triage(args):
+    config = load_outreach()
+    client = agentmail_or_exit()
+    lists = email_lists.load_config(CONFIG / "email_lists.json") or {}
+    own = {i["domain"] for i in config["inboxes"]} | set(lists.get("own_domains", []))
+    results = outreach.triage(client, config["triage_inboxes"], own, apply=args.apply)
+    if not results:
+        print("No new replies.")
+        return
+    order = ["needs_terell", "opt_out", "bounce", "bounce_unclear", "auto_reply"]
+    for r in sorted(results, key=lambda r: order.index(r["kind"])):
+        line = f"[{r['kind']}] {r['from']} | {r['subject']}"
+        if r["suppress"] and args.apply:
+            line += f" | {block_opt_out(client, r['suppress'], 'Bounced' if r['kind'] == 'bounce' else 'Replied asking to stop', 'reply ' + r['message_id'][:40])}"
+        elif r["suppress"]:
+            line += f" | would block {r['suppress']}"
+        print(line)
+        if r["kind"] in ("needs_terell", "bounce_unclear"):
+            print("    " + r["preview"].replace("\n", " ")[:300])
+    if not args.apply:
+        print("\nNothing changed. Run with --apply to label replies and block opt-outs.")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -427,6 +544,21 @@ def main():
     li.add_argument("--run", help="scored run whose MESSAGE partners may be added to the send allow list")
     li.add_argument("--apply", action="store_true", help="add the missing entries (never deletes)")
     li.set_defaults(func=cmd_lists)
+    ib = sub.add_parser("inboxes", help="create the inboxes in config/outreach.json")
+    ib.add_argument("--apply", action="store_true")
+    ib.set_defaults(func=cmd_inboxes)
+    dr = sub.add_parser("drafts", help="put checked outreach emails into AgentMail as drafts")
+    dr.add_argument("--run", required=True)
+    dr.add_argument("--apply", action="store_true")
+    dr.set_defaults(func=cmd_drafts)
+    se = sub.add_parser("send", help="send the drafts you approve, by lead id")
+    se.add_argument("--run", required=True)
+    se.add_argument("lead_ids", nargs="+")
+    se.add_argument("--apply", action="store_true")
+    se.set_defaults(func=cmd_send)
+    tr = sub.add_parser("triage", help="sort new replies; block opt-outs and bounces")
+    tr.add_argument("--apply", action="store_true")
+    tr.set_defaults(func=cmd_triage)
     args = parser.parse_args()
     args.func(args)
 

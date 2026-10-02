@@ -135,6 +135,34 @@ python3 qualify.py optout someone@biz.com --reason "Replied no thanks" --source 
 - On an unverified AgentMail organization, sending is limited to the send
   allow list, so check the account is verified before relying on outreach.
 
+## Running outreach (AgentMail)
+
+Partner outreach goes out from `terell@6cpartners.com` only. The brand
+domains are for customers and never send cold email. The inbox map, daily
+caps and sending hours are in `config/outreach.json`.
+
+```bash
+python3 qualify.py inboxes --apply                    # create the inbox map
+python3 qualify.py drafts --run <run> --apply         # checked emails -> AgentMail drafts
+python3 qualify.py send --run <run> L0004 L0011       # preview; add --apply to send
+python3 qualify.py triage --apply                     # sort replies; block opt-outs and bounces
+```
+
+- **You approve every first email.** `send` only sends the lead ids you name.
+  Without `--apply` it shows what would happen.
+- `drafts` skips anyone not MESSAGE, any email that failed a check, unlisted
+  free-mail addresses, opt-outs, and signatures still showing placeholders.
+  It says why for each one, and never drafts the same lead twice.
+- `send` re-checks the opt-out list, keeps to the daily cap (10 a day for
+  the first 14 days, then 30), and sends only Monday to Friday, 9am to 4pm
+  Chicago time. Outside those hours it schedules for the next opening. Set
+  `warmup_start` to your first send date.
+- `triage` sorts each new reply into needs Terell, opt-out, bounce,
+  auto-reply or unclear bounce. Opt-outs and bounces are blocked right away.
+  It only checks the new reply, not the quoted email below it.
+- Drafts, labels and sent mail live in AgentMail (`6c-*` labels), so a new
+  session picks up where the last one stopped.
+
 ## Rules built in
 
 - Business-facing information only. No owners' personal accounts or private

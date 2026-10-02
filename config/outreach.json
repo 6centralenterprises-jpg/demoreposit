@@ -1,0 +1,28 @@
+{
+  "_note": "Inbox map and sending limits for partner outreach. No secrets here: the API key comes from AGENTMAIL_API_KEY.",
+  "sender_inbox": "terell@6cpartners.com",
+  "triage_inboxes": ["terell@6cpartners.com", "partners@6cpartners.com"],
+  "inboxes": [
+    {"username": "terell", "domain": "6cpartners.com", "display_name": "Terell John | 6 Central Enterprises",
+     "purpose": "Partner outreach and replies. The only inbox that sends first-contact email."},
+    {"username": "partners", "domain": "6cpartners.com", "display_name": "6 Central Partners",
+     "purpose": "Onboarding after a partner says yes: agreement, W-9, insurance certificate."},
+    {"username": "dispatch", "domain": "6cpartners.com", "display_name": "6C Dispatch",
+     "purpose": "Job offers and confirmations to signed partners only."},
+    {"username": "hello", "domain": "deepbreathhousecleaning.com", "display_name": "Deep Breath House Cleaning",
+     "purpose": "Customers only. Never used for outreach."},
+    {"username": "hello", "domain": "quietwallpestcontrol.com", "display_name": "Quiet Wall Pest Control",
+     "purpose": "Customers only. Never used for outreach."},
+    {"username": "hello", "domain": "freshseatsmobiledetailing.com", "display_name": "Fresh Seats Mobile Detailing",
+     "purpose": "Customers only. Never used for outreach."},
+    {"username": "hello", "domain": "allstarmobilecardetailingservice.com", "display_name": "All Star Mobile Car Detailing",
+     "purpose": "Customers only. Never used for outreach."},
+    {"username": "help", "domain": "tjsnationwideroadsideservice.com", "display_name": "TJ's Nationwide Roadside",
+     "purpose": "Customers only: receipts and follow-ups."}
+  ],
+  "warmup_start": null,
+  "daily_cap_warmup": 10,
+  "daily_cap": 30,
+  "warmup_days": 14,
+  "send_window": {"timezone": "America/Chicago", "days": [0, 1, 2, 3, 4], "start_hour": 9, "end_hour": 16}
+}

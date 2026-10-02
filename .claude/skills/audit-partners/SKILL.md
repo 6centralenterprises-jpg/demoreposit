@@ -66,6 +66,12 @@ customers. The audit book ranks partners by fit:
    
    Remind Terell that nothing has been sent.
 
+6. **Stage the drafts (when AgentMail is reachable).** Run
+   `python3 qualify.py drafts --run <run>` and show the list. With Terell's
+   yes, run it with `--apply`. Then he approves by lead id, and
+   `python3 qualify.py send --run <run> <ids>` shows the plan. Only add
+   `--apply` after he confirms those exact ids. Never send an id he didn't name.
+
 ## Sender details
 
 Emails get this signature: name, title and company, phone and mailing
