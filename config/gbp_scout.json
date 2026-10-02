@@ -449,6 +449,17 @@
             "pergola installation near me",
             "patio cover installation"
           ]
+        },
+        "fences": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 6,
+          "licensed": true,
+          "keywords": [
+            "fence installation near me",
+            "fence company near me",
+            "fence repair near me",
+            "vinyl fence installation"
+          ]
         }
       }
     },
@@ -736,5 +747,229 @@
       "free",
       "pickup day"
     ]
+  },
+  "verification": {
+    "_about": "Daily Amazon research for verification-readiness kits. Kits help REAL businesses show Google what it asks for. They never stand in for a business that doesn't exist.",
+    "source": "https://support.google.com/business/answer/14271705",
+    "kits_per_day": 10,
+    "proofs": {
+      "location": "Show where your business operates: street signs, landmarks or other identifiers at your business address.",
+      "exists": "Show proof the business exists: the professional tools, equipment or products you use, business cards, branded apparel.",
+      "management": "Show proof you manage it: perform a service, unlock your branded van, or show a business document (permit, invoice, utility bill) matching the profile name."
+    },
+    "common_items": [
+      {
+        "proof": "management",
+        "item": "Custom magnetic vehicle signs with business name",
+        "search": "custom magnetic vehicle signs business"
+      },
+      {
+        "proof": "exists",
+        "item": "Custom embroidered work shirts with logo",
+        "search": "custom embroidered work shirts logo"
+      },
+      {
+        "proof": "exists",
+        "item": "Custom business cards",
+        "search": "custom business cards"
+      },
+      {
+        "proof": "management",
+        "item": "Carbonless invoice / work-order book (personalized)",
+        "search": "personalized carbonless invoice book"
+      },
+      {
+        "proof": "location",
+        "item": "Phone gimbal stabilizer for one steady, continuous take",
+        "search": "smartphone gimbal stabilizer"
+      }
+    ],
+    "niche_items": {
+      "mobile tire service": [
+        {
+          "proof": "exists",
+          "item": "Portable tire changer / bead breaker",
+          "search": "portable manual tire changer bead breaker"
+        },
+        {
+          "proof": "exists",
+          "item": "Cordless impact wrench + socket set",
+          "search": "cordless impact wrench lug nut socket set"
+        },
+        {
+          "proof": "exists",
+          "item": "Tire plug and patch repair kit (pro)",
+          "search": "heavy duty tire plug repair kit professional"
+        }
+      ],
+      "roadside assistance": [
+        {
+          "proof": "exists",
+          "item": "Commercial jump starter pack",
+          "search": "commercial jump starter pack 12v"
+        },
+        {
+          "proof": "exists",
+          "item": "Car lockout kit (air wedge + reach tool)",
+          "search": "car lockout kit air wedge long reach tool"
+        }
+      ],
+      "mobile mechanic": [
+        {
+          "proof": "exists",
+          "item": "OBD2 diagnostic scanner (pro)",
+          "search": "professional obd2 diagnostic scanner"
+        },
+        {
+          "proof": "exists",
+          "item": "Mechanic rolling tool chest / tool set",
+          "search": "mechanic tool set rolling case"
+        }
+      ],
+      "car detailing": [
+        {
+          "proof": "exists",
+          "item": "Dual-action polisher kit",
+          "search": "dual action polisher kit detailing"
+        },
+        {
+          "proof": "exists",
+          "item": "Hot-water carpet & upholstery extractor",
+          "search": "carpet upholstery extractor auto detailing"
+        },
+        {
+          "proof": "exists",
+          "item": "Branded detailing caddy / pressure washer",
+          "search": "mobile detailing pressure washer kit"
+        }
+      ],
+      "cleaning": [
+        {
+          "proof": "exists",
+          "item": "Professional cleaning caddy + supply kit",
+          "search": "professional house cleaning caddy kit"
+        },
+        {
+          "proof": "exists",
+          "item": "Commercial backpack vacuum",
+          "search": "commercial backpack vacuum"
+        },
+        {
+          "proof": "exists",
+          "item": "Microfiber color-coded system",
+          "search": "color coded microfiber cloths professional"
+        }
+      ],
+      "pet grooming": [
+        {
+          "proof": "exists",
+          "item": "Professional grooming clipper kit",
+          "search": "professional dog grooming clippers kit"
+        },
+        {
+          "proof": "exists",
+          "item": "High-velocity pet dryer",
+          "search": "high velocity dog dryer professional"
+        }
+      ],
+      "junk removal": [
+        {
+          "proof": "exists",
+          "item": "Furniture dolly + moving straps",
+          "search": "heavy duty furniture dolly moving straps"
+        },
+        {
+          "proof": "exists",
+          "item": "Contractor trash bags + work gloves",
+          "search": "contractor trash bags heavy duty"
+        }
+      ],
+      "garage doors": [
+        {
+          "proof": "exists",
+          "item": "Torsion spring winding bars",
+          "search": "garage door torsion spring winding bars"
+        },
+        {
+          "proof": "exists",
+          "item": "Garage door repair tool kit",
+          "search": "garage door repair tool kit"
+        }
+      ],
+      "pressure washing": [
+        {
+          "proof": "exists",
+          "item": "Gas pressure washer + surface cleaner",
+          "search": "gas pressure washer surface cleaner commercial"
+        }
+      ],
+      "gutter cleaning": [
+        {
+          "proof": "exists",
+          "item": "Stabilized extension ladder + standoff",
+          "search": "ladder standoff stabilizer gutter"
+        },
+        {
+          "proof": "exists",
+          "item": "Gutter cleaning wand attachment",
+          "search": "gutter cleaning wand pressure washer"
+        }
+      ],
+      "snow removal": [
+        {
+          "proof": "exists",
+          "item": "Two-stage snow blower",
+          "search": "two stage snow blower"
+        },
+        {
+          "proof": "exists",
+          "item": "Commercial ice-melt spreader",
+          "search": "walk behind salt spreader commercial"
+        }
+      ],
+      "holiday lighting": [
+        {
+          "proof": "exists",
+          "item": "Commercial-grade C9 light strands + clips",
+          "search": "commercial c9 christmas lights clips"
+        }
+      ],
+      "decks and patios": [
+        {
+          "proof": "exists",
+          "item": "Deck board straightening + fastening tools",
+          "search": "deck board straightener tool"
+        }
+      ],
+      "fences": [
+        {
+          "proof": "exists",
+          "item": "Post hole digger / auger",
+          "search": "post hole auger fence"
+        },
+        {
+          "proof": "exists",
+          "item": "Fence stretcher / post level",
+          "search": "fence post level stretcher tool"
+        }
+      ],
+      "tree removal": [
+        {
+          "proof": "exists",
+          "item": "Chainsaw PPE kit (chaps, helmet, face shield, ear protection)",
+          "search": "chainsaw chaps helmet forestry safety kit"
+        },
+        {
+          "proof": "exists",
+          "item": "Arborist climbing saddle + rigging",
+          "search": "arborist climbing saddle harness"
+        },
+        {
+          "proof": "exists",
+          "item": "Stump grinder / professional chainsaw",
+          "search": "professional chainsaw 20 inch gas"
+        }
+      ]
+    }
   }
 }

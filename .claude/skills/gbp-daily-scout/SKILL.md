@@ -105,6 +105,22 @@ is `runs/gbp/D/`.
    `{"openrush_credits": N, "semrush_units": N}` from the usage the tools
    reported.
 
+7b. **Verification-readiness kits (Amazon).** `plan` printed today's kit
+   searches (the day's niches plus rotating basics, up to 10). For each, run
+   WebSearch with `allowed_domains: ["amazon.com"]` and pick the clearest
+   matching product listing (a `/dp/` product page, not a search page, when
+   one is shown). Save to `runs/gbp/D/kits.json`:
+   ```json
+   [{"niche": "cleaning", "proof": "exists", "item": "Commercial backpack vacuum",
+     "title": "ProTeam ProVac FS 6 Commercial Backpack Vacuum", "url": "https://www.amazon.com/.../dp/..."}]
+   ```
+   Copy titles and URLs exactly as the search returned them. Search results
+   don't include prices or stock, so never state a price. Each item maps to
+   one of Google's three video-verification proofs for service-area
+   businesses (where you operate, business exists, you manage it). Kits are
+   for real operators only: never frame an item as a prop for a business
+   that doesn't do the work.
+
 8. **Build.** `python3 scout.py build --date D`. This writes
    `brief.html`, `summary.md` and `state.json`.
 

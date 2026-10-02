@@ -128,3 +128,29 @@ def test_leaderboard_ranks_open_markets_first():
     rows = scoring.leaderboard(board)
     assert [r["market"] for r in rows] == ["Chicago, IL", "Dallas, TX"]
     assert rows[0]["best_query"] == "tire" and rows[0]["best_median"] == 10
+
+
+def test_kit_searches_put_niche_tools_first_and_cap():
+    cfg = scout.load_config()
+    cluster = cfg["clusters"]["home-care-and-pets"]
+    picks = scout.kit_searches(cfg, cluster, "2026-10-02")
+    assert len(picks) == cfg["verification"]["kits_per_day"]
+    assert picks[0]["niche"] in cluster["niches"]
+    assert picks[-1]["niche"] == "every business"
+    assert all(p["proof"] in cfg["verification"]["proofs"] for p in picks)
+
+
+def test_brief_shows_only_amazon_kits(tmp_path, monkeypatch):
+    monkeypatch.setattr(scout, "RUNS", tmp_path)
+    day = "2026-10-02"
+    out = tmp_path / day
+    for sub in ("discovery", "keywords", "serp"):
+        (out / sub).mkdir(parents=True)
+    (out / "plan.json").write_text(json.dumps({"date": day, "weekday": "Friday", "cluster": "weekly-recap",
+                                               "label": "Recap", "recap": True, "markets": []}))
+    (out / "kits.json").write_text(json.dumps([
+        {"niche": "cleaning", "proof": "exists", "item": "Vacuum", "title": "Good vac", "url": "https://www.amazon.com/dp/X"},
+        {"niche": "cleaning", "proof": "exists", "item": "Vacuum", "title": "Elsewhere", "url": "https://example.com/vac"}]))
+    brief = scout.build(day, scout.load_config())
+    assert [k["title"] for k in brief["kits"]] == ["Good vac"]
+    assert "Verification readiness kits" in render_html(brief)

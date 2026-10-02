@@ -190,6 +190,34 @@ def leaderboard_rows(rows):
     return "\n".join(out)
 
 
+def kit_section(b):
+    kits = b.get("kits") or []
+    if not kits:
+        return ""
+    proofs = b["verification"]["proofs"]
+    names = {"location": "Where you operate", "exists": "Business exists", "management": "You manage it"}
+    groups = {}
+    for k in kits:
+        groups.setdefault(k.get("niche", "every business"), []).append(k)
+    blocks = []
+    for niche, items in groups.items():
+        rows = "".join(
+            f"<tr><td>{pill(names.get(k.get('proof'), k.get('proof', '')))}</td><td>{escape(k.get('item', ''))}</td>"
+            f"<td>{link(k['url'], k['title'][:90])}</td></tr>" for k in items)
+        blocks.append(f'''<div class="panel"><h3>{escape(niche.title())}</h3><div class="table"><table>
+<thead><tr><th>Google proof</th><th>What to have</th><th>Amazon listing found today</th></tr></thead>
+<tbody>{rows}</tbody></table></div></div>''')
+    reqs = "".join(f"<li><strong>{escape(names[k])}:</strong> {escape(v)}</li>" for k, v in proofs.items())
+    return f'''<section><h2>Verification readiness kits</h2>
+<p class="muted" style="margin-bottom:10px">What a real service-area business needs on camera for Google's video verification
+(<a href="{escape(b['verification']['source'], quote=True)}" target="_blank" rel="noopener">Google's rules</a>). Listings come from today's
+Amazon search; check price, reviews and seller before buying.</p>
+<div class="note" style="margin-bottom:14px"><ul>{reqs}</ul>
+<p><strong>Kits are for businesses that really do this work.</strong> Showing tools you don't use, or setting up a business that doesn't operate,
+is misrepresentation, and it's the pattern Google's suspension waves target. A kit helps a real operator show what's true; it can't make a fake pass.</p></div>
+<div class="grid2">{"".join(blocks)}</div></section>'''
+
+
 def render_html(b):
     opps = b["opportunities"]
     state_json = json.dumps(b["state"]).replace("</", "<\\/")
@@ -239,6 +267,8 @@ Google's video verification and suspension checks look for exactly this.</p></se
 <tbody>{leaderboard_rows(b.get("leaderboard", []))}</tbody></table></div></section>''' if b.get("leaderboard") else ''}
 
 <section><h2>Timing signals</h2><div class="grid2">{signal_list(b['signals'])}</div></section>
+
+{kit_section(b)}
 
 <section class="tactic"><span class="eyebrow">Profile tactic of the day</span><p>{escape(b['tactic'])}</p></section>
 

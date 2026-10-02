@@ -66,6 +66,18 @@ def market_checks(plan, cfg):
             for m in plan["markets"]]
 
 
+def kit_searches(cfg, cluster, day):
+    """Today's Amazon kit searches: the cluster's niche tools first, then rotating basics."""
+    ver = cfg["verification"]
+    cap = ver["kits_per_day"]
+    picks = [dict(it, niche=n) for n in cluster["niches"] for it in ver["niche_items"].get(n, [])]
+    common = ver["common_items"]
+    start = datetime.strptime(day, "%Y-%m-%d").toordinal() % len(common)
+    rotated = common[start:] + common[:start]
+    picks = picks[:max(cap - 2, 0)] + [dict(it, niche="every business") for it in rotated]
+    return picks[:cap]
+
+
 def niche_index(cluster):
     index = {}
     for name, niche in cluster["niches"].items():
@@ -110,6 +122,7 @@ def cmd_plan(args):
            + checks * credits["inspect_serp"])
     plan = {"date": day, "weekday": weekday, "cluster": cluster_id, "label": cluster["label"],
             "recap": recap, "seeds": seeds, "keywords": keywords,
+            "kit_searches": kit_searches(cfg, cluster, day),
             "markets": markets, "estimate": {
                 "openrush_credits_max": est,
                 "semrush_units_max": 0 if recap else budget["semrush_keywords_per_day"] * cfg["semrush_units_per_keyword"]}}
@@ -122,6 +135,9 @@ def cmd_plan(args):
     else:
         print(f"Discovery seeds (save each result to discovery/<seed-slug>.json): {seeds}")
         print(f"Config keywords: {len(keywords)}")
+    print("Verification-kit searches (WebSearch, allowed_domains amazon.com; save to kits.json):")
+    for k in plan["kit_searches"]:
+        print(f"  [{k['niche']} / {k['proof']}] {k['item']}  ->  search: {k['search']}")
     print(f"Budget ceiling: {plan['estimate']['openrush_credits_max']} OpenRush credits, "
           f"{plan['estimate']['semrush_units_max']} Semrush API units")
 
@@ -328,11 +344,13 @@ def build(day, cfg):
 
     own_sightings = [dict(p, query=c["query"], market=c["market"])
                      for checks in serps.values() for c in checks for p in c["pack"] if p["possibly_ours"]]
+    kits = [k for k in read_json(out / "kits.json", []) or []
+            if "amazon.com" in (k.get("url") or "") and k.get("title")]
     tactic = cfg["playbook"][datetime.strptime(day, "%Y-%m-%d").toordinal() % len(cfg["playbook"])]
     brief = {"date": day, "weekday": plan["weekday"], "label": plan["label"], "recap": plan["recap"],
              "markets": [m["name"] for m in plan["markets"]], "leaderboard": scoring.leaderboard(board),
              "opportunities": opportunities,
-             "serps": serps, "signals": signals, "own_sightings": own_sightings, "tactic": tactic,
+             "serps": serps, "signals": signals, "kits": kits, "verification": cfg["verification"], "own_sightings": own_sightings, "tactic": tactic,
              "spend": read_json(out / "spend.json", {}), "state": state}
     return brief
 
