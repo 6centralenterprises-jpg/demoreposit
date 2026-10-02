@@ -177,9 +177,32 @@ def visibility(audit, evidence, market, pack_hits):
     return sum(p["points"] for p in parts), parts
 
 
-def need_score(visibility_score, audit):
+SMALL_SIZES = ("owner-run", "1-5", "2-5", "6-15")
+LARGE_SIZES = ("50+", "51-200", "200+")
+
+
+def shop_size(evidence, reviews_total):
+    """small / mid / large / unknown. Small owner-run shops are the partners most likely to want our jobs.
+    A sourced team-size band wins over the review count; how visible they are is scored separately."""
+    size = (evidence or {}).get("size") or {}
+    band = (size.get("value") or "").lower()
+    reviews = reviews_total or 0
+    if size.get("is_franchise_or_national") or band in LARGE_SIZES or reviews >= 500:
+        return "large"
+    if band in SMALL_SIZES:
+        return "small"
+    if band == "16-50" or reviews >= 150:
+        return "mid"
+    return "small" if reviews_total is not None else "unknown"
+
+
+SIZE_NEED = {"small": 1, "mid": 0, "large": -2, "unknown": 0}
+SIZE_ORDER = ["small", "unknown", "mid", "large"]
+
+
+def need_score(visibility_score, audit, size="unknown"):
     signals = [s for s in audit.get("capacity_signals") or [] if has_ref(s)]
-    return max(0, min(10, 10 - visibility_score + min(2, len(signals))))
+    return max(0, min(10, 10 - visibility_score + min(2, len(signals)) + SIZE_NEED[size]))
 
 
 def quadrant(quality, need):
@@ -259,7 +282,8 @@ def audit_partner(lead, evidence, result, audit, market, sender):
     name = audit.get("business_name") or result.get("business_name")
     hits = local_pack_hits(domain, name, market)
     vis, parts = visibility(audit, evidence, market, hits)
-    need = need_score(vis, audit)
+    size = shop_size(evidence, partner_reviews(audit, evidence))
+    need = need_score(vis, audit, size)
     quality = result.get("score")
     rep = audit.get("google_reputation") or {}
     google = None
@@ -288,6 +312,7 @@ def audit_partner(lead, evidence, result, audit, market, sender):
         "visibility_parts": parts,
         "visibility_estimated": any(not p["known"] for p in parts),
         "need": need,
+        "shop_size": size,
         "quadrant": quadrant(quality, need),
         "google": google,
         "reviews_total": partner_reviews(audit, evidence),
@@ -306,5 +331,6 @@ def audit_partner(lead, evidence, result, audit, market, sender):
 
 
 def rank_partners(rows):
-    return sorted(rows, key=lambda r: (QUADRANT_ORDER.index(r["quadrant"]), -r["need"], -(r["quality"] or 0),
+    return sorted(rows, key=lambda r: (QUADRANT_ORDER.index(r["quadrant"]), SIZE_ORDER.index(r["shop_size"]),
+                                       -r["need"], -(r["quality"] or 0),
                                        -(r["reviews_total"] or 0)))

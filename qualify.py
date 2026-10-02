@@ -4,7 +4,7 @@
     python3 qualify.py prepare      <leads file> [--market "Chicago, IL"] [--limit N]
     python3 qualify.py status       --run <run id>
     python3 qualify.py score        --run <run id> [--out-dir DIR]
-    python3 qualify.py audit-plan   --run <run id> [--top 20] [--include-verify] [--all]
+    python3 qualify.py audit-plan   --run <run id> [--top 20] [--include-verify] [--all] [--exclude IDS]
     python3 qualify.py audit-report --run <run id> [--out-dir DIR]
 
 `prepare` cleans the lead file and splits it into research batches. The
@@ -215,7 +215,8 @@ def cmd_audit_plan(args):
                 and not (r["verdict"] == "SKIP" and r["reason"].startswith(not_real))]
         order = {"VERIFY": 0, "HOLD": 1, "SKIP": 2}
         picks += sorted(rest, key=lambda r: (order[r["verdict"]], -r["score"], -r["review_total"]))
-    picks = picks[:args.top]
+    excluded = [x.strip() for x in (getattr(args, "exclude", None) or "").split(",") if x.strip()]
+    picks = [r for r in picks if r["lead_id"] not in excluded][:args.top]
     if not picks:
         sys.exit("No MESSAGE partners to audit yet (try --include-verify).")
 
@@ -252,6 +253,7 @@ def cmd_audit_plan(args):
     high = with_site * sum(CREDITS[k] for k in ("inspect_domain", "audit_site", "inspect_backlinks",
                                                  "inspect_search_visibility"))
     plan = {"partners": [e["lead_id"] for e in entries], "niches": niches, "missing_markets": missing_markets,
+            "excluded": {i: "big / visible" for i in excluded},
             "batches": len(batches), "estimated_credits": [market_credits + low, market_credits + high]}
     (out / "audit_plan.json").write_text(json.dumps(plan, indent=2))
 
@@ -330,6 +332,7 @@ def main():
     a.add_argument("--include-verify", action="store_true", help="also audit VERIFY leads that could reach 8+")
     a.add_argument("--all", action="store_true",
                    help="audit every real business; HOLD and low scorers are marked for Terell to decide")
+    a.add_argument("--exclude", help="comma-separated lead ids to leave out (e.g. big shops that don't need us)")
     a.add_argument("--batch-size", type=int, default=3)
     a.set_defaults(func=cmd_audit_plan)
     r = sub.add_parser("audit-report", help="build the audit workbook and audit book")

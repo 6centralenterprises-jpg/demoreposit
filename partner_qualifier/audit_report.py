@@ -32,7 +32,7 @@ def build_audit_workbook(path, rows, markets):
     for rank, r in enumerate(rows, start=1):
         seo = r["audit"].get("seo") or {}
         best.append([
-            rank, r["business_name"], r["quadrant"], r["quality"], r["need"],
+            rank, r["business_name"], r["quadrant"], r["shop_size"], r["quality"], r["need"],
             f"{r['visibility']}{'*' if r['visibility_estimated'] else ''}", _google(r), r["reviews_total"],
             r["website"] or "none", seo.get("est_monthly_traffic"),
             sum(1 for k in (r["audit"].get("keywords") or {}).get("ranking") or [] if (k.get("position") or 99) <= 10),
@@ -41,7 +41,7 @@ def build_audit_workbook(path, rows, markets):
             _first(r["doing_right"]), _first(r["doing_wrong"]), r["email"]["status"], r["contact"].get("best", ""),
         ])
     ws = _sheet(wb, "Best Partners",
-                ["Rank", "Business", "Fit", "Quality /10", "Need /10", "Visibility /10", "Google", "Reviews",
+                ["Rank", "Business", "Fit", "Shop size", "Quality /10", "Need /10", "Visibility /10", "Google", "Reviews",
                  "Website", "Visitors/mo (est.)", "Page-1 money keywords", "In Google map pack for",
                  "Competes with us on Google", "Biggest strength", "Biggest gap", "Email", "Best contact"],
                 best, widths={"Business": 28, "Fit": 30, "Biggest strength": 45, "Biggest gap": 45,
@@ -117,10 +117,11 @@ def build_audit_book(path, rows, markets, run):
            "**How to read this:** **Quality** (0–10) means we can trust them with our customers. "
            "**Need** (0–10) means our jobs would matter to them; higher means they're harder to find "
            "online today. **Visibility** is the opposite of need, and `*` means part of it was estimated. "
+           "**Shop size** comes from sourced team size and review counts; small owner-run shops rank first. "
            "Best partners: high quality, high need.", "",
-           "| # | Business | Fit | Quality | Need | Google | Email |", "|---|---|---|---|---|---|---|"]
+           "| # | Business | Fit | Shop size | Quality | Need | Google | Email |", "|---|---|---|---|---|---|---|---|"]
     for rank, r in enumerate(rows, start=1):
-        out.append(f"| {rank} | [{r['business_name']}](#{rank}) | {r['quadrant']} | {r['quality']}/10 | "
+        out.append(f"| {rank} | [{r['business_name']}](#{rank}) | {r['quadrant']} | {r['shop_size']} | {r['quality']}/10 | "
                    f"{r['need']}/10 | {_google(r)} | {r['email']['status']} |")
 
     for niche, market in markets.items():
@@ -139,7 +140,7 @@ def build_audit_book(path, rows, markets, run):
         rep = a.get("google_reputation") or {}
         authority = seo.get("authority") or {}
         out += ["", "---", "", f'<a id="{rank}"></a>', f"## {rank}. {r['business_name']}",
-                f"**{r['quadrant']}** · Quality {r['quality']}/10 · Need {r['need']}/10 · "
+                f"**{r['quadrant']}** · {r['shop_size'].capitalize()} shop · Quality {r['quality']}/10 · Need {r['need']}/10 · "
                 f"Visibility {r['visibility']}/10{'*' if r['visibility_estimated'] else ''} · {r['niche'] or ''}", "",
                 f"Contact: {r['contact'].get('best', '')} · Website: {r['website'] or 'none'}"]
         if r["competes_on_google"]:

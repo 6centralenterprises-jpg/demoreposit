@@ -7,7 +7,7 @@ from openpyxl import load_workbook
 
 import qualify
 from partner_qualifier.audit import (OPT_OUT, audit_partner, check_email, local_leaders, local_pack_hits,
-                                     missing_keywords, visibility)
+                                     missing_keywords, rank_partners, shop_size, visibility)
 
 FIXTURES = Path(__file__).parent / "fixtures"
 SENDER = {"name": "Terell John", "title": "Founder", "company": "6 Central Enterprises",
@@ -71,8 +71,9 @@ def test_audit_partner_scores_fit():
                         load("market/house-cleaning.json"), SENDER)
     # Visibility: site 2 + page-1 keywords 1 + map pack 1 + visitors 1 + reviews 1 (215 vs median 600) = 6
     assert row["visibility"] == 6
-    assert row["need"] == 5  # 10 - 6 + 1 capacity signal
-    assert row["quadrant"] == "Good partner"
+    assert row["shop_size"] == "small"  # 6-15 team band, under 500 reviews
+    assert row["need"] == 6  # 10 - 6 + 1 capacity signal + 1 small shop
+    assert row["quadrant"].startswith("Ideal partner")
     assert row["google"]["via"] == "Google map pack (live)" and row["google"]["reviews"] == 215
     assert len(row["doing_wrong"]) == 1 and row["unsourced_points"] == 1  # unsourced point dropped
     assert row["competes_on_google"] is True  # in the map pack for 1 of 2 searches checked
@@ -136,3 +137,23 @@ def test_audit_plan_all_takes_every_real_business(tmp_path, monkeypatch):
     batch = json.loads((run / "audit_batches" / "batch_01.json").read_text())
     for p in batch["partners"]:
         assert p["terell_decides"] == (results[p["lead_id"]]["verdict"] in ("HOLD", "SKIP"))
+
+    dropped = plan["partners"][-1]
+    qualify.cmd_audit_plan(Namespace(run="t", top=50, include_verify=False, all=True, batch_size=50,
+                                     exclude=dropped))
+    plan = json.loads((run / "audit_plan.json").read_text())
+    assert set(plan["partners"]) == expected - {dropped}
+    assert plan["excluded"] == {dropped: "big / visible"}
+
+def test_shop_size_prefers_small_owner_run_shops():
+    assert shop_size({"size": {"value": "owner-run", "is_franchise_or_national": False}}, 40) == "small"
+    assert shop_size({"size": {"value": "6-15"}}, 215) == "small"  # sourced team size beats review count
+    assert shop_size({"size": {"value": None}}, 60) == "small"  # few reviews, no big-shop signal
+    assert shop_size({"size": {"value": "16-50"}}, 40) == "mid"
+    assert shop_size({"size": {"value": None}}, 200) == "mid"
+    assert shop_size({"size": {"is_franchise_or_national": True}}, 10) == "large"
+    assert shop_size({}, 900) == "large"
+    assert shop_size({}, None) == "unknown"
+    rows = [{"quadrant": "Good partner", "shop_size": s, "need": 5, "quality": 8, "reviews_total": 10, "name": s}
+            for s in ("large", "mid", "small")]
+    assert [r["name"] for r in rank_partners(rows)] == ["small", "mid", "large"]
