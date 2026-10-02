@@ -575,9 +575,20 @@
             "appliance repair near me",
             "tv mounting near me",
             "furniture assembly near me",
-            "garage door repair near me",
             "smart home installation near me",
             "grab bar installation near me"
+          ]
+        },
+        "garage doors": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 6,
+          "licensed": true,
+          "keywords": [
+            "garage door repair near me",
+            "garage door installation near me",
+            "garage door spring repair near me",
+            "garage door opener repair near me",
+            "garage door replacement"
           ]
         }
       }
