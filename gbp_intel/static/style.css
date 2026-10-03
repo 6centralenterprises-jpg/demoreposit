@@ -48,3 +48,6 @@ td.wrap { white-space: normal; min-width: 260px; }
 .gaps tr.gap .dot { background: var(--danger); }
 .gaps tr.gap td:first-child { font-weight: 600; }
 section.card form.inline + form.inline { margin-top: 12px; }
+.spark polyline { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.up { color: var(--ok); }
+.down { color: var(--danger); }

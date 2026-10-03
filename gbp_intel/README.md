@@ -15,7 +15,7 @@ reviews or anything else on anyone's behalf.
 | 1 | **Our assets**: add or upload our websites and Maps links, match each to its Google profile | Built |
 | 2 | **Competitors**: Google's top 20 for a service + city, with rating, reviews, website, phone, a "what it takes" summary and CSV export | Built (categories and full review stats come with DataForSEO) |
 | 3 | **Gap analysis**: our profile scored against the top 3 and top 10, with a plain next step per gap | Built (posts, photos and review replies come with the Business Profile API and DataForSEO) |
-| 4 | Keywords: volume, trend, CPC, competition | Next |
+| 4 | **Keywords**: related keywords with monthly volume, 12-month trend, CPC and competition, by country, state or city, with CSV export | Built (needs a DataForSEO account; not yet tested against the live API) |
 | Later | Geo-grid heatmaps and Teleport | Planned |
 
 ## Run it
@@ -27,8 +27,9 @@ python3 -m gbp_intel          # open http://localhost:8000
 python3 -m pytest -q
 ```
 
-Without a key the app still works for adding and uploading assets; matching
-to Google profiles needs the key.
+Without keys the app still works for adding and uploading assets. Matching,
+competitors and gap analysis need the Google key; keyword research needs a
+DataForSEO login.
 
 ### Getting the Google key
 
@@ -36,6 +37,12 @@ to Google profiles needs the key.
    project and turn on billing.
 2. Enable **Places API (New)**.
 3. Create an API key, restrict it to Places API (New), and put it in `.env`.
+
+### Getting the DataForSEO login
+
+Sign up at [dataforseo.com](https://dataforseo.com/) (pay as you go, $50
+minimum top-up), then copy the API login and password from the dashboard
+into `.env` as `DATAFORSEO_LOGIN` and `DATAFORSEO_PASSWORD`.
 
 ## Uploading our URLs
 
@@ -73,6 +80,15 @@ a new one for its city. The checks:
 Gaps come first, each with a next step. The tool never suggests buying,
 filtering or incentivizing reviews, stuffing keywords into the business
 name, or listing services we don't offer.
+
+## Keyword research
+
+Enter up to 20 seed keywords and a location (Google Ads names such as
+`United States`, `Illinois,United States` or `Chicago,Illinois,United States`).
+Results come from DataForSEO's Google Ads keyword data: monthly volume, the
+last 12 months as a sparkline, trend (last 3 months against the 3 before),
+cost per click and advertiser competition. Sort, filter by minimum volume
+and download as CSV. Keyword results are DataForSEO data, which we may keep.
 
 ## Data rules we follow
 

@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 
 from gbp_intel import db
 from gbp_intel.app import create_app
+from gbp_intel.keywords import KeywordClient, trend
 from gbp_intel.places import PlacesClient
 from gbp_intel.urls import normalize_website, parse_maps_url, parse_upload
 
@@ -37,11 +38,36 @@ def fake_google(request):
     return httpx.Response(404, json={"error": {"message": "Not found"}})
 
 
+def months(*volumes):
+    return [{"year": 2026, "month": i + 1, "search_volume": v} for i, v in enumerate(volumes)]
+
+
+KEYWORD_RESULTS = [
+    {"keyword": "deck repair", "search_volume": 9900, "cpc": 8.12, "competition": "HIGH", "competition_index": 88,
+     "low_top_of_page_bid": 3.1, "high_top_of_page_bid": 12.4,
+     "monthly_searches": list(reversed(months(100, 100, 100, 150, 150, 150)))},  # API sends newest first
+    {"keyword": "deck staining near me", "search_volume": 2400, "cpc": None, "competition": "LOW",
+     "competition_index": 12, "monthly_searches": months(50, 50, 50, 25, 25, 25)},
+]
+
+
+def fake_dataforseo(request):
+    assert request.headers["authorization"].startswith("Basic ")
+    assert request.url.path == "/v3/keywords_data/google_ads/keywords_for_keywords/live"
+    task = json.loads(request.content)[0]
+    if task["keywords"] == ["bad"]:
+        return httpx.Response(200, json={"tasks": [{"status_code": 40501, "status_message": "Invalid location"}]})
+    assert task == {"keywords": ["deck repair", "deck staining"], "location_name": "Illinois,United States",
+                    "language_code": "en"}
+    return httpx.Response(200, json={"tasks": [{"status_code": 20000, "result": KEYWORD_RESULTS}]})
+
+
 @pytest.fixture
 def client():
     conn = db.connect(":memory:")
     places = PlacesClient(api_key="test-key", transport=httpx.MockTransport(fake_google))
-    return TestClient(create_app(conn, places))
+    keywords = KeywordClient("login", "pw", transport=httpx.MockTransport(fake_dataforseo))
+    return TestClient(create_app(conn, places, keywords))
 
 
 def test_normalize_website():
@@ -159,3 +185,30 @@ def test_gap_analysis_page(client):
     assert "4 gaps" in resp.text  # secondary categories, reviews, website, phone
     assert "Rival Decks" in resp.text
     assert "Deck repair in Chicago, IL" in client.get("/assets/1").text  # saved search offered next time
+
+
+def test_keyword_trend():
+    assert trend(months(100, 100, 100, 150, 150, 150)) == 50
+    assert trend(months(1, 2, 3)) is None
+    assert trend(months(0, 0, 0, 5, 5, 5)) is None
+
+
+def test_keyword_research(client):
+    resp = client.post("/keywords", data={"seeds": "deck repair,\n deck staining", "location": "Illinois,United States"})
+    assert resp.url.path == "/keywords/1"
+    html = resp.text
+    assert html.index("deck repair") < html.index("deck staining near me")  # by volume
+    assert "9,900" in html and "$8.12" in html and "+50%" in html and "-50%" in html and "High" in html
+    assert "<polyline" in html
+
+    html = client.get("/keywords/1?sort=trend&min_volume=3000").text
+    assert "deck staining near me" not in html
+
+    lines = client.get("/keywords/1/csv").text.splitlines()
+    assert lines[1] == "deck repair,9900,50,8.12,High,88,3.1,12.4"
+    assert "deck repair, deck staining" in client.get("/keywords").text
+
+
+def test_keyword_errors(client):
+    assert "Invalid location" in client.post("/keywords", data={"seeds": "bad"}).text
+    assert "Enter at least one keyword." in client.post("/keywords", data={"seeds": " , "}).text

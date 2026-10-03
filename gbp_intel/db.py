@@ -30,6 +30,13 @@ CREATE TABLE IF NOT EXISTS search_results (
     place_id TEXT NOT NULL,
     PRIMARY KEY (search_id, rank)
 );
+CREATE TABLE IF NOT EXISTS keyword_searches (
+    id INTEGER PRIMARY KEY,
+    seeds TEXT NOT NULL,
+    location TEXT NOT NULL,
+    results TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS places_cache (
     place_id TEXT PRIMARY KEY,
     data TEXT NOT NULL,
@@ -138,6 +145,23 @@ def search_results(conn, search_id):
                         [search_id]).fetchall()
     return [{"rank": r["rank"], "place_id": r["place_id"], "place": cached_place(conn, r["place_id"])}
             for r in rows]
+
+
+def save_keyword_search(conn, seeds, location, results):
+    cur = conn.execute("INSERT INTO keyword_searches (seeds, location, results, created_at) VALUES (?, ?, ?, ?)",
+                       [seeds, location, json.dumps(results), now()])
+    conn.commit()
+    return cur.lastrowid
+
+
+def get_keyword_search(conn, search_id):
+    row = conn.execute("SELECT * FROM keyword_searches WHERE id = ?", [search_id]).fetchone()
+    return {**dict(row), "results": json.loads(row["results"])} if row else None
+
+
+def recent_keyword_searches(conn, limit=20):
+    return conn.execute("SELECT id, seeds, location, created_at, json_array_length(results) AS results "
+                        "FROM keyword_searches ORDER BY id DESC LIMIT ?", [limit]).fetchall()
 
 
 def our_place_ids(conn):

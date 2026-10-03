@@ -1,5 +1,7 @@
 """The web app. Run with:  python3 -m gbp_intel  (then open http://localhost:8000)."""
 import base64
+import csv
+import io
 import secrets
 from pathlib import Path
 from urllib.parse import urlencode
@@ -11,16 +13,18 @@ from fastapi.templating import Jinja2Templates
 
 from . import competitors as comp
 from . import config, db, gaps
+from .keywords import KeywordClient, KeywordError, sparkline
 from .places import PlacesClient, PlacesError
 from .urls import normalize_website, parse_maps_url, parse_upload, search_text_for
 
 HERE = Path(__file__).resolve().parent
 
 
-def create_app(conn=None, places=None):
+def create_app(conn=None, places=None, keywords=None):
     app = FastAPI(title="6 Central Local Intel", docs_url=None, redoc_url=None)
     app.state.conn = conn or db.connect()
     app.state.places = places or PlacesClient()
+    app.state.keywords = keywords or KeywordClient()
     templates = Jinja2Templates(directory=HERE / "templates")
     app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
 
@@ -39,7 +43,8 @@ def create_app(conn=None, places=None):
         return await call_next(request)
 
     def page(request, name, **context):
-        context.update(projects=config.PROJECTS, places_ready=app.state.places.configured)
+        context.update(projects=config.PROJECTS, places_ready=app.state.places.configured,
+                       keywords_ready=app.state.keywords.configured)
         return templates.TemplateResponse(request, name, context)
 
     def back(url, **params):
@@ -198,6 +203,52 @@ def create_app(conn=None, places=None):
         return page(request, "gaps.html", asset=asset, search=search, ours=ours, our_rank=our_rank,
                     checks=gaps.analyze(ours, rivals), rivals=rivals[:3], later=gaps.LATER,
                     expired=len(rivals) < sum(1 for r in results if r["place_id"] != asset["place_id"]))
+
+    @app.get("/keywords", response_class=HTMLResponse)
+    def keywords_home(request: Request, msg: str = ""):
+        return page(request, "keywords.html", searches=db.recent_keyword_searches(app.state.conn), msg=msg)
+
+    @app.post("/keywords")
+    def run_keywords(seeds: str = Form(""), location: str = Form("United States")):
+        terms = [t.strip() for t in seeds.replace("\n", ",").split(",") if t.strip()]
+        if not terms:
+            return back("/keywords", msg="Enter at least one keyword.")
+        location = location.strip() or "United States"
+        try:
+            results = app.state.keywords.ideas(terms, location)
+        except KeywordError as e:
+            return back("/keywords", msg=str(e))
+        return back(f"/keywords/{db.save_keyword_search(app.state.conn, ', '.join(terms), location, results)}")
+
+    @app.get("/keywords/{search_id}", response_class=HTMLResponse)
+    def keyword_page(request: Request, search_id: int, sort: str = "volume", min_volume: int = 0):
+        search = db.get_keyword_search(app.state.conn, search_id)
+        if not search:
+            return back("/keywords", msg="That search no longer exists.")
+        if sort not in ("volume", "trend", "cpc", "competition_index", "keyword"):
+            sort = "volume"
+        rows = [r for r in search["results"] if (r["volume"] or 0) >= min_volume]
+        reverse = sort != "keyword"
+        rows.sort(key=lambda r: (r.get(sort) is not None, r.get(sort) or 0) if sort != "keyword" else r["keyword"],
+                  reverse=reverse)
+        for r in rows:
+            r["spark"] = sparkline(r["monthly"])
+        return page(request, "keyword_results.html", search=search, rows=rows, sort=sort, min_volume=min_volume)
+
+    @app.get("/keywords/{search_id}/csv")
+    def keyword_csv(search_id: int):
+        search = db.get_keyword_search(app.state.conn, search_id)
+        if not search:
+            return Response("Not found", 404)
+        buf = io.StringIO()
+        writer = csv.writer(buf)
+        writer.writerow(["keyword", "monthly_volume", "trend_pct", "cpc", "competition", "competition_index",
+                         "bid_low", "bid_high"])
+        for r in search["results"]:
+            writer.writerow([r["keyword"], r["volume"], r["trend"], r["cpc"], r["competition"],
+                             r["competition_index"], r["bid_low"], r["bid_high"]])
+        return Response(buf.getvalue(), media_type="text/csv",
+                        headers={"Content-Disposition": f'attachment; filename="keywords-{search_id}.csv"'})
 
     @app.post("/assets/{asset_id}/delete")
     def delete(asset_id: int):

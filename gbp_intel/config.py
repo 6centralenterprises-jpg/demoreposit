@@ -19,6 +19,8 @@ def _load_dotenv():
 _load_dotenv()
 
 GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY", "")
+DATAFORSEO_LOGIN = os.environ.get("DATAFORSEO_LOGIN", "")
+DATAFORSEO_PASSWORD = os.environ.get("DATAFORSEO_PASSWORD", "")
 DB_PATH = Path(os.environ.get("GBP_INTEL_DB", ROOT / "data" / "gbp_intel.db"))
 # Optional. When set, every page asks for this password (any username).
 APP_PASSWORD = os.environ.get("APP_PASSWORD", "")
