@@ -28,11 +28,14 @@ the brief.
   holding profiles, and suspensions also hurt the real businesses involved.
 - **Research only.** Never create or edit a profile, and never contact a
   business.
-- Stay inside the daily budget in `config/gbp_scout.json` (about 51 OpenRush
+- Stay inside the daily budget in `config/gbp_scout.json` (about 61 OpenRush
   credits and 450 Semrush units). Never re-run a call that succeeded.
 - **Markets:** Chicago is checked every day. A roster of 34 large or
   fast-growing metros nationwide rotates, 3 a day (`plan` prints today's).
   Rotating metros get the top 2 map-pack searches; Chicago gets all of them.
+- **Standing watch** (`focus` in config: decks & general contracting).
+  `screen` adds one focus map search to every market each day, alternating
+  "deck builders" / "general contractor" (about 8 credits a day).
 - **Our listings** (`own_listings` in config) are confirmed 6 Central
   profiles. `screen` adds each one's tracked search in its market every day
   (2 credits each). Never edit those profiles; only report on them.
@@ -151,6 +154,8 @@ is `runs/gbp/D/`.
       entered the top 5 today
     - each of our listings: today's map position and reviews vs the last
       check, and its open "fix before Google asks" items (from `summary.md`)
+    - the standing watch (decks & general contracting): its most open
+      markets, and any new market that showed a median under 50 reviews
     - any "possibly ours" map-pack sighting, as a question to confirm
     - one thing to watch that is 2–3 steps ahead (a season turning, a
       policy shift, a rising keyword moving up the watchlist)

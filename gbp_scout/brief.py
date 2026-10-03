@@ -33,6 +33,25 @@ def money(value):
     return "–" if value in (None, "") else f"${value:,.2f}"
 
 
+def focus_section(f):
+    if not f:
+        return ""
+    today = "".join(f"<li>“{escape(c['query'])}” in {escape(c['market'])}: median {num(c.get('median_reviews'))} reviews"
+                    f" (openness {c['weakness']:.2f})</li>" for c in f["today"] if c.get("weakness") is not None)
+    rows = "".join(f"<tr><td class=\"n\">{i}</td><td>{escape(r['market'])}</td><td class=\"n\">{r['openness']:.2f}</td>"
+                   f"<td>{escape(r['best_query'])} <span class=\"muted\">(median {num(r['best_median'])})</span></td>"
+                   f"<td class=\"n\">{escape(r['last'])}</td></tr>" for i, r in enumerate(f["leaderboard"][:8], 1))
+    lic = "".join(f"<li><strong>{escape(s)}:</strong> {escape(v['note'])} {link(v['source'], 'source')}</li>"
+                  for s, v in f["licensing"].items())
+    return f"""<section><h2>Standing watch: {escape(f['label'])}</h2>
+<p class="muted" style="margin-bottom:10px">Licensed trades: the play is Partner &amp; manage with a real licensed builder,
+or a 6 Central company that holds the license itself. Checked in every market, alternating searches daily.</p>
+<div class="grid2"><div class="panel"><h3>Today's checks</h3><ul>{today or '<li class="muted">No focus checks saved today.</li>'}</ul></div>
+<div class="panel"><h3>License rules in these markets</h3><ul>{lic or '<li class="muted">No rules on file for these states yet.</li>'}</ul></div></div>
+{f'<div class="table" style="margin-top:14px"><table><thead><tr><th>#</th><th>Market</th><th>Openness</th><th>Most open</th><th>Last checked</th></tr></thead><tbody>{rows}</tbody></table></div>' if rows else ''}
+</section>"""
+
+
 def own_line(o):
     if not o["checked"]:
         return f"{o['name']}: not checked today."
@@ -287,6 +306,7 @@ Google's video verification and suspension checks look for exactly this.</p></se
 <section><h2>Today's moves</h2><div class="moves">{moves}</div></section>
 {mine}
 {own}
+{focus_section(b.get("focus"))}
 {f'<section><h2>Keywords checked today</h2>{table}<p class="muted" style="margin-top:8px">Score parts: D demand (25) · V job value from CPC (20) · M momentum (20) · C map-pack openness (25) · F home-based fit (10). Semrush and OpenRush volumes differ by vendor and are never compared with each other.</p></section>' if table else ''}
 
 <section><h2>Map pack check</h2><div class="grid2">{serp_panels(b['serps'])}</div></section>
@@ -341,6 +361,10 @@ def render_summary(b):
     if board:
         lines += ["", "Most open markets so far: " + "; ".join(
             f"{r['market']} ({r['openness']:.2f}, best: '{r['best_query']}' median {r['best_median']:g})" for r in board[:3])]
+    f = b.get("focus")
+    if f and f["leaderboard"]:
+        lines += ["", f"{f['label']}, most open markets: " + "; ".join(
+            f"{r['market']} ({r['best_query']}, median {r['best_median']:g})" for r in f["leaderboard"][:3])]
     for o in b.get("own_listings") or []:
         lines += ["", f"Our listing: {own_line(o)}"] + [f"- Fix: {i}" for i in o["issues"]]
     if b["own_sightings"]:

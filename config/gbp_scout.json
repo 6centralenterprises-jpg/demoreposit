@@ -456,7 +456,9 @@
             "deck installation near me",
             "deck resurfacing",
             "pergola installation near me",
-            "patio cover installation"
+            "patio cover installation",
+            "porch builders near me",
+            "composite deck builders near me"
           ]
         },
         "fences": {
@@ -473,7 +475,7 @@
       }
     },
     "hvac-and-energy": {
-      "label": "HVAC, energy & home upgrades",
+      "label": "HVAC, energy, remodeling & upgrades",
       "discovery_seeds": [
         "furnace repair",
         "mini split installation"
@@ -531,6 +533,21 @@
           "keywords": [
             "radon testing near me",
             "radon mitigation near me"
+          ]
+        },
+        "general contracting": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 4,
+          "licensed": true,
+          "keywords": [
+            "general contractor near me",
+            "general contractors near me",
+            "home remodeling contractors near me",
+            "bathroom remodel near me",
+            "kitchen remodel near me",
+            "basement finishing near me",
+            "home addition contractors near me",
+            "handyman near me"
           ]
         }
       }
@@ -979,6 +996,36 @@
           "search": "professional chainsaw 20 inch gas"
         }
       ]
+    }
+  },
+  "focus": {
+    "label": "Decks & general contracting",
+    "why": "Terell asked for a standing watch on deck building and general contracting.",
+    "map_queries": [
+      "deck builders",
+      "general contractor"
+    ],
+    "licensing": {
+      "IL": {
+        "note": "City of Chicago requires a general contractor license from the Department of Buildings; decks need permits.",
+        "source": "https://webapps1.chicago.gov/licensedcontractors/general"
+      },
+      "TN": {
+        "note": "Home Improvement License for $3,000-$24,999 jobs in 9 counties incl. Davidson (Nashville) and Shelby; full contractor license at $25,000+.",
+        "source": "https://tn.gov/commerce/regboards/hi/home-improvement-licensing-requirements.html"
+      },
+      "GA": {
+        "note": "State residential/general contractor license required for jobs over $2,500.",
+        "source": "https://www.fayetteville-ga.gov/165/Contractor-Licensing-Requirements"
+      },
+      "NC": {
+        "note": "State GC license required for projects of $40,000 or more (raised from $30,000 in Oct 2023).",
+        "source": "https://abc11.com/amp/post/nc-contractors-home-construction-license-unlicensed/13961419/"
+      },
+      "TX": {
+        "note": "No statewide GC license; Dallas requires contractor registration with insurance, and attached decks need a permit.",
+        "source": "https://permitmint.com/permits/texas/dallas/deck/"
+      }
     }
   }
 }

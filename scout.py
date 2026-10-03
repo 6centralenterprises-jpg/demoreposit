@@ -65,11 +65,22 @@ def market_checks(plan, cfg):
     out = []
     for m in plan["markets"]:
         queries = list(plan["map_checks"] if m["role"] == "home" else plan["map_checks"][:per_rotating])
+        focus_q = focus_query(cfg, plan.get("date"))
+        if focus_q and focus_q not in queries:  # standing focus watch: one search per market per day
+            queries.append(focus_q)
         for listing in cfg.get("own_listings", []):  # our own listings are tracked every day
             if listing["market"] == m["name"] and listing["track_query"] not in queries:
                 queries.append(listing["track_query"])
         out.append((m, queries))
     return out
+
+
+def focus_query(cfg, day):
+    """Today's standing-watch map search (alternates daily between the focus searches)."""
+    queries = (cfg.get("focus") or {}).get("map_queries") or []
+    if not queries or not day:
+        return None
+    return queries[datetime.strptime(day, "%Y-%m-%d").toordinal() % len(queries)]
 
 
 def kit_searches(cfg, cluster, day):
@@ -122,7 +133,7 @@ def cmd_plan(args):
     seeds = cluster["discovery_seeds"][:budget["openrush_research_seeds"]]
     markets = todays_markets(cfg, day)
     checks = sum(budget["openrush_map_pack_checks"] if m["role"] == "home" else budget["rotating_checks_per_market"]
-                 for m in markets)
+                 for m in markets) + len(markets) * bool(focus_query(cfg, day)) + len(cfg.get("own_listings", []))
     est = (len(seeds) * credits["research_keywords"]
            + (0 if recap else budget["openrush_deep_dives"] * credits["inspect_keyword"])
            + checks * credits["inspect_serp"])
@@ -141,6 +152,8 @@ def cmd_plan(args):
     else:
         print(f"Discovery seeds (save each result to discovery/<seed-slug>.json): {seeds}")
         print(f"Config keywords: {len(keywords)}")
+    if focus_query(cfg, day):
+        print(f"Focus watch ({cfg['focus']['label']}): '{focus_query(cfg, day)}' map pack in every market today")
     print("Verification-kit searches (WebSearch, allowed_domains amazon.com; save to kits.json):")
     for k in plan["kit_searches"]:
         print(f"  [{k['niche']} / {k['proof']}] {k['item']}  ->  search: {k['search']}")
@@ -363,6 +376,17 @@ def build(day, cfg):
         health["previous"] = next((h for h in reversed(history) if h["date"] != day), None)
         own_state[listing["name"]] = history
         own_listings.append(health)
+    focus = cfg.get("focus") or {}
+    fq = {scoring.slug(q) for q in focus.get("map_queries", [])}
+    focus_board = {m: [r for r in rows if scoring.slug(r["query"]) in fq] for m, rows in board.items()}
+    focus_view = None
+    if focus:
+        today_checks = [c for k in fq for c in serps.get(k, [])]
+        states = {m["name"].split(",")[-1].strip() for m in plan["markets"]} | {
+            r["market"].split(",")[-1].strip() for r in scoring.leaderboard(focus_board)[:5]}
+        focus_view = {"label": focus["label"], "today": today_checks,
+                      "leaderboard": scoring.leaderboard({m: r for m, r in focus_board.items() if r}),
+                      "licensing": {s: focus["licensing"][s] for s in sorted(states) if s in focus.get("licensing", {})}}
     state = {"version": 1, "updated": day, "watchlist": watch, "briefs": briefs, "markets": board,
              "own_listings": own_state}
 
@@ -375,7 +399,7 @@ def build(day, cfg):
              "markets": [m["name"] for m in plan["markets"]], "leaderboard": scoring.leaderboard(board),
              "opportunities": opportunities,
              "serps": serps, "signals": signals, "kits": kits, "verification": cfg["verification"], "own_sightings": own_sightings,
-             "own_listings": own_listings, "tactic": tactic,
+             "own_listings": own_listings, "focus": focus_view, "tactic": tactic,
              "spend": spend_for(out, cfg), "state": state}
     return brief
 

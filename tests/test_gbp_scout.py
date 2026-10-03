@@ -195,3 +195,13 @@ def test_our_listing_is_tracked_and_its_mismatches_flagged():
     text = " ".join(health["issues"])
     assert "Boise" in text and "keyword stuffing" in text and "free builder" in text
     assert scoring.listing_health(listing, None, cities)["checked"] is False
+
+
+def test_focus_watch_adds_one_search_per_market_and_alternates():
+    cfg = scout.load_config()
+    a, b = scout.focus_query(cfg, "2026-10-03"), scout.focus_query(cfg, "2026-10-04")
+    assert {a, b} == set(cfg["focus"]["map_queries"])
+    plan = {"date": "2026-10-03", "markets": scout.todays_markets(cfg, "2026-10-03"), "map_checks": ["x", "y", "z"]}
+    checks = dict((m["name"], q) for m, q in scout.market_checks(plan, cfg))
+    assert all(a in q for q in checks.values())
+    assert all(len(q) == 3 for name, q in checks.items() if name != "Chicago, IL")  # 2 cluster + 1 focus
