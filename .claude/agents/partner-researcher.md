@@ -40,7 +40,15 @@ phone, website, followers and a niche guess.
 6. **Paid tools are off-limits.** Don't use paid data tools (OpenRush,
    Semrush, vidIQ and similar) unless the prompt says you may.
 
-## Procedure for each lead (about 6 to 12 tool calls)
+## Budget: hard limits
+
+- **No more than 12 tool calls per lead** (WebSearch plus WebFetch). A lead
+  that fails a quick gate in step B should take about 3.
+- Stop searching a field once you have one solid source for it. Leave hard
+  fields `null` rather than spending 10 searches on them. The scorer treats
+  `null` as "verify later", which is fine.
+
+## Procedure for each lead
 
 **A. Identify (1–3 searches).** Find the real business behind the handle.
 Search the name with the city, the handle, the website domain and the phone
@@ -63,7 +71,8 @@ on.
   `method: "search"`.
 - **Complaints:** search `"<name>" complaint`, `"<name>" scam`, BBB
   complaints and `"<name>" lawsuit <city>`. List every URL you checked in
-  `complaints.checked_sources`, even when you found nothing.
+  `complaints.checked_sources`, even when you found nothing. "None found"
+  only counts when at least 2 sources were checked.
 - **Website claims:** insured, bonded, background-checked staff,
   certifications, guarantees, years in business, service area and team size.
 - **Registration and licensing:** a BBB profile, an "LLC" or "Inc." in the
@@ -93,7 +102,8 @@ confirmed. Leave out nothing in the schema:
   "lead_id": "L0001",
   "researched_at": "YYYY-MM-DD",
   "stage": "deep | screened_out",
-  "identity": {"status": "confirmed | probable | not_found", "business_name": "",
+  "identity": {"status": "confirmed | probable | not_found", "business_name": "primary name only",
+               "aliases": ["other spellings, kept out of business_name"],
                "is_service_provider": true, "note": "how you confirmed it", "source": "https://..."},
   "niche": {"value": "house cleaning", "source": "https://..."},
   "serves_target": {"value": true, "areas": "Chicago north side, Evanston", "quote": "", "source": "https://..."},

@@ -159,7 +159,7 @@ def _number(value):
         return None
 
 
-def _domain(url):
+def domain_of(url):
     if not url:
         return ""
     if not re.match(r"https?://", url, re.I):
@@ -173,7 +173,7 @@ def _matches(domain, domains):
 
 
 def website_kind(url):
-    domain = _domain(url)
+    domain = domain_of(url)
     if not domain:
         return "none"
     if _matches(domain, LINK_PAGE_DOMAINS):
@@ -306,7 +306,7 @@ def build_lead(index, row, market):
         "email_domain": email.split("@")[-1] if email else "",
         "website": website,
         "website_kind": kind,
-        "website_domain": _domain(website) if kind == "own_site" else "",
+        "website_domain": domain_of(website) if kind == "own_site" else "",
         "phone": phone,
         "area_code": area_code,
         "followers": _number(mapped.get("followers")),

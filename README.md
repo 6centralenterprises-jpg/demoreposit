@@ -64,6 +64,50 @@ researcher remembering to.
 | **DO NOT CONTACT** | Pest control, plumbing or roofing (Illinois) without a verified active state license. |
 | **SKIP** | Duplicate, not a real business, not a service provider, out of area, or can't reach 7. |
 
+## Full partner audits and custom emails
+
+After qualifying, say *"Audit the best partners."* The `audit-partners`
+skill digs into every MESSAGE partner (and near-misses if you ask):
+
+| Section | What's in it | Source |
+|---|---|---|
+| **Google reputation** | Google rating (live map-pack reading when available), other platforms, what customers praise or complain about, review replies | Google results, web search |
+| **SEO** | Ranking keywords, page-1 count, estimated visitors and their ad value, authority, linking sites, site health and top issues, where traffic really comes from | OpenRush |
+| **Keywords** | Where they rank for the searches that bring paying customers, and the biggest searches they're missing | OpenRush + market demand list |
+| **Competition** | Who owns Google's map pack and page 1 for the money searches, and where this partner stands | OpenRush live results |
+| **Doing right / wrong** | 3–5 concrete, sourced points each | All of the above |
+| **Custom email** | A draft in 6 Central's outreach standard, checked automatically | Written from the audit |
+
+**Who's the best partner?** Each partner gets two scores:
+- **Quality** (the 10-point rubric): can we trust them with our customers?
+- **Need**: how much our jobs would matter to them. Need is high when
+  they're hard to find online today.
+
+The ideal partner does excellent work but is under-marketed. Businesses that
+already own Google may not need our jobs, and they compete with our brands
+for the same customers, so the report labels them clearly.
+
+**Email checks:**
+- under 120 words, including signature and opt-out
+- says who we are
+- paid jobs, with price agreed up front
+- exactly one question
+- uses a true, sourced fact
+- no promises of volume, income or exclusivity, no size claims, no
+  urgency, no jargon
+- about an 8th-grade reading level
+
+Drafts that fail are marked **Needs rewrite**. **Nothing is ever sent
+automatically.** Every draft waits for Terell's approval.
+
+**Cost:** about 15 OpenRush credits per niche for market research, plus
+18–37 per partner with a website. Partners without a website cost 0. The
+plan step shows the estimate before anything is spent.
+
+Put your phone and mailing address for the signature in
+`config/sender.json`. Copy `config/sender.example.json` to create it. It
+stays out of git.
+
 ## Rules built in
 
 - Business-facing information only. No owners' personal accounts or private
@@ -87,6 +131,8 @@ pip install -r requirements.txt
 python3 qualify.py prepare leads.csv --market "Chicago, IL"   # → runs/<run>/batches/
 python3 qualify.py status --run <run>
 python3 qualify.py score  --run <run> --out-dir /mnt/user-data/outputs
+python3 qualify.py audit-plan   --run <run> --top 20        # prints credit estimate
+python3 qualify.py audit-report --run <run> --out-dir /mnt/user-data/outputs
 python3 -m pytest -q
 ```
 

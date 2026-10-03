@@ -15,3 +15,6 @@ __pycache__/
 # Local Intel: API keys and the local database stay on your machine.
 .env
 data/
+
+# Real sender details stay local; config/sender.example.json is the template.
+config/sender.json
