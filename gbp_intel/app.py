@@ -9,6 +9,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from . import competitors as comp
 from . import config, db
 from .places import PlacesClient, PlacesError
 from .urls import normalize_website, parse_maps_url, parse_upload, search_text_for
@@ -123,6 +124,43 @@ def create_app(conn=None, places=None):
     def unmatch(asset_id: int):
         db.set_place_id(app.state.conn, asset_id, None)
         return back(f"/assets/{asset_id}")
+
+    @app.get("/competitors", response_class=HTMLResponse)
+    def competitors_home(request: Request, msg: str = ""):
+        return page(request, "competitors.html", searches=db.recent_searches(app.state.conn), msg=msg)
+
+    @app.post("/competitors")
+    def run_search(service: str = Form(""), city: str = Form("")):
+        if not (service.strip() and city.strip()):
+            return back("/competitors", msg="Enter both a service and a city.")
+        try:
+            found = app.state.places.competitors(service, city)
+        except PlacesError as e:
+            return back("/competitors", msg=str(e))
+        search_id = db.save_search(app.state.conn, service, city, found)
+        return back(f"/competitors/{search_id}")
+
+    def search_table(search_id):
+        return comp.rows(db.search_results(app.state.conn, search_id), db.our_place_ids(app.state.conn))
+
+    @app.get("/competitors/{search_id}", response_class=HTMLResponse)
+    def search_page(request: Request, search_id: int):
+        search = db.get_search(app.state.conn, search_id)
+        if not search:
+            return back("/competitors", msg="That search no longer exists.")
+        table = search_table(search_id)
+        return page(request, "competitor_results.html", search=search, table=table,
+                    summary=comp.summary(table), expired=any(r["expired"] for r in table))
+
+    @app.get("/competitors/{search_id}/csv")
+    def search_csv(search_id: int):
+        search = db.get_search(app.state.conn, search_id)
+        if not search:
+            return Response("Not found", 404)
+        name = f"competitors-{search['service']}-{search['city']}".lower()
+        name = "".join(c if c.isalnum() else "-" for c in name)
+        return Response(comp.to_csv(search_table(search_id)), media_type="text/csv",
+                        headers={"Content-Disposition": f'attachment; filename="{name}.csv"'})
 
     @app.post("/assets/{asset_id}/delete")
     def delete(asset_id: int):

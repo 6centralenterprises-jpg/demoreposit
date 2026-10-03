@@ -15,8 +15,18 @@ PLACE = {"id": "ChIJtest123", "displayName": {"text": "Sparkle Decks"}, "formatt
          "rating": 4.8, "userRatingCount": 52, "regularOpeningHours": {"weekdayDescriptions": ["Monday: 8 AM–5 PM"]}}
 
 
+RIVAL = {"id": "ChIJrival", "displayName": {"text": "Rival Decks"}, "primaryTypeDisplayName": {"text": "Deck contractor"},
+         "rating": 4.9, "userRatingCount": 210, "websiteUri": "https://www.rivaldecks.test/", "businessStatus": "OPERATIONAL"}
+NO_SITE = {"id": "ChIJnosite", "displayName": {"text": "Bob's Decks"}, "primaryType": "contractor",
+           "rating": 4.1, "userRatingCount": 8, "businessStatus": "CLOSED_TEMPORARILY"}
+
+
 def fake_google(request):
     assert request.headers["X-Goog-Api-Key"] == "test-key"
+    if request.url.path.endswith(":searchText") and json.loads(request.content)["textQuery"].endswith(" in Chicago, IL"):
+        assert json.loads(request.content) == {"textQuery": "Deck repair in Chicago, IL", "pageSize": 20}
+        assert "places.websiteUri" in request.headers["X-Goog-FieldMask"]
+        return httpx.Response(200, json={"places": [RIVAL, PLACE, NO_SITE]})
     if request.url.path.endswith(":searchText"):
         assert json.loads(request.content)["textQuery"] == "Sparkle Decks Chicago, IL"
         return httpx.Response(200, json={"places": [PLACE]})
@@ -90,3 +100,36 @@ def test_password_gate(monkeypatch, client):
     monkeypatch.setattr("gbp_intel.config.APP_PASSWORD", "s3cret")
     assert client.get("/assets").status_code == 401
     assert client.get("/assets", auth=("any", "s3cret")).status_code == 200
+
+
+def test_competitor_search(client):
+    client.post("/assets", data={"name": "Sparkle Decks", "project": "Deck repair", "city": "Chicago, IL"})
+    client.post("/assets/1/match", data={"place_id": "ChIJtest123"})
+
+    resp = client.post("/competitors", data={"service": "Deck repair", "city": "Chicago, IL"})
+    assert resp.url.path == "/competitors/1"
+    html = resp.text
+    assert html.index("Rival Decks") < html.index("Sparkle Decks") < html.index("Bob&#39;s Decks")
+    assert "rivaldecks.test" in html and "closed temporarily" in html
+    assert "#2" in html  # where we show up
+    assert ">52<" in html  # median reviews of the top 3 (210, 52, 8)
+
+    csv_text = client.get("/competitors/1/csv").text
+    lines = csv_text.splitlines()
+    assert lines[0].startswith("rank,name,ours,primary_type,rating,reviews,website")
+    assert lines[2].startswith("2,Sparkle Decks,yes,Deck contractor,4.8,52")
+    assert "Deck repair" in client.get("/competitors").text
+
+
+def test_competitor_details_expire_but_ranking_stays(client):
+    client.post("/competitors", data={"service": "Deck repair", "city": "Chicago, IL"})
+    conn = client.app.state.conn
+    conn.execute("UPDATE places_cache SET fetched_at = '2000-01-01T00:00:00+00:00'")
+    db.purge_expired_places(conn)
+    html = client.get("/competitors/1").text
+    assert html.count("Details cleared after 30 days") == 3
+    assert "Run the search again" in html
+
+
+def test_competitor_search_needs_service_and_city(client):
+    assert "Enter both a service and a city." in client.post("/competitors", data={"service": "Decks"}).text

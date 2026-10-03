@@ -10,8 +10,9 @@ from . import config
 BASE = "https://places.googleapis.com/v1"
 SEARCH_FIELDS = ["id", "displayName", "formattedAddress", "primaryType", "primaryTypeDisplayName",
                  "googleMapsUri"]
-DETAIL_FIELDS = SEARCH_FIELDS + ["types", "websiteUri", "nationalPhoneNumber", "rating", "userRatingCount",
-                                 "regularOpeningHours", "businessStatus"]
+COMPETITOR_FIELDS = SEARCH_FIELDS + ["types", "websiteUri", "nationalPhoneNumber", "rating", "userRatingCount",
+                                     "businessStatus"]
+DETAIL_FIELDS = COMPETITOR_FIELDS + ["regularOpeningHours"]
 
 
 class PlacesError(Exception):
@@ -43,6 +44,15 @@ class PlacesClient:
     def search(self, text, limit=5):
         data = self._call("POST", "/places:searchText", [f"places.{f}" for f in SEARCH_FIELDS],
                           json={"textQuery": text, "pageSize": limit})
+        return [flatten(p) for p in data.get("places", [])]
+
+    def competitors(self, service, city, limit=20):
+        """Google's top businesses for "<service> in <city>", in Google's order.
+
+        Text Search Enterprise tier (rating, website, phone). Its order is
+        Google's relevance ranking, close to but not the same as the Maps 3-pack."""
+        data = self._call("POST", "/places:searchText", [f"places.{f}" for f in COMPETITOR_FIELDS],
+                          json={"textQuery": f"{service} in {city}", "pageSize": limit})
         return [flatten(p) for p in data.get("places", [])]
 
     def details(self, place_id):

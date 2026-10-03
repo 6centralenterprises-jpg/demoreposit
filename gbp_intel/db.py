@@ -18,6 +18,18 @@ CREATE TABLE IF NOT EXISTS assets (
     notes TEXT NOT NULL DEFAULT '',
     created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS searches (
+    id INTEGER PRIMARY KEY,
+    service TEXT NOT NULL,
+    city TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS search_results (
+    search_id INTEGER NOT NULL REFERENCES searches(id) ON DELETE CASCADE,
+    rank INTEGER NOT NULL,
+    place_id TEXT NOT NULL,
+    PRIMARY KEY (search_id, rank)
+);
 CREATE TABLE IF NOT EXISTS places_cache (
     place_id TEXT PRIMARY KEY,
     data TEXT NOT NULL,
@@ -38,6 +50,7 @@ def connect(path=None):
         path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(path, check_same_thread=False)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
     conn.executescript(SCHEMA)
     purge_expired_places(conn)
     return conn
@@ -95,6 +108,40 @@ def cached_place(conn, place_id):
     if not row:
         return None
     return {**json.loads(row["data"]), "fetched_at": row["fetched_at"]}
+
+
+def save_search(conn, service, city, places):
+    """Keeps the ranked Place IDs for good; the place data goes to places_cache."""
+    cur = conn.execute("INSERT INTO searches (service, city, created_at) VALUES (?, ?, ?)",
+                       [service.strip(), city.strip(), now()])
+    for rank, place in enumerate(places, 1):
+        conn.execute("INSERT INTO search_results (search_id, rank, place_id) VALUES (?, ?, ?)",
+                     [cur.lastrowid, rank, place["id"]])
+        cache_place(conn, place)
+    conn.commit()
+    return cur.lastrowid
+
+
+def get_search(conn, search_id):
+    return conn.execute("SELECT * FROM searches WHERE id = ?", [search_id]).fetchone()
+
+
+def recent_searches(conn, limit=20):
+    return conn.execute("SELECT s.*, COUNT(r.rank) AS results FROM searches s "
+                        "LEFT JOIN search_results r ON r.search_id = s.id "
+                        "GROUP BY s.id ORDER BY s.id DESC LIMIT ?", [limit]).fetchall()
+
+
+def search_results(conn, search_id):
+    """Ranked results with their cached place data (None once Google's 30-day limit has passed)."""
+    rows = conn.execute("SELECT rank, place_id FROM search_results WHERE search_id = ? ORDER BY rank",
+                        [search_id]).fetchall()
+    return [{"rank": r["rank"], "place_id": r["place_id"], "place": cached_place(conn, r["place_id"])}
+            for r in rows]
+
+
+def our_place_ids(conn):
+    return {r["place_id"] for r in conn.execute("SELECT place_id FROM assets WHERE place_id IS NOT NULL")}
 
 
 def purge_expired_places(conn):

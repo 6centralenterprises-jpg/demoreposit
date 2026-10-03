@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Competitors{% endblock %}
+{% block content %}
+<h1>Competitors</h1>
+<p class="lead">Who Google shows for a service in a city, with their ratings, reviews and websites.</p>
+
+<section class="card">
+  <form method="post" action="/competitors" class="inline">
+    <label>Service <input name="service" list="services" placeholder="Deck repair" required></label>
+    <label>City <input name="city" placeholder="Chicago, IL" required></label>
+    <button {% if not places_ready %}disabled{% endif %}>Search</button>
+  </form>
+  <datalist id="services">{% for p in projects if p != "Other" %}<option value="{{ p }}">{% endfor %}</datalist>
+  <p class="muted small">Each search is one Google Places call (about $0.035; the first 1,000 a month are free).</p>
+</section>
+
+{% if searches %}
+<h2>Recent searches</h2>
+<table>
+  <thead><tr><th>Service</th><th>City</th><th>Results</th><th>Run</th></tr></thead>
+  <tbody>
+  {% for s in searches %}
+  <tr>
+    <td><a href="/competitors/{{ s.id }}">{{ s.service }}</a></td>
+    <td>{{ s.city }}</td>
+    <td>{{ s.results }}</td>
+    <td>{{ s.created_at[:10] }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}

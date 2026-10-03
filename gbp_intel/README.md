@@ -13,8 +13,8 @@ reviews or anything else on anyone's behalf.
 | Phase | What | State |
 |---|---|---|
 | 1 | **Our assets**: add or upload our websites and Maps links, match each to its Google profile | Built |
-| 2 | Competitors: top businesses for a service + city, with categories and review stats | Next |
-| 3 | Gap analysis: our profile scored against the top 3 and top 10 | Planned |
+| 2 | **Competitors**: Google's top 20 for a service + city, with rating, reviews, website, phone, a "what it takes" summary and CSV export | Built (categories and full review stats come with DataForSEO) |
+| 3 | Gap analysis: our profile scored against the top 3 and top 10 | Next |
 | 4 | Keywords: volume, trend, CPC, competition | Planned |
 | Later | Geo-grid heatmaps and Teleport | Planned |
 
@@ -44,14 +44,29 @@ a CSV with headers like `name, project, city, website, maps_url, notes`.
 Duplicates (same website or Maps link) are skipped. Each asset then gets a
 "Find this business on Google" step where you pick the right profile.
 
+## Looking up competitors
+
+Enter a service and a city. The app asks Google for "<service> in <city>"
+and shows up to 20 businesses in Google's order, with our own assets
+highlighted. The order is Google's relevance ranking for that search, which
+is close to, but not the same as, the Maps 3-pack a customer sees from a
+specific spot (that needs the geo-grid feature, planned later).
+
+The summary shows the bar to beat: median reviews and rating of the top 3,
+how many have websites, the most common primary types and where we show up.
+"Download CSV" exports the table.
+
 ## Data rules we follow
 
 - Google's terms allow keeping a **Place ID** forever, but other Places data
   only for **30 days**. The app stores profile data with its fetch date and
-  deletes anything older than 30 days on startup. Refresh to pull it again.
+  deletes anything older than 30 days on startup. Competitor searches keep
+  their ranked Place IDs; the details clear after 30 days until you run the
+  search again. Refresh to pull it again.
 - Matching uses Text Search with Pro-tier fields (about $32 per 1,000 after
   5,000 free a month). Refreshing a profile uses Place Details with rating,
   hours, phone and website (Enterprise tier, about $20 per 1,000 after 1,000
-  free a month). Prices as of October 2026; check Google's pricing page.
+  free a month). A competitor search is one Text Search call at the
+  Enterprise tier (about $35 per 1,000 after 1,000 free). Prices as of October 2026; check Google's pricing page.
 - `.env` and `data/` are git-ignored. This repository is public, so keys and
   our database never get committed.
