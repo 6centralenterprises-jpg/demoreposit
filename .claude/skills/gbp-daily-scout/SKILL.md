@@ -33,6 +33,9 @@ the brief.
 - **Markets:** Chicago is checked every day. A roster of 34 large or
   fast-growing metros nationwide rotates, 3 a day (`plan` prints today's).
   Rotating metros get the top 2 map-pack searches; Chicago gets all of them.
+- **Our listings** (`own_listings` in config) are confirmed 6 Central
+  profiles. `screen` adds each one's tracked search in its market every day
+  (2 credits each). Never edit those profiles; only report on them.
 
 ## Steps
 
@@ -146,6 +149,8 @@ is `runs/gbp/D/`.
       that matters most
     - the 3 most open markets on the leaderboard, and any new market that
       entered the top 5 today
+    - each of our listings: today's map position and reviews vs the last
+      check, and its open "fix before Google asks" items (from `summary.md`)
     - any "possibly ours" map-pack sighting, as a question to confirm
     - one thing to watch that is 2–3 steps ahead (a season turning, a
       policy shift, a rising keyword moving up the watchlist)

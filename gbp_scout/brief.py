@@ -33,6 +33,32 @@ def money(value):
     return "–" if value in (None, "") else f"${value:,.2f}"
 
 
+def own_line(o):
+    if not o["checked"]:
+        return f"{o['name']}: not checked today."
+    spot = f"#{o['position']} in the map pack" if o["position"] else "not in the top 3"
+    text = f"{o['name']} is {spot} for '{o['query']}' in {o['market']}"
+    if o["position"]:
+        text += f" ({o['rating']}★, {num(o['reviews'])} reviews)"
+    prev = o.get("previous")
+    if prev:
+        was = f"#{prev['position']}" if prev.get("position") else "out of the top 3"
+        text += f"; last check {prev['date']}: {was}, {num(prev.get('reviews'))} reviews"
+    return text + "."
+
+
+def own_listing_section(listings):
+    if not listings:
+        return ""
+    cards = []
+    for o in listings:
+        issues = "".join(f"<li>{escape(i)}</li>" for i in o["issues"])
+        cards.append(f"""<div class="panel"><div class="row"><h3>{escape(o['name'])}</h3><span class="pill own">Ours</span></div>
+<p>{escape(own_line(o))}</p>{f'<p><strong>Fix before Google asks:</strong></p><ul>{issues}</ul>' if issues else '<p class="muted">No mismatches found.</p>'}</div>""")
+    return f"""<section><h2>Our listings</h2><p class="muted" style="margin-bottom:10px">Confirmed 6 Central listings,
+checked in their map pack every day.</p><div class="grid2">{''.join(cards)}</div></section>"""
+
+
 def pill(text):
     return f'<span class="pill {PILL.get(text, "flat")}">{escape(text)}</span>'
 
@@ -146,9 +172,10 @@ def serp_panels(serps):
                 body = f'<p class="muted">{escape(c["reason"])}</p>'
             else:
                 ours = ' <span class="pill flag">Possibly ours: confirm</span>'
+                mine = ' <span class="pill own">Ours</span>'
                 items = "".join(
                     f"<li>{escape(p['name'])} · {p['rating'] if p['rating'] is not None else '–'}★ · "
-                    f"{num(p['reviews'])} reviews{ours if p['possibly_ours'] else ''}"
+                    f"{num(p['reviews'])} reviews{mine if p.get('ours') else ours if p['possibly_ours'] else ''}"
                     f"<br><span class=\"muted\">{escape(p['domain'])}</span></li>" for p in c["pack"])
                 body = f"<ul>{items}</ul><p class=\"muted\">{escape(c['reason'])}</p>"
             weak = "–" if c.get("weakness") is None else f"{c['weakness']:.2f}"
@@ -234,6 +261,7 @@ def render_html(b):
 <p>Confirm whether these belong to a 6 Central business. If they do, check each one: is it at the real
 business base, is the service area one we really serve, and does its website match the city?
 Google's video verification and suspension checks look for exactly this.</p></section>"""
+    mine = own_listing_section(b.get("own_listings") or [])
     past = "".join(f"<li><strong>{escape(x['date'])}</strong> · {escape(x['label'])}: "
                    f"{escape(', '.join(t['keyword'] for t in x['top']) or 'recap')}</li>"
                    for x in b["state"]["briefs"][1:15])
@@ -257,6 +285,7 @@ Google's video verification and suspension checks look for exactly this.</p></se
 </header>
 
 <section><h2>Today's moves</h2><div class="moves">{moves}</div></section>
+{mine}
 {own}
 {f'<section><h2>Keywords checked today</h2>{table}<p class="muted" style="margin-top:8px">Score parts: D demand (25) · V job value from CPC (20) · M momentum (20) · C map-pack openness (25) · F home-based fit (10). Semrush and OpenRush volumes differ by vendor and are never compared with each other.</p></section>' if table else ''}
 
@@ -312,6 +341,8 @@ def render_summary(b):
     if board:
         lines += ["", "Most open markets so far: " + "; ".join(
             f"{r['market']} ({r['openness']:.2f}, best: '{r['best_query']}' median {r['best_median']:g})" for r in board[:3])]
+    for o in b.get("own_listings") or []:
+        lines += ["", f"Our listing: {own_line(o)}"] + [f"- Fix: {i}" for i in o["issues"]]
     if b["own_sightings"]:
         lines += ["", "Possibly ours in the map pack (confirm): "
                   + "; ".join(f"{s['name']} ({s['query']})" for s in b["own_sightings"])]

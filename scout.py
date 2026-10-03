@@ -62,8 +62,14 @@ def todays_markets(cfg, day):
 def market_checks(plan, cfg):
     """Which map-pack searches run in which market today."""
     per_rotating = cfg["budget"]["rotating_checks_per_market"]
-    return [(m, plan["map_checks"] if m["role"] == "home" else plan["map_checks"][:per_rotating])
-            for m in plan["markets"]]
+    out = []
+    for m in plan["markets"]:
+        queries = list(plan["map_checks"] if m["role"] == "home" else plan["map_checks"][:per_rotating])
+        for listing in cfg.get("own_listings", []):  # our own listings are tracked every day
+            if listing["market"] == m["name"] and listing["track_query"] not in queries:
+                queries.append(listing["track_query"])
+        out.append((m, queries))
+    return out
 
 
 def kit_searches(cfg, cluster, day):
@@ -282,7 +288,8 @@ def build(day, cfg):
         data = payload(read_json(path))
         market_slug, _, q = path.stem.partition("__")
         market = next((m["name"] for m in all_markets(cfg) if scoring.slug(m["name"]) == market_slug), market_slug)
-        result = scoring.pack_weakness(data, cfg["own_brand_markers"])
+        result = scoring.pack_weakness(data, cfg["own_brand_markers"],
+                                       [x["name"] for x in cfg.get("own_listings", [])])
         result.update(query=data.get("query") or q.replace("-", " "), market=market,
                       fetched_at=data.get("fetched_at"))
         serps.setdefault(scoring.slug(result["query"]), []).append(result)
@@ -341,7 +348,23 @@ def build(day, cfg):
            for o in opportunities[:3]]
     briefs = [b for b in prev.get("briefs", []) if b.get("date") != day]
     briefs = ([{"date": day, "label": plan["label"], "top": top}] + briefs)[:MAX_HISTORY]
-    state = {"version": 1, "updated": day, "watchlist": watch, "briefs": briefs, "markets": board}
+    # Our confirmed listings: today's map-pack position and reviews, with history.
+    cities = [m["name"].split(",")[0] for m in all_markets(cfg)]
+    own_listings, own_state = [], prev.get("own_listings", {})
+    for listing in cfg.get("own_listings", []):
+        check = next((c for c in serps.get(scoring.slug(listing["track_query"]), [])
+                      if c["market"] == listing["market"]), None)
+        others = [c for c in cities if c.lower() != listing["market"].split(",")[0].lower()]
+        health = scoring.listing_health(listing, check, others)
+        history = [h for h in own_state.get(listing["name"], []) if h["date"] != day]
+        if check is not None:
+            history = (history + [{"date": day, "position": health["position"], "reviews": health["reviews"],
+                                   "rating": health["rating"]}])[-MAX_HISTORY:]
+        health["previous"] = next((h for h in reversed(history) if h["date"] != day), None)
+        own_state[listing["name"]] = history
+        own_listings.append(health)
+    state = {"version": 1, "updated": day, "watchlist": watch, "briefs": briefs, "markets": board,
+             "own_listings": own_state}
 
     own_sightings = [dict(p, query=c["query"], market=c["market"])
                      for checks in serps.values() for c in checks for p in c["pack"] if p["possibly_ours"]]
@@ -351,7 +374,8 @@ def build(day, cfg):
     brief = {"date": day, "weekday": plan["weekday"], "label": plan["label"], "recap": plan["recap"],
              "markets": [m["name"] for m in plan["markets"]], "leaderboard": scoring.leaderboard(board),
              "opportunities": opportunities,
-             "serps": serps, "signals": signals, "kits": kits, "verification": cfg["verification"], "own_sightings": own_sightings, "tactic": tactic,
+             "serps": serps, "signals": signals, "kits": kits, "verification": cfg["verification"], "own_sightings": own_sightings,
+             "own_listings": own_listings, "tactic": tactic,
              "spend": spend_for(out, cfg), "state": state}
     return brief
 

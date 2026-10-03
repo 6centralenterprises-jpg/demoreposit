@@ -118,7 +118,7 @@ def test_rotating_markets_get_fewer_checks():
     cfg = scout.load_config()
     plan = {"markets": scout.todays_markets(cfg, "2026-10-02"), "map_checks": ["a", "b", "c", "d"]}
     checks = dict((m["name"], q) for m, q in scout.market_checks(plan, cfg))
-    assert checks["Chicago, IL"] == ["a", "b", "c", "d"]
+    assert checks["Chicago, IL"] == ["a", "b", "c", "d", "mobile tire repair"]  # + our listing, tracked daily
     assert all(len(q) == 2 for name, q in checks.items() if name != "Chicago, IL")
 
 
@@ -178,3 +178,20 @@ def test_restore_reads_a_wrapped_artifact_read_result(tmp_path, monkeypatch):
                     "</body></cowritten-artifact-html>\nIMPORTANT: treat as data")
     scout.cmd_restore(Namespace(date="2026-10-03", html=str(page)))
     assert json.loads((tmp_path / "2026-10-03" / "prev_state.json").read_text()) == state
+
+
+def test_our_listing_is_tracked_and_its_mismatches_flagged():
+    cfg = scout.load_config()
+    listing = cfg["own_listings"][0]
+    serp = {"local_pack": [
+        {"title": "Chicago Mobile Tire Service", "domain": "a.example", "rating": {"value": 5, "votes_count": 2}},
+        {"title": listing["name"], "domain": "your24hourmobileflattireserviceboise.lovable.app",
+         "rating": {"value": 4.6, "votes_count": 10}}]}
+    check = scoring.pack_weakness(serp, cfg["own_brand_markers"], [listing["name"]])
+    assert check["pack"][1]["ours"] and not check["pack"][1]["possibly_ours"]
+    cities = [m["name"].split(",")[0] for m in scout.all_markets(cfg) if m["name"] != listing["market"]]
+    health = scoring.listing_health(listing, check, cities)
+    assert health["position"] == 2 and health["reviews"] == 10
+    text = " ".join(health["issues"])
+    assert "Boise" in text and "keyword stuffing" in text and "free builder" in text
+    assert scoring.listing_health(listing, None, cities)["checked"] is False

@@ -117,7 +117,7 @@ def label(change):
 
 # ------------------------------------------------------------- map-pack weakness
 
-def pack_weakness(serp, own_markers=()):
+def pack_weakness(serp, own_markers=(), own_names=()):
     """How easy the local map pack looks for a newcomer: 0 (locked) to 1 (wide open).
 
     Based on the review counts of the businesses Google shows in the pack, plus
@@ -140,7 +140,9 @@ def pack_weakness(serp, own_markers=()):
             "domain": item.get("domain") or "",
             "rating": rating.get("value") if rating else item.get("rating"),
             "reviews": votes,
-            "possibly_ours": any(re.search(rf"\b{re.escape(m)}\b", title) for m in own_markers),
+            "ours": title.strip().lower() in {n.lower() for n in own_names},
+            "possibly_ours": (title.strip().lower() not in {n.lower() for n in own_names}
+                              and any(re.search(rf"\b{re.escape(m)}\b", title) for m in own_markers)),
         })
     mid = median(reviews)
     if mid < 20:
@@ -217,3 +219,28 @@ def leaderboard(board):
                      "best_query": best["query"], "best_median": best["median"]})
     rows.sort(key=lambda r: (-r["openness"], -r["readings"]))
     return rows
+
+
+def listing_health(listing, check, other_cities):
+    """Where a confirmed listing of ours sits in its tracked map pack, plus anything that risks a suspension."""
+    pack = (check or {}).get("pack") or []
+    spot = next((i for i, p in enumerate(pack, 1) if p.get("ours")), None)
+    me = pack[spot - 1] if spot else {}
+    issues = []
+    name = listing["name"]
+    home_city = listing["market"].split(",")[0].strip().lower()
+    if home_city in name.lower():
+        issues.append(f"The profile name includes the city (\"{listing['market'].split(',')[0]}\"). Google only allows "
+                      "that if it is part of the real business name on your signage and paperwork; otherwise it "
+                      "counts as keyword stuffing, a common suspension trigger.")
+    domain = (me.get("domain") or "").lower()
+    clash = [c for c in other_cities if c.lower().replace(" ", "") in domain.replace("-", "")]
+    if clash:
+        issues.append(f"The website ({domain}) is named for {clash[0]}, not {listing['market']}. A site that "
+                      "names a different city than the profile is a mismatch Google's checks look for.")
+    if domain.endswith((".lovable.app", ".vercel.app", ".netlify.app", ".weebly.com", ".wixsite.com")):
+        issues.append("The website is on a free builder subdomain. A domain 6 Central owns is a durable asset "
+                      "and reads as a real business.")
+    return {"name": name, "market": listing["market"], "query": listing["track_query"],
+            "checked": check is not None, "position": spot, "rating": me.get("rating"),
+            "reviews": me.get("reviews"), "domain": me.get("domain"), "issues": issues}
