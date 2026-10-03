@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Gaps: {{ asset.name }}{% endblock %}
+{% block content %}
+<p><a href="/assets/{{ asset.id }}">&larr; {{ asset.name or "Asset" }}</a></p>
+<h1>Gap analysis: {{ ours.displayName or asset.name }}</h1>
+<p class="lead">Against <a href="/competitors/{{ search.id }}">{{ search.service }} in {{ search.city }}</a>
+  ({{ search.created_at[:10] }}) · {% if our_rank %}we rank #{{ our_rank }}{% else %}we are not in this search's results{% endif %}</p>
+
+{% if expired %}<p class="banner warn">Some competitor details have passed Google's 30-day limit. <a href="/competitors">Run the search again</a> for a full comparison.</p>{% endif %}
+
+{% set gap_count = checks | selectattr("status", "equalto", "gap") | list | length %}
+<p><strong>{{ gap_count }} gap{{ "s" if gap_count != 1 }}</strong> out of {{ checks | length }} checks.</p>
+
+<table class="gaps">
+  <thead><tr><th>Check</th><th>Us</th><th>Leaders</th><th>Next step</th></tr></thead>
+  <tbody>
+  {% for c in checks %}
+  <tr class="{{ c.status }}">
+    <td><span class="dot"></span>{{ c.check }}</td>
+    <td>{{ c.ours }}</td>
+    <td>{{ c.benchmark }}</td>
+    <td class="wrap">{{ c.step }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% if rivals %}
+<h2>Top 3 we're measured against</h2>
+<ul>
+  {% for r in rivals %}<li>{{ r.displayName }} · {{ r.rating or "no" }} rating, {{ r.userRatingCount or 0 }} reviews</li>{% endfor %}
+</ul>
+{% endif %}
+
+<h2>Coming in later phases</h2>
+<ul class="muted">{% for item in later %}<li>{{ item }}</li>{% endfor %}</ul>
+{% endblock %}

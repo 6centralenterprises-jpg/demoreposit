@@ -11,8 +11,8 @@ BASE = "https://places.googleapis.com/v1"
 SEARCH_FIELDS = ["id", "displayName", "formattedAddress", "primaryType", "primaryTypeDisplayName",
                  "googleMapsUri"]
 COMPETITOR_FIELDS = SEARCH_FIELDS + ["types", "websiteUri", "nationalPhoneNumber", "rating", "userRatingCount",
-                                     "businessStatus"]
-DETAIL_FIELDS = COMPETITOR_FIELDS + ["regularOpeningHours"]
+                                     "businessStatus", "regularOpeningHours"]
+DETAIL_FIELDS = COMPETITOR_FIELDS
 
 
 class PlacesError(Exception):
@@ -49,7 +49,7 @@ class PlacesClient:
     def competitors(self, service, city, limit=20):
         """Google's top businesses for "<service> in <city>", in Google's order.
 
-        Text Search Enterprise tier (rating, website, phone). Its order is
+        Text Search Enterprise tier (rating, website, phone, hours). Its order is
         Google's relevance ranking, close to but not the same as the Maps 3-pack."""
         data = self._call("POST", "/places:searchText", [f"places.{f}" for f in COMPETITOR_FIELDS],
                           json={"textQuery": f"{service} in {city}", "pageSize": limit})

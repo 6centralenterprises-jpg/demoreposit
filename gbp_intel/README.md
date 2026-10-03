@@ -14,8 +14,8 @@ reviews or anything else on anyone's behalf.
 |---|---|---|
 | 1 | **Our assets**: add or upload our websites and Maps links, match each to its Google profile | Built |
 | 2 | **Competitors**: Google's top 20 for a service + city, with rating, reviews, website, phone, a "what it takes" summary and CSV export | Built (categories and full review stats come with DataForSEO) |
-| 3 | Gap analysis: our profile scored against the top 3 and top 10 | Next |
-| 4 | Keywords: volume, trend, CPC, competition | Planned |
+| 3 | **Gap analysis**: our profile scored against the top 3 and top 10, with a plain next step per gap | Built (posts, photos and review replies come with the Business Profile API and DataForSEO) |
+| 4 | Keywords: volume, trend, CPC, competition | Next |
 | Later | Geo-grid heatmaps and Teleport | Planned |
 
 ## Run it
@@ -55,6 +55,24 @@ specific spot (that needs the geo-grid feature, planned later).
 The summary shows the bar to beat: median reviews and rating of the top 3,
 how many have websites, the most common primary types and where we show up.
 "Download CSV" exports the table.
+
+## Gap analysis
+
+Open a matched asset and compare it with a saved competitor search, or run
+a new one for its city. The checks:
+
+| Check | Compared with |
+|---|---|
+| Primary category | The most common primary type in the top 3 |
+| Secondary categories | Types at least 2 of the top 3 share that we lack |
+| Review count | Top 3 median |
+| Rating | Top 3 median (within 0.1 counts as even) |
+| Website, phone, hours on profile | How many of the top 10 fill them in |
+| Business status | Anything other than open is flagged |
+
+Gaps come first, each with a next step. The tool never suggests buying,
+filtering or incentivizing reviews, stuffing keywords into the business
+name, or listing services we don't offer.
 
 ## Data rules we follow
 

@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from . import competitors as comp
-from . import config, db
+from . import config, db, gaps
 from .places import PlacesClient, PlacesError
 from .urls import normalize_website, parse_maps_url, parse_upload, search_text_for
 
@@ -101,8 +101,9 @@ def create_app(conn=None, places=None):
                 candidates = places.search(query)
             except PlacesError as e:
                 error = str(e)
+        searches = [s for s in db.recent_searches(conn, 50) if s["city"].lower() == asset["city"].lower()]
         return page(request, "asset.html", asset=asset, place=place, candidates=candidates,
-                    query=query, error=error, msg=msg)
+                    query=query, error=error, msg=msg, searches=searches)
 
     @app.post("/assets/{asset_id}/match")
     def match(asset_id: int, place_id: str = Form(...)):
@@ -161,6 +162,42 @@ def create_app(conn=None, places=None):
         name = "".join(c if c.isalnum() else "-" for c in name)
         return Response(comp.to_csv(search_table(search_id)), media_type="text/csv",
                         headers={"Content-Disposition": f'attachment; filename="{name}.csv"'})
+
+    @app.post("/assets/{asset_id}/gaps")
+    def run_gaps(asset_id: int, search_id: int = Form(0), service: str = Form("")):
+        """Compare against an existing search, or run a new one for this asset's city."""
+        asset = db.get_asset(app.state.conn, asset_id)
+        if not asset or not asset["place_id"]:
+            return back(f"/assets/{asset_id}", msg="Match this asset to its Google profile first.")
+        if not search_id:
+            if not (service.strip() and asset["city"]):
+                return back(f"/assets/{asset_id}", msg="Gap analysis needs a service and the asset's city.")
+            try:
+                found = app.state.places.competitors(service, asset["city"])
+            except PlacesError as e:
+                return back(f"/assets/{asset_id}", msg=str(e))
+            search_id = db.save_search(app.state.conn, service, asset["city"], found)
+        return back(f"/assets/{asset_id}/gaps/{search_id}")
+
+    @app.get("/assets/{asset_id}/gaps/{search_id}", response_class=HTMLResponse)
+    def gaps_page(request: Request, asset_id: int, search_id: int):
+        conn = app.state.conn
+        asset, search = db.get_asset(conn, asset_id), db.get_search(conn, search_id)
+        if not asset or not search or not asset["place_id"]:
+            return back(f"/assets/{asset_id}")
+        ours = db.cached_place(conn, asset["place_id"])
+        if ours is None:
+            try:
+                ours = app.state.places.details(asset["place_id"])
+                db.cache_place(conn, ours)
+            except PlacesError as e:
+                return back(f"/assets/{asset_id}", msg=str(e))
+        results = db.search_results(conn, search_id)
+        rivals = [r["place"] for r in results if r["place"] and r["place_id"] != asset["place_id"]]
+        our_rank = next((r["rank"] for r in results if r["place_id"] == asset["place_id"]), None)
+        return page(request, "gaps.html", asset=asset, search=search, ours=ours, our_rank=our_rank,
+                    checks=gaps.analyze(ours, rivals), rivals=rivals[:3], later=gaps.LATER,
+                    expired=len(rivals) < sum(1 for r in results if r["place_id"] != asset["place_id"]))
 
     @app.post("/assets/{asset_id}/delete")
     def delete(asset_id: int):

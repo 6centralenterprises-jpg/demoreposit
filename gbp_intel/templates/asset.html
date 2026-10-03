@@ -33,6 +33,27 @@
     <form method="post" action="/assets/{{ asset.id }}/unmatch"><button class="secondary">Unmatch</button></form>
   </div>
 </section>
+
+<section class="card">
+  <h2>Gap analysis</h2>
+  <p class="muted">Score this profile against the businesses Google ranks for a service in {{ asset.city or "this asset's city" }}.</p>
+  {% if searches %}
+  <form method="post" action="/assets/{{ asset.id }}/gaps" class="inline">
+    <label>Compare with a saved search
+      <select name="search_id">{% for s in searches %}<option value="{{ s.id }}">{{ s.service }} in {{ s.city }} ({{ s.created_at[:10] }})</option>{% endfor %}</select>
+    </label>
+    <button>Compare</button>
+  </form>
+  {% endif %}
+  {% if asset.city %}
+  <form method="post" action="/assets/{{ asset.id }}/gaps" class="inline">
+    <label>Or run a new search for <input name="service" value="{{ asset.project if asset.project != "Other" else "" }}" required></label>
+    <button {% if not places_ready %}disabled{% endif %}>Search and compare</button>
+  </form>
+  {% else %}
+  <p class="muted">Add a city to this asset to run a new search.</p>
+  {% endif %}
+</section>
 {% else %}
 <section class="card">
   <h2>Find this business on Google</h2>

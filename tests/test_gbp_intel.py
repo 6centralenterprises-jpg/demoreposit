@@ -16,8 +16,9 @@ PLACE = {"id": "ChIJtest123", "displayName": {"text": "Sparkle Decks"}, "formatt
 
 
 RIVAL = {"id": "ChIJrival", "displayName": {"text": "Rival Decks"}, "primaryTypeDisplayName": {"text": "Deck contractor"},
+         "primaryType": "deck_contractor", "types": ["deck_contractor", "carpenter"],
          "rating": 4.9, "userRatingCount": 210, "websiteUri": "https://www.rivaldecks.test/", "businessStatus": "OPERATIONAL"}
-NO_SITE = {"id": "ChIJnosite", "displayName": {"text": "Bob's Decks"}, "primaryType": "contractor",
+NO_SITE = {"id": "ChIJnosite", "displayName": {"text": "Bob's Decks"}, "primaryType": "contractor", "types": ["contractor", "carpenter"],
            "rating": 4.1, "userRatingCount": 8, "businessStatus": "CLOSED_TEMPORARILY"}
 
 
@@ -133,3 +134,28 @@ def test_competitor_details_expire_but_ranking_stays(client):
 
 def test_competitor_search_needs_service_and_city(client):
     assert "Enter both a service and a city." in client.post("/competitors", data={"service": "Decks"}).text
+
+
+def test_gap_analysis_checks():
+    from gbp_intel.gaps import analyze
+    ours = {"primaryType": "deck_contractor", "types": ["deck_contractor"], "rating": 4.8, "userRatingCount": 52,
+            "regularOpeningHours": ["Monday: 8 AM–5 PM"], "businessStatus": "OPERATIONAL"}
+    checks = {c["check"]: c for c in analyze(ours, [RIVAL, NO_SITE])}
+    assert checks["Primary category"]["status"] == "ok"
+    assert checks["Secondary categories"]["status"] == "gap" and "Carpenter" in checks["Secondary categories"]["benchmark"]
+    assert checks["Review count"]["status"] == "gap" and "57 more reviews" in checks["Review count"]["step"]
+    assert checks["Rating"]["status"] == "ok"
+    assert checks["Website on profile"]["status"] == "gap" and checks["Website on profile"]["benchmark"] == "1 of top 2 have it"
+    assert checks["Hours on profile"]["status"] == "ok"
+    assert list(checks)[0] != "Primary category"  # gaps listed first
+
+
+def test_gap_analysis_page(client):
+    client.post("/assets", data={"name": "Sparkle Decks", "project": "Deck repair", "city": "Chicago, IL"})
+    client.post("/assets/1/match", data={"place_id": "ChIJtest123"})
+    resp = client.post("/assets/1/gaps", data={"service": "Deck repair"})
+    assert resp.url.path == "/assets/1/gaps/1"
+    assert "we rank #2" in resp.text
+    assert "4 gaps" in resp.text  # secondary categories, reviews, website, phone
+    assert "Rival Decks" in resp.text
+    assert "Deck repair in Chicago, IL" in client.get("/assets/1").text  # saved search offered next time

@@ -43,3 +43,8 @@ a.button.secondary { color: var(--accent); border: 1px solid var(--accent); }
 tr.ours td { background: color-mix(in srgb, var(--accent) 12%, transparent); }
 .tag { font-size: 12px; padding: 1px 6px; border-radius: 10px; border: 1px solid var(--accent); color: var(--accent); margin-left: 6px; }
 .tag.warn { border-color: var(--danger); color: var(--danger); }
+td.wrap { white-space: normal; min-width: 260px; }
+.gaps .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; background: var(--ok); }
+.gaps tr.gap .dot { background: var(--danger); }
+.gaps tr.gap td:first-child { font-weight: 600; }
+section.card form.inline + form.inline { margin-top: 12px; }
