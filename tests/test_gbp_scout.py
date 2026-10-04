@@ -201,8 +201,9 @@ def test_our_listing_is_tracked_and_its_mismatches_flagged():
 
 def test_focus_watch_adds_one_search_per_market_and_alternates():
     cfg = scout.load_config()
-    a, b = scout.focus_query(cfg, "2026-10-03"), scout.focus_query(cfg, "2026-10-04")
-    assert {a, b} == set(cfg["focus"]["map_queries"])
+    days = [f"2026-10-{d:02d}" for d in range(1, 1 + len(cfg["focus"]["map_queries"]))]
+    assert {scout.focus_query(cfg, d) for d in days} == set(cfg["focus"]["map_queries"])  # rotates through all
+    a = scout.focus_query(cfg, "2026-10-03")
     plan = {"date": "2026-10-03", "markets": scout.todays_markets(cfg, "2026-10-03"), "map_checks": ["x", "y", "z"]}
     checks = dict((m["name"], q) for m, q in scout.market_checks(plan, cfg))
     assert all(a in q for q in checks.values())
