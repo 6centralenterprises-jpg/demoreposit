@@ -625,3 +625,28 @@ Early interest is up: August 2026 ran 8,100, against 6,600 in August 2025.
 **Climate**
 - https://www.weather.gov/lot/snowclimatology
 - https://www.weather.gov/lot/chicago_normals
+
+---
+
+## Addendum (2026-10-04): the winter 2026-27 outlook changes the pricing
+
+- **The forecasts:**
+  - NOAA's Climate Prediction Center gives a **greater than 90% chance of a very strong El Niño** this
+    winter, and a **75% chance it exceeds every event since 1950** in Oct–Dec
+    ([CPC ENSO discussion](https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml)).
+  - NOAA's winter outlook (issued 2026-09-17) favors **above-normal temperatures** for Chicago, with
+    equal chances for precipitation ([CBS Chicago](https://www.cbsnews.com/chicago/news/fall-winter-weather-predictions-chicago-2026-2027/)).
+  - The Farmers' Almanac calls for a warmer-than-normal winter with **near- to below-normal snowfall**,
+    snowiest in early and late January and early February ([NBC Chicago](https://www.nbcchicago.com/news/local/winter-predictions-for-2026-27-season-farmers-almanac-super-el-nino-nws-and-what-they-say/3978021/)).
+- **Past strong El Niño winters in Chicago (Dec–Feb):**
+  - 1997-98: **16.3"** of snow, +3.1°F.
+  - 2015-16: **16.5"**, +2.7°F.
+  - Both are about half the normal snowfall for those months
+    ([NBC Chicago](https://www.nbcchicago.com/weather/el-nino-will-impact-chicagos-winter-but-how-will-it-effect-snow-temperatures/3282529/)).
+- **What changes (Assumption):** plan for about **5–7 plowable events**, not the 12 visits in §4.
+  - **Sell fixed-price seasonal contracts** with a visit cap and a per-inch charge over the cap.
+  - Avoid per-push revenue as the core.
+  - Pay subcontractors per push, so a mild winter widens margin and a heavy winter stays capped.
+  - Keep fixed costs and equipment light: subcontract plowing and don't buy a plow truck.
+  - Expect weaker inbound Google demand. Contracts sold door to door and B2B in Oct–Nov carry the season.
+  - The storefront sidewalk ordinance still applies to every snowfall.
