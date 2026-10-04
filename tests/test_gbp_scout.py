@@ -62,6 +62,8 @@ def test_pack_weakness_and_own_brand_flag():
 def test_plays_never_skip_the_guardrails():
     niche = {"home_based_fit": 9, "licensed": False, "portfolio": "TJ's Nationwide Roadside"}
     assert scoring.play_for(70, niche, 1.0, 0.3)[0] == "Own it"
+    assert scoring.play_for(70, niche, None, 0.3)[0] == "Validate"      # no map check yet
+    assert scoring.play_for(70, niche, 0.5, 0.3)[0] == "Watch"          # contested pack: find a smaller pond
     assert scoring.play_for(70, niche, 0.1, 0.3)[0] == "Watch"          # locked map pack
     assert scoring.play_for(70, niche, 1.0, -0.2)[0] == "Watch"         # cooling demand
     licensed = dict(niche, licensed=True)
@@ -205,3 +207,32 @@ def test_focus_watch_adds_one_search_per_market_and_alternates():
     checks = dict((m["name"], q) for m, q in scout.market_checks(plan, cfg))
     assert all(a in q for q in checks.values())
     assert all(len(q) == 3 for name, q in checks.items() if name != "Chicago, IL")  # 2 cluster + 1 focus
+
+
+def test_blank_ratings_are_unknown_not_zero():
+    serp = {"local_pack": [{"title": "A", "rating": {"value": 5, "votes_count": 7}},
+                           {"title": "B", "rating": {"value": 4.9, "votes_count": 31}},
+                           {"title": "C", "rating": None}]}
+    result = scoring.pack_weakness(serp)
+    assert result["median_reviews"] == 19 and result["pack"][2]["reviews"] is None
+    blank = {"local_pack": [{"title": "A", "rating": None}, {"title": "B", "rating": {"value": None, "votes_count": None}}]}
+    assert scoring.pack_weakness(blank)["weakness"] is None
+
+
+def test_google_risk_season_and_plays():
+    niche = {"home_based_fit": 9, "licensed": False, "portfolio": "P", "verify": "own",
+             "keywords": ["garage door repair near me"]}
+    register = [{"id": "gd", "niches": ["garage doors"], "keywords": ["garage door"], "level": "high",
+                 "what": "Suspension wave.", "plan": "Avoid until it settles.", "sources": [{"url": "https://x", "date": "2026-04"}]}]
+    risk = scoring.google_risk("garage doors", niche, register)
+    assert risk["level"] == "high"
+    assert scoring.play_for(80, niche, 1.0, 0.3, risk)[0] == "Avoid"
+    assert scoring.google_risk("cleaning", dict(niche, keywords=["house cleaning near me"]), register) is None
+    trend = [{"year": y, "month": m, "search_volume": v} for (y, m, v) in
+             [(2025, 10, 100), (2025, 11, 150), (2025, 12, 200), (2026, 1, 250)]]
+    season = scoring.season_ahead(trend, "2026-10-04")
+    assert season == {"ratio": 2.0, "peak_month": "Jan", "peak_volume": 250}
+    score, parts, _, _ = scoring.opportunity({"volume": 1000, "cpc": 5, "momentum": None}, niche, None,
+                                             {"weakness": 1.0}, None, season)
+    assert parts["verify"] == 15 and parts["momentum"] == 15 and parts["google_risk"] == 0
+    assert scoring.big_fish(1000, 1.0, "own") and not scoring.big_fish(1000, 1.0, "partner")

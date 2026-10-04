@@ -295,6 +295,7 @@ def build(day, cfg):
     watch = prev.get("watchlist", {})
     signals = read_json(out / "signals.json", {}) or {}
     signals = {k: [s for s in v if s.get("source")] for k, v in signals.items() if isinstance(v, list)}
+    register, flags = google_watch(cfg, prev, signals.get("google", []), day)
 
     serps = {}
     for path in sorted((out / "serp").glob("*.json")):
@@ -322,9 +323,15 @@ def build(day, cfg):
             checks = serps.get(scoring.slug(scoring.local_query(kw)), [])
             weak_values = [c["weakness"] for c in checks if c.get("weakness") is not None]
             serp_summary = {"weakness": max(weak_values)} if weak_values else None
-            score, parts, change, trend_source = scoring.opportunity(row, niche, deep, serp_summary)
-            play, why = scoring.play_for(score, niche, serp_summary and serp_summary["weakness"], change)
+            risk = scoring.google_risk(row["niche"], niche, register, flags)
+            season = scoring.season_ahead(raw.get("trend"), day) if raw else None
+            score, parts, change, trend_source = scoring.opportunity(row, niche, deep, serp_summary, risk, season)
+            weakness = serp_summary and serp_summary["weakness"]
+            play, why = scoring.play_for(score, niche, weakness, change, risk, season)
+            verify = niche.get("verify", "partner")
             opportunities.append({
+                "verify": verify, "verify_grade": scoring.VERIFY_GRADE[verify], "risk": risk, "season": season,
+                "big_fish": scoring.big_fish((deep or {}).get("volume") or row["volume"], weakness, verify),
                 "keyword": kw, "niche": row["niche"], "portfolio": niche["portfolio"],
                 "licensed": niche.get("licensed", False), "discovered": row.get("discovered", False),
                 "score": score, "parts": parts, "change": change, "trend_source": trend_source,
@@ -337,7 +344,8 @@ def build(day, cfg):
     for o in opportunities:
         entry = watch.get(o["keyword"], {"first_seen": day, "history": []})
         entry.update(niche=o["niche"], cluster=plan["label"], last_seen=day, label=o["label"],
-                     score=o["score"], change=o["change"], play=o["play"])
+                     score=o["score"], change=o["change"], play=o["play"], verify=o["verify_grade"],
+                     risk=(o["risk"] or {}).get("level"), season=o["season"], big_fish=o["big_fish"])
         history = [h for h in entry["history"] if h[0] != day]  # a re-run replaces today's point
         entry["history"] = (history + [[day, o["score"], o["change"]]])[-MAX_HISTORY:]
         watch[o["keyword"]] = entry
@@ -388,7 +396,7 @@ def build(day, cfg):
                       "leaderboard": scoring.leaderboard({m: r for m, r in focus_board.items() if r}),
                       "licensing": {s: focus["licensing"][s] for s in sorted(states) if s in focus.get("licensing", {})}}
     state = {"version": 1, "updated": day, "watchlist": watch, "briefs": briefs, "markets": board,
-             "own_listings": own_state}
+             "own_listings": own_state, "google_flags": flags}
 
     own_sightings = [dict(p, query=c["query"], market=c["market"])
                      for checks in serps.values() for c in checks for p in c["pack"] if p["possibly_ours"]]
@@ -400,8 +408,36 @@ def build(day, cfg):
              "opportunities": opportunities,
              "serps": serps, "signals": signals, "kits": kits, "verification": cfg["verification"], "own_sightings": own_sightings,
              "own_listings": own_listings, "focus": focus_view, "tactic": tactic,
+             "google": {"register": [e for e in register if e.get("level") in ("high", "medium")],
+                        "flags": flags, "as_of": (read_json(ROOT / cfg.get("google_risk_register", ""), {}) or {}).get("as_of")
+                        if cfg.get("google_risk_register") else None},
+             "season_ahead": sorted([o for o in opportunities if (o["season"] or {}).get("ratio", 0) >= 1.3],
+                                    key=lambda o: -o["season"]["ratio"]),
              "spend": spend_for(out, cfg), "state": state}
     return brief
+
+
+def google_watch(cfg, prev, todays, day):
+    """The dated Google risk register plus the rolling daily watch.
+
+    Each daily item is {"summary", "source", "niches": [...], "keywords": [...], "level": high|medium|low}.
+    Items carry over between runs and expire after `flag_days` without being seen again.
+    """
+    path = cfg.get("google_risk_register")
+    register = ((read_json(ROOT / path, {}) or {}).get("entries", []) if path else [])
+    keep_days = (cfg.get("google_watch") or {}).get("flag_days", 60)
+    today = datetime.strptime(day, "%Y-%m-%d")
+    flags = {}
+    for key, f in (prev.get("google_flags") or {}).items():
+        if (today - datetime.strptime(f["last_seen"], "%Y-%m-%d")).days <= keep_days:
+            flags[key] = f
+    for item in todays:
+        if item.get("level") not in scoring.RISK_RANK or not (item.get("niches") or item.get("keywords")):
+            continue
+        key = scoring.slug(item.get("summary", ""))[:60]
+        first = flags.get(key, {}).get("first_seen", day)
+        flags[key] = dict(item, first_seen=first, last_seen=day)
+    return register, flags
 
 
 def spend_for(out, cfg):

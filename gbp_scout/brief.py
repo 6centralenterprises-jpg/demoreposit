@@ -18,7 +18,8 @@ GUARDRAILS = [
 ]
 
 PILL = {"Surging": "up", "Rising": "up2", "Steady": "flat", "Cooling": "down",
-        "Own it": "own", "Partner & manage": "partner", "Validate": "validate", "Watch": "watch"}
+        "Own it": "own", "Partner & manage": "partner", "Validate": "validate", "Watch": "watch", "Avoid": "down"}
+RISK_PILL = {"high": "down", "medium": "validate", "low": "flat"}
 
 
 def pct(value):
@@ -152,6 +153,14 @@ def move_card(o):
         flags.append('<span class="pill flag">New</span>')
     if o["licensed"]:
         flags.append('<span class="pill flag">License check</span>')
+    if o.get("verify_grade"):
+        flags.append(f'<span class="pill flat">Verify {o["verify_grade"]}</span>')
+    if o.get("big_fish"):
+        flags.append('<span class="pill own">Big fish</span>')
+    if o.get("risk"):
+        flags.append(f'<span class="pill {RISK_PILL.get(o["risk"]["level"], "flat")}">Google: {escape(o["risk"]["level"])}</span>')
+    if (o.get("season") or {}).get("ratio", 0) >= 1.3:
+        flags.append(f'<span class="pill up">Season ahead ×{o["season"]["ratio"]:.1f}</span>')
     yo = o.get("openrush") or {}
     facts = (f"{num(yo.get('volume') or o['semrush']['volume'])} searches/mo · CPC {money(yo.get('cpc') or o['semrush']['cpc'])}"
              f" · {pct(o['change'])} {'vs last year' if o['trend_source'].startswith('openrush') else '(seasonal)'}")
@@ -179,8 +188,37 @@ def opportunity_rows(opps):
 <td class="n">{num(yo.get('volume'))}</td><td class="n">{num(o['semrush']['volume'])}</td>
 <td class="n">{money(yo.get('cpc') if yo.get('cpc') is not None else o['semrush']['cpc'])}</td>
 <td>{escape(pack)}</td><td>{pill(o['play'])}</td>
-<td class="n">D{p['demand']:.0f} V{p['job_value']:.0f} M{p['momentum']:.0f} C{p['competition']:.0f} F{p['home_fit']:.0f}</td></tr>""")
+<td class="n">D{p['demand']:.0f} V{p['job_value']:.0f} M{p['momentum']:.0f} C{p['competition']:.0f} A{p.get('verify', 0):.0f} F{p['home_fit']:.0f}{f" G{p['google_risk']:.0f}" if p.get('google_risk') else ''}</td></tr>""")
     return "\n".join(rows)
+
+
+def google_section(g):
+    if not g or not (g.get("register") or g.get("flags")):
+        return ""
+    items = []
+    for e in sorted(g.get("register") or [], key=lambda e: -{"high": 3, "medium": 2, "low": 1}.get(e.get("level"), 0)):
+        src = (e.get("sources") or [{}])[0]
+        items.append(f"""<li><span class="pill {RISK_PILL.get(e.get('level'), 'flat')}">{escape(e.get('level', ''))}</span>
+<strong>{escape(', '.join(e.get('niches', [])))}</strong>: {escape(e.get('what', ''))} <span class="muted">Plan: {escape(e.get('plan', ''))}</span>
+{link(src['url'], 'source') if src.get('url') else ''}</li>""")
+    for f in (g.get("flags") or {}).values():
+        items.append(f"""<li><span class="pill {RISK_PILL.get(f.get('level'), 'flat')}">{escape(f.get('level', ''))}</span>
+<strong>{escape(', '.join(f.get('niches') or f.get('keywords') or []))}</strong>: {escape(f.get('summary', ''))}
+<span class="muted">first seen {escape(f.get('first_seen', ''))}</span> {link(f['source'], 'source') if f.get('source') else ''}</li>""")
+    as_of = f" Register as of {escape(g['as_of'])}." if g.get("as_of") else ""
+    return f"""<section><h2>Google watch</h2><p class="muted" style="margin-bottom:10px">What Google is flagging right now.
+High-risk niches are marked Avoid until the wave settles; medium means prepare before you launch.{as_of}</p>
+<div class="panel"><ul>{''.join(items)}</ul></div></section>"""
+
+
+def season_section(opps):
+    if not opps:
+        return ""
+    lis = "".join(f"<li><strong>{escape(o['keyword'])}</strong>: last year the next 3 months ran "
+                  f"{o['season']['ratio']:.1f}× this month, peaking in {escape(o['season']['peak_month'])} "
+                  f"({num(o['season']['peak_volume'])} searches, OpenRush). {pill(o['play'])}</li>" for o in opps)
+    return f"""<section><h2>Get ahead of the season</h2><p class="muted" style="margin-bottom:10px">Searches that
+turn up in the next 1-3 months. A profile launched now has reviews before the peak.</p><div class="panel"><ul>{lis}</ul></div></section>"""
 
 
 def serp_panels(serps):
@@ -304,10 +342,12 @@ Google's video verification and suspension checks look for exactly this.</p></se
 </header>
 
 <section><h2>Today's moves</h2><div class="moves">{moves}</div></section>
+{season_section(b.get("season_ahead"))}
+{google_section(b.get("google"))}
 {mine}
 {own}
 {focus_section(b.get("focus"))}
-{f'<section><h2>Keywords checked today</h2>{table}<p class="muted" style="margin-top:8px">Score parts: D demand (25) · V job value from CPC (20) · M momentum (20) · C map-pack openness (25) · F home-based fit (10). Semrush and OpenRush volumes differ by vendor and are never compared with each other.</p></section>' if table else ''}
+{f'<section><h2>Keywords checked today</h2>{table}<p class="muted" style="margin-top:8px">Score parts: D demand (20) · V job value from CPC (15) · M momentum or season ahead (15) · C map-pack openness (25) · A ease of verification (15) · F home-based fit (10) · G Google-risk penalty. Semrush and OpenRush volumes differ by vendor and are never compared with each other.</p></section>' if table else ''}
 
 <section><h2>Map pack check</h2><div class="grid2">{serp_panels(b['serps'])}</div></section>
 
@@ -347,7 +387,9 @@ def render_summary(b):
         lines.append("Today's moves:")
         for i, o in enumerate(b["opportunities"][:3], 1):
             vol = (o.get("openrush") or {}).get("volume") or o["semrush"]["volume"]
-            lines.append(f"{i}. {o['keyword']}: {o['play']}, score {o['score']:.0f}, {o['label']} "
+            tags = "".join([" [big fish]" if o.get("big_fish") else "", f" [verify {o.get('verify_grade')}]" if o.get("verify_grade") else "",
+                            f" [Google risk: {o['risk']['level']}]" if o.get("risk") else ""])
+            lines.append(f"{i}. {o['keyword']}{tags}: {o['play']}, score {o['score']:.0f}, {o['label']} "
                          f"({pct(o['change'])}), {vol:,}/mo. {o['why']}")
     elif b["recap"]:
         lines += ["", "Weekly recap. Top of the watchlist:"]
@@ -361,6 +403,12 @@ def render_summary(b):
     if board:
         lines += ["", "Most open markets so far: " + "; ".join(
             f"{r['market']} ({r['openness']:.2f}, best: '{r['best_query']}' median {r['best_median']:g})" for r in board[:3])]
+    for o in (b.get("season_ahead") or [])[:3]:
+        lines.append(f"Season ahead: {o['keyword']} (next 3 months ran {o['season']['ratio']:.1f}x last year, peak {o['season']['peak_month']})")
+    for e in [e for e in ((b.get("google") or {}).get("register") or []) if e.get("level") == "high"][:3]:
+        lines.append(f"Google watch (high): {', '.join(e.get('niches', []))}: {e.get('what')}")
+    for fl in list(((b.get("google") or {}).get("flags") or {}).values())[:3]:
+        lines.append(f"Google watch (new, {fl.get('level')}): {fl.get('summary')}")
     f = b.get("focus")
     if f and f["leaderboard"]:
         lines += ["", f"{f['label']}, most open markets: " + "; ".join(

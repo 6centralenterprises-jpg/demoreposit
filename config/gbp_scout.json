@@ -237,7 +237,8 @@
             "basement flooding cleanup",
             "sewage cleanup near me",
             "water extraction near me"
-          ]
+          ],
+          "verify": "own-licensed"
         },
         "mold remediation": {
           "portfolio": "Water-restoration project",
@@ -248,7 +249,8 @@
             "mold removal near me",
             "mold inspection near me",
             "black mold removal"
-          ]
+          ],
+          "verify": "partner"
         },
         "crawl space encapsulation": {
           "portfolio": "Water-restoration project",
@@ -258,7 +260,8 @@
             "crawl space encapsulation near me",
             "crawl space repair near me",
             "basement waterproofing near me"
-          ]
+          ],
+          "verify": "own"
         },
         "plumbing": {
           "portfolio": "Plumbing project",
@@ -274,7 +277,8 @@
             "frozen pipe repair near me",
             "burst pipe repair near me",
             "leak detection near me"
-          ]
+          ],
+          "verify": "partner"
         },
         "sewer camera inspection": {
           "portfolio": "Plumbing project",
@@ -284,7 +288,8 @@
             "sewer camera inspection near me",
             "sewer line inspection near me",
             "hydro jetting near me"
-          ]
+          ],
+          "verify": "own"
         }
       }
     },
@@ -306,7 +311,8 @@
             "flat tire repair near me",
             "24 hour mobile tire service",
             "mobile tire change near me"
-          ]
+          ],
+          "verify": "own"
         },
         "roadside assistance": {
           "portfolio": "TJ's Nationwide Roadside",
@@ -318,7 +324,8 @@
             "car lockout service near me",
             "fuel delivery service near me",
             "mobile battery replacement near me"
-          ]
+          ],
+          "verify": "own"
         },
         "mobile mechanic": {
           "portfolio": "Mobile mechanic project",
@@ -330,7 +337,8 @@
             "mobile oil change near me",
             "mobile car diagnostic near me",
             "mobile auto electrician near me"
-          ]
+          ],
+          "verify": "own"
         },
         "car detailing": {
           "portfolio": "Car-detailing project",
@@ -342,7 +350,8 @@
             "ceramic coating near me",
             "headlight restoration near me",
             "paint correction near me"
-          ]
+          ],
+          "verify": "own"
         },
         "mobile windshield": {
           "portfolio": "TJ's Nationwide Roadside",
@@ -351,7 +360,8 @@
           "keywords": [
             "mobile windshield replacement near me",
             "windshield chip repair near me"
-          ]
+          ],
+          "verify": "own"
         },
         "ev charging help": {
           "portfolio": "TJ's Nationwide Roadside",
@@ -360,7 +370,8 @@
           "keywords": [
             "mobile ev charging service",
             "ev roadside assistance"
-          ]
+          ],
+          "verify": "own"
         },
         "mobile marine": {
           "portfolio": "Home-services project",
@@ -370,7 +381,8 @@
             "boat winterization near me",
             "boat shrink wrap near me",
             "mobile boat detailing near me"
-          ]
+          ],
+          "verify": "own"
         }
       }
     },
@@ -391,7 +403,8 @@
             "stump grinding near me",
             "tree trimming near me",
             "storm damage tree removal"
-          ]
+          ],
+          "verify": "own"
         },
         "gutter cleaning": {
           "portfolio": "Home-services project",
@@ -401,7 +414,8 @@
             "gutter cleaning near me",
             "gutter guard installation",
             "gutter repair near me"
-          ]
+          ],
+          "verify": "own"
         },
         "pressure washing": {
           "portfolio": "Home-services project",
@@ -412,7 +426,8 @@
             "soft washing near me",
             "roof cleaning near me",
             "deck staining near me"
-          ]
+          ],
+          "verify": "own"
         },
         "holiday lighting": {
           "portfolio": "Home-services project",
@@ -423,7 +438,8 @@
             "holiday light installation",
             "permanent christmas lights",
             "christmas light removal"
-          ]
+          ],
+          "verify": "own"
         },
         "snow removal": {
           "portfolio": "Home-services project",
@@ -433,7 +449,8 @@
             "snow removal near me",
             "snow plowing near me",
             "residential snow removal"
-          ]
+          ],
+          "verify": "own"
         },
         "lawn and leaves": {
           "portfolio": "Home-services project",
@@ -444,7 +461,8 @@
             "fall cleanup near me",
             "lawn aeration near me",
             "lawn care near me"
-          ]
+          ],
+          "verify": "own"
         },
         "pest and mosquito": {
           "portfolio": "Home-services project",
@@ -454,7 +472,8 @@
             "mosquito control near me",
             "rodent control near me",
             "pest control near me"
-          ]
+          ],
+          "verify": "own-licensed"
         },
         "decks and patios": {
           "portfolio": "Home-services project",
@@ -469,7 +488,8 @@
             "patio cover installation",
             "porch builders near me",
             "composite deck builders near me"
-          ]
+          ],
+          "verify": "partner"
         },
         "fences": {
           "portfolio": "Home-services project",
@@ -480,7 +500,8 @@
             "fence company near me",
             "fence repair near me",
             "vinyl fence installation"
-          ]
+          ],
+          "verify": "own-licensed"
         }
       }
     },
@@ -502,7 +523,8 @@
             "heat pump installation near me",
             "mini split installation near me",
             "boiler repair near me"
-          ]
+          ],
+          "verify": "partner"
         },
         "duct and vent": {
           "portfolio": "HVAC project",
@@ -513,7 +535,8 @@
             "dryer vent cleaning near me",
             "chimney sweep near me",
             "chimney inspection near me"
-          ]
+          ],
+          "verify": "own"
         },
         "home energy": {
           "portfolio": "HVAC project",
@@ -524,7 +547,8 @@
             "whole house generator installation",
             "attic insulation near me",
             "solar panel cleaning near me"
-          ]
+          ],
+          "verify": "partner"
         },
         "sunrooms": {
           "portfolio": "Sunroom project",
@@ -534,7 +558,8 @@
             "sunroom installation near me",
             "sunroom contractors near me",
             "screened porch builders near me"
-          ]
+          ],
+          "verify": "partner"
         },
         "radon": {
           "portfolio": "Home-services project",
@@ -543,7 +568,8 @@
           "keywords": [
             "radon testing near me",
             "radon mitigation near me"
-          ]
+          ],
+          "verify": "own-licensed"
         },
         "general contracting": {
           "portfolio": "Home-services project",
@@ -558,7 +584,8 @@
             "basement finishing near me",
             "home addition contractors near me",
             "handyman near me"
-          ]
+          ],
+          "verify": "partner"
         },
         "backup power": {
           "portfolio": "Home-services project",
@@ -568,7 +595,8 @@
             "generator installation near me",
             "whole house generator installation",
             "generator repair near me"
-          ]
+          ],
+          "verify": "partner"
         }
       }
     },
@@ -588,7 +616,8 @@
             "mobile cat grooming near me",
             "in home dog grooming",
             "dog nail trimming near me"
-          ]
+          ],
+          "verify": "own"
         },
         "pet waste": {
           "portfolio": "Home-services project",
@@ -597,7 +626,8 @@
           "keywords": [
             "pet waste removal near me",
             "dog poop pickup service"
-          ]
+          ],
+          "verify": "own"
         },
         "cleaning": {
           "portfolio": "Home-services project",
@@ -610,7 +640,8 @@
             "carpet cleaning near me",
             "window cleaning near me",
             "upholstery cleaning near me"
-          ]
+          ],
+          "verify": "own"
         },
         "junk removal": {
           "portfolio": "Home-services project",
@@ -622,7 +653,8 @@
             "appliance removal near me",
             "estate cleanout near me",
             "hot tub removal near me"
-          ]
+          ],
+          "verify": "own"
         },
         "repair and install": {
           "portfolio": "Home-services project",
@@ -635,7 +667,8 @@
             "furniture assembly near me",
             "smart home installation near me",
             "grab bar installation near me"
-          ]
+          ],
+          "verify": "own"
         },
         "garage doors": {
           "portfolio": "Home-services project",
@@ -647,21 +680,32 @@
             "garage door spring repair near me",
             "garage door opener repair near me",
             "garage door replacement"
-          ]
+          ],
+          "verify": "partner"
         },
-        "mobile beauty and fitness": {
+        "mobile fitness": {
           "portfolio": "Home-services project",
           "home_based_fit": 9,
-          "licensed": true,
+          "licensed": false,
           "keywords": [
             "personal trainer near me",
             "in home personal trainer near me",
+            "mobile personal trainer near me"
+          ],
+          "verify": "own"
+        },
+        "mobile beauty": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 8,
+          "licensed": true,
+          "keywords": [
             "mobile hair stylist near me",
             "mobile barber near me",
             "mobile spray tan near me",
             "loctician near me",
             "makeup artist near me"
-          ]
+          ],
+          "verify": "own-licensed"
         }
       }
     },
@@ -682,7 +726,8 @@
             "aging in place remodeling",
             "wheelchair ramp installation near me",
             "stair lift installation near me"
-          ]
+          ],
+          "verify": "own"
         },
         "home tech": {
           "portfolio": "Home-services project",
@@ -693,7 +738,8 @@
             "security camera installation near me",
             "starlink installation near me",
             "smart thermostat installation"
-          ]
+          ],
+          "verify": "own"
         },
         "water quality": {
           "portfolio": "Plumbing project",
@@ -703,7 +749,8 @@
             "water softener installation near me",
             "water testing near me",
             "whole house water filter installation"
-          ]
+          ],
+          "verify": "own"
         },
         "outdoor living": {
           "portfolio": "Home-services project",
@@ -714,7 +761,8 @@
             "paver sealing near me",
             "hot tub repair near me",
             "pool opening service near me"
-          ]
+          ],
+          "verify": "own"
         },
         "high-ticket add-ons": {
           "portfolio": "Home-services project",
@@ -729,7 +777,8 @@
             "carports near me",
             "metal buildings near me",
             "gazebo builders near me"
-          ]
+          ],
+          "verify": "partner"
         },
         "garage upgrades": {
           "portfolio": "Home-services project",
@@ -739,7 +788,8 @@
             "epoxy garage floor near me",
             "garage floor coating near me",
             "garage storage installation near me"
-          ]
+          ],
+          "verify": "own"
         },
         "event rentals": {
           "portfolio": "Home-services project",
@@ -750,7 +800,8 @@
             "bounce house rental near me",
             "mobile bartending service",
             "private chef near me"
-          ]
+          ],
+          "verify": "own"
         },
         "mobile professional services": {
           "portfolio": "Home-services project",
@@ -759,7 +810,8 @@
           "keywords": [
             "mobile notary near me",
             "translation services near me"
-          ]
+          ],
+          "verify": "own-licensed"
         },
         "answering and dispatch": {
           "portfolio": "6 Central shared services",
@@ -770,7 +822,8 @@
             "after hours answering service",
             "virtual receptionist service",
             "call center services"
-          ]
+          ],
+          "verify": "office"
         },
         "learning": {
           "portfolio": "Home-services project",
@@ -778,7 +831,8 @@
           "licensed": false,
           "keywords": [
             "homeschool programs near me"
-          ]
+          ],
+          "verify": "office"
         }
       }
     },
@@ -1127,5 +1181,17 @@
         "source": "https://permitmint.com/permits/texas/dallas/deck/"
       }
     }
+  },
+  "google_risk_register": "research/google/risk_register.json",
+  "google_watch": {
+    "why": "Watch what Google is flagging so we avoid or prepare before a suspension wave hits a niche.",
+    "flag_days": 60,
+    "searches": [
+      "Google Business Profile suspensions this week",
+      "Google Business Profile verification change",
+      "site:seroundtable.com Google Business Profile",
+      "Google local search update",
+      "Local Services Ads change"
+    ]
   }
 }

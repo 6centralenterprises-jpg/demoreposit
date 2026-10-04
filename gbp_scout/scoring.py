@@ -132,8 +132,12 @@ def pack_weakness(serp, own_markers=(), own_names=()):
     rows = []
     for item in pack:
         rating = item.get("rating") or {}
-        votes = rating.get("votes_count") or item.get("reviews") or 0
-        reviews.append(votes)
+        votes = rating.get("votes_count")
+        if votes is None:
+            votes = item.get("reviews")
+        # A blank rating is unknown, not zero: the data feed sometimes omits ratings for listings that have reviews.
+        if votes is not None:
+            reviews.append(votes)
         title = item.get("title") or item.get("name") or ""
         rows.append({
             "name": title,
@@ -144,6 +148,9 @@ def pack_weakness(serp, own_markers=(), own_names=()):
             "possibly_ours": (title.strip().lower() not in {n.lower() for n in own_names}
                               and any(re.search(rf"\b{re.escape(m)}\b", title) for m in own_markers)),
         })
+    if not reviews:
+        return {"weakness": None, "median_reviews": None, "pack": rows, "directories": 0,
+                "reason": "Review counts weren't returned for this pack; check it by hand before trusting it."}
     mid = median(reviews)
     if mid < 20:
         weakness = 1.0
@@ -163,10 +170,78 @@ def pack_weakness(serp, own_markers=(), own_names=()):
             "reason": f"Map-pack median {mid:g} reviews; {directories} directory/forum results in the top 10."}
 
 
+# ------------------------------------------------- verification, Google risk, season
+
+# How a real business verifies its Google profile, and how much of it 6 Central owns.
+VERIFY_EASE = {"own": 1.0, "own-licensed": 0.7, "office": 0.4, "partner": 0.25, "no": 0.0}
+VERIFY_GRADE = {"own": "A", "own-licensed": "B", "office": "C", "partner": "D", "no": "F"}
+VERIFY_TEXT = {"own": "We verify and own it", "own-licensed": "We own it; licensed staff do the work",
+               "office": "Needs a real staffed office", "partner": "Partner's profile; we own the site",
+               "no": "Can't be verified"}
+RISK_PENALTY = {"high": 15.0, "medium": 7.0, "low": 2.0}
+RISK_RANK = {"high": 3, "medium": 2, "low": 1}
+MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+
+def google_risk(niche_name, niche, register=(), flags=None):
+    """The strongest Google risk that applies to a niche, from the dated register and the daily watch.
+
+    A register entry applies when it names the niche, or when one of its telltale search terms appears
+    in one of the niche's keywords. Returns None when nothing applies.
+    """
+    name = niche_name.lower()
+    keywords = [k.lower() for k in niche.get("keywords", [])]
+    hits = []
+    for entry in list(register) + list((flags or {}).values()):
+        names = [n.lower() for n in entry.get("niches", [])]
+        terms = [t.lower() for t in entry.get("keywords", [])]
+        if name in names or any(t and any(t in k for k in keywords) for t in terms):
+            hits.append(entry)
+    if not hits:
+        return None
+    top = max(hits, key=lambda e: RISK_RANK.get(e.get("level"), 0))
+    return {"level": top.get("level"), "what": top.get("what") or top.get("summary"), "plan": top.get("plan"),
+            "id": top.get("id"), "since": top.get("since"),
+            "source": (top.get("sources") or [{}])[0].get("url") if top.get("sources") else top.get("source")}
+
+
+def season_ahead(trend, today):
+    """Is the season about to turn up? Uses last year's months from an OpenRush 24-month trend.
+
+    Compares last year's next three months (after today's month) with today's month last year.
+    Returns {"ratio", "peak_month", "peak_volume"} or None when the history doesn't cover it.
+    """
+    points = {(p["year"], p["month"]): p.get("search_volume") or 0 for p in trend or []}
+    year, month = int(today[:4]), int(today[5:7])
+    base = points.get((year - 1, month))
+    ahead = []
+    y, m = year - 1, month
+    for _ in range(3):
+        y, m = (y, m + 1) if m < 12 else (y + 1, 1)
+        if (y, m) not in points:
+            return None
+        ahead.append(((y, m), points[(y, m)]))
+    if not base:
+        return None
+    peak = max(ahead, key=lambda kv: kv[1])
+    return {"ratio": round(sum(v for _, v in ahead) / 3 / base, 2), "peak_month": MONTHS[peak[0][1] - 1],
+            "peak_volume": peak[1]}
+
+
+def big_fish(volume, weakness, verify):
+    """A small, open pond we can own: modest demand, a weak map pack, and a profile we can verify ourselves."""
+    return bool(volume and volume <= 15000 and weakness is not None and weakness >= 0.75
+                and verify in ("own", "own-licensed"))
+
+
 # --------------------------------------------------------------- final scoring
 
-def opportunity(kw, niche, deep=None, serp=None):
-    """0–100 opportunity score with its parts, so every point can be traced."""
+def opportunity(kw, niche, deep=None, serp=None, risk=None, season=None):
+    """0–100 opportunity score with its parts, so every point can be traced.
+
+    Demand 20, job value 15, momentum or season ahead 15, map-pack openness 25, ease of verification 15,
+    home-based fit 10, minus a Google-risk penalty (high 15, medium 7, low 2).
+    """
     volume = (deep or {}).get("volume") or kw["volume"]
     cpc = (deep or {}).get("cpc") if (deep or {}).get("cpc") is not None else kw["cpc"]
     change = (deep or {}).get("yoy")
@@ -174,36 +249,51 @@ def opportunity(kw, niche, deep=None, serp=None):
     if change is None and kw.get("momentum") is not None:
         change = kw["momentum"] - 1
         trend_source = "semrush 3-vs-9 month (seasonal)"
+    trend_part = clamp(((change or 0) + 0.1) / 0.6)
+    season_part = clamp(((season or {}).get("ratio", 1.0) - 1.0) / 0.6)
     parts = {
-        "demand": round(25 * clamp((math.log10(max(volume, 1)) - 2) / 3), 1),
-        "job_value": round(20 * math.sqrt(clamp(cpc / 40)), 1),
-        "momentum": round(20 * clamp(((change or 0) + 0.1) / 0.6), 1),
+        "demand": round(20 * clamp((math.log10(max(volume, 1)) - 2) / 3), 1),
+        "job_value": round(15 * math.sqrt(clamp(cpc / 40)), 1),
+        "momentum": round(15 * max(trend_part, season_part), 1),
         "competition": round(25 * (serp["weakness"] if serp and serp.get("weakness") is not None else 0.5), 1),
+        "verify": round(15 * VERIFY_EASE.get(niche.get("verify", "partner"), 0.25), 1),
         "home_fit": float(niche["home_based_fit"]),
+        "google_risk": -RISK_PENALTY.get((risk or {}).get("level"), 0.0),
     }
-    return round(sum(parts.values()), 1), parts, change, trend_source
+    return round(max(0.0, sum(parts.values())), 1), parts, change, trend_source
 
 
-PLAY_ORDER = {"Own it": 0, "Partner & manage": 1, "Validate": 2, "Watch": 3}
+PLAY_ORDER = {"Own it": 0, "Partner & manage": 1, "Validate": 2, "Watch": 3, "Avoid": 4}
 
 
-def play_for(score, niche, weakness, change):
+def play_for(score, niche, weakness, change, risk=None, season=None):
     """Which legitimate GBP play fits. Never a profile for a business that doesn't exist."""
-    if change is not None and change <= -0.15:
+    if risk and risk.get("level") == "high":
+        plan = f" Plan: {risk['plan']}" if risk.get("plan") else ""
+        return "Avoid", f"Google is flagging this niche now: {risk.get('what')}{plan}"
+    rising_season = season and season.get("ratio", 0) >= 1.3
+    if change is not None and change <= -0.15 and not rising_season:
         return "Watch", "Demand is cooling. Don't build here yet."
     if weakness is not None and weakness <= 0.25:
         return "Watch", "Map pack is locked up: the top businesses have hundreds of reviews."
     licensed = niche.get("licensed")
-    if score >= 60 and niche["home_based_fit"] >= 8 and not licensed:
+    caution = f" Google watch: {risk['what']}" if risk and risk.get("level") == "medium" else ""
+    open_pack = weakness is not None and weakness >= 0.6
+    if score >= 60 and open_pack and niche["home_based_fit"] >= 8 and not licensed and niche.get("verify", "own") == "own":
+        timing = (f" Season turns up next: last year the next 3 months ran {season['ratio']:.1f}x this month "
+                  f"(peak {season['peak_month']}). Launch now to have reviews before the peak.") if rising_season else ""
         return ("Own it", f"Launch or extend a real service under {niche['portfolio']}: a service-area "
-                          "profile from a real home base, run by people who do the work.")
+                          "profile from a real home base, run by people who do the work." + timing + caution)
     if weakness is not None and weakness >= 0.75:
         note = " Partner must hold the required license." if licensed else ""
         return ("Partner & manage", "Weak map pack. Find real local operators with thin profiles (run "
                                     "qualify-partners) and set up or manage their profile. They stay the "
-                                    "owner." + note)
+                                    "owner." + note + caution)
+    if score >= 55 and weakness is None:
+        return "Validate", "Strong numbers. Check the map pack in your market before committing." + caution
     if score >= 55:
-        return "Validate", "Strong numbers. Check the map pack in your market before committing."
+        return ("Watch", "Good numbers, but the map pack here is contested. Look for a smaller pond: a suburb "
+                         "where the top 3 have under 50 reviews, or a narrower version of the service." + caution)
     return "Watch", "Keep on the watchlist."
 
 
