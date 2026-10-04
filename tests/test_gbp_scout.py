@@ -237,3 +237,12 @@ def test_google_risk_season_and_plays():
                                              {"weakness": 1.0}, None, season)
     assert parts["verify"] == 15 and parts["momentum"] == 15 and parts["google_risk"] == 0
     assert scoring.big_fish(1000, 1.0, "own") and not scoring.big_fish(1000, 1.0, "partner")
+
+
+def test_general_rules_never_penalize_and_risk_is_per_keyword():
+    register = [{"id": "ai", "scope": "general", "niches": ["all niches"], "keywords": ["near me"], "level": "medium", "what": "x"},
+                {"id": "lock", "scope": "niche", "niches": ["locksmith"], "keywords": ["car lockout service"], "level": "high",
+                 "what": "Advanced verification.", "plan": "Avoid."}]
+    assert scoring.google_risk("cleaning", {"keywords": ["house cleaning near me"]}, register) is None
+    assert scoring.google_risk("roadside assistance", {"keywords": ["roadside assistance near me"]}, register) is None
+    assert scoring.google_risk("roadside assistance", {"keywords": ["car lockout service near me"]}, register)["level"] == "high"

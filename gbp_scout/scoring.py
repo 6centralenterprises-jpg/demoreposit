@@ -179,6 +179,8 @@ VERIFY_TEXT = {"own": "We verify and own it", "own-licensed": "We own it; licens
                "office": "Needs a real staffed office", "partner": "Partner's profile; we own the site",
                "no": "Can't be verified"}
 RISK_PENALTY = {"high": 15.0, "medium": 7.0, "low": 2.0}
+GENERIC_NICHES = {"all niches", "home services", "all lsa categories", "mobile services"}
+GENERIC_TERMS = {"near me", "reviews", "local services ads", "google verified", "review request"}
 RISK_RANK = {"high": 3, "medium": 2, "low": 1}
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -193,8 +195,10 @@ def google_risk(niche_name, niche, register=(), flags=None):
     keywords = [k.lower() for k in niche.get("keywords", [])]
     hits = []
     for entry in list(register) + list((flags or {}).values()):
-        names = [n.lower() for n in entry.get("niches", [])]
-        terms = [t.lower() for t in entry.get("keywords", [])]
+        if entry.get("scope") == "general":  # rules for every profile, not a reason to avoid a niche
+            continue
+        names = [n.lower() for n in entry.get("niches", []) if n.lower() not in GENERIC_NICHES]
+        terms = [t.lower() for t in entry.get("keywords", []) if t.lower() not in GENERIC_TERMS]
         if name in names or any(t and any(t in k for k in keywords) for t in terms):
             hits.append(entry)
     if not hits:

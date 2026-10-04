@@ -323,7 +323,7 @@ def build(day, cfg):
             checks = serps.get(scoring.slug(scoring.local_query(kw)), [])
             weak_values = [c["weakness"] for c in checks if c.get("weakness") is not None]
             serp_summary = {"weakness": max(weak_values)} if weak_values else None
-            risk = scoring.google_risk(row["niche"], niche, register, flags)
+            risk = scoring.google_risk(row["niche"], {"keywords": [kw]}, register, flags)  # per keyword, not per niche
             season = scoring.season_ahead(raw.get("trend"), day) if raw else None
             score, parts, change, trend_source = scoring.opportunity(row, niche, deep, serp_summary, risk, season)
             weakness = serp_summary and serp_summary["weakness"]
