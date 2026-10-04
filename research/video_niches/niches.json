@@ -1,0 +1,505 @@
+[
+ {
+  "niche": "passenger van rental",
+  "source": "screen",
+  "kw_national": "passenger van rental near me",
+  "kw_chicago": "passenger van rental chicago",
+  "map_query": "passenger van rental",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Dallas,Texas,United States"
+  ]
+ },
+ {
+  "niche": "escape room",
+  "source": "screen",
+  "kw_national": "escape room near me",
+  "kw_chicago": "escape room chicago",
+  "map_query": "escape room",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Dallas,Texas,United States"
+  ]
+ },
+ {
+  "niche": "haunted houses",
+  "source": "screen",
+  "kw_national": "haunted houses near me",
+  "kw_chicago": "haunted houses chicago",
+  "map_query": "haunted house",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Dallas,Texas,United States"
+  ]
+ },
+ {
+  "niche": "auditions",
+  "source": "screen",
+  "kw_national": "auditions near me",
+  "kw_chicago": "auditions chicago",
+  "map_query": "auditions",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Los Angeles,California,United States"
+  ]
+ },
+ {
+  "niche": "golf courses",
+  "source": "screen",
+  "kw_national": "golf courses near me",
+  "kw_chicago": "golf courses chicago",
+  "map_query": "golf course",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Phoenix,Arizona,United States"
+  ]
+ },
+ {
+  "niche": "private equity firms",
+  "source": "screen",
+  "kw_national": "private equity firms",
+  "kw_chicago": "private equity firms chicago",
+  "map_query": "private equity firm",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "New York,New York,United States"
+  ]
+ },
+ {
+  "niche": "credit union",
+  "source": "screen",
+  "kw_national": "credit union near me",
+  "kw_chicago": "credit union chicago",
+  "map_query": "credit union",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Dallas,Texas,United States"
+  ]
+ },
+ {
+  "niche": "homeschool program",
+  "source": "screen",
+  "kw_national": "homeschool programs near me",
+  "kw_chicago": "homeschool programs chicago",
+  "map_query": "homeschool program",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Dallas,Texas,United States"
+  ]
+ },
+ {
+  "niche": "passport",
+  "source": "screen",
+  "kw_national": "passport office near me",
+  "kw_chicago": "passport office chicago",
+  "map_query": "passport office",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Dallas,Texas,United States"
+  ]
+ },
+ {
+  "niche": "grocery delivery",
+  "source": "screen",
+  "kw_national": "grocery delivery near me",
+  "kw_chicago": "grocery delivery chicago",
+  "map_query": "grocery delivery",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Dallas,Texas,United States"
+  ]
+ },
+ {
+  "niche": "airports",
+  "source": "screen",
+  "kw_national": "airport near me",
+  "kw_chicago": "airports chicago",
+  "map_query": "airport",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Dallas,Texas,United States"
+  ]
+ },
+ {
+  "niche": "makeup artist",
+  "source": "screen",
+  "kw_national": "makeup artist near me",
+  "kw_chicago": "makeup artist chicago",
+  "map_query": "makeup artist",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Atlanta,Georgia,United States"
+  ]
+ },
+ {
+  "niche": "celebrity hair stylist",
+  "source": "screen",
+  "kw_national": "celebrity hair stylist",
+  "kw_chicago": "celebrity hair stylist chicago",
+  "map_query": "celebrity hair stylist",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Los Angeles,California,United States"
+  ]
+ },
+ {
+  "niche": "celebrity makeup artist",
+  "source": "screen",
+  "kw_national": "celebrity makeup artist",
+  "kw_chicago": "celebrity makeup artist chicago",
+  "map_query": "celebrity makeup artist",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Los Angeles,California,United States"
+  ]
+ },
+ {
+  "niche": "celebrity nanny agency",
+  "source": "screen",
+  "kw_national": "celebrity nanny agency",
+  "kw_chicago": "nanny agency chicago",
+  "map_query": "celebrity nanny agency",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Los Angeles,California,United States"
+  ]
+ },
+ {
+  "niche": "celebrity nutritionist",
+  "source": "screen",
+  "kw_national": "celebrity nutritionist",
+  "kw_chicago": "nutritionist chicago",
+  "map_query": "celebrity nutritionist",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Los Angeles,California,United States"
+  ]
+ },
+ {
+  "niche": "celebrity personal trainer",
+  "source": "screen",
+  "kw_national": "celebrity personal trainer",
+  "kw_chicago": "personal trainer chicago",
+  "map_query": "celebrity personal trainer",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Atlanta,Georgia,United States"
+  ]
+ },
+ {
+  "niche": "celebrity PR",
+  "source": "screen",
+  "kw_national": "celebrity pr firm",
+  "kw_chicago": "pr firm chicago",
+  "map_query": "celebrity pr firm",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Los Angeles,California,United States"
+  ]
+ },
+ {
+  "niche": "celebrity publicist",
+  "source": "screen",
+  "kw_national": "celebrity publicist",
+  "kw_chicago": "publicist chicago",
+  "map_query": "celebrity publicist",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Los Angeles,California,United States"
+  ]
+ },
+ {
+  "niche": "celebrity realtors",
+  "source": "screen",
+  "kw_national": "celebrity realtor",
+  "kw_chicago": "luxury realtor chicago",
+  "map_query": "celebrity realtor",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Los Angeles,California,United States"
+  ]
+ },
+ {
+  "niche": "celebrity tours",
+  "source": "screen",
+  "kw_national": "celebrity tours",
+  "kw_chicago": "celebrity tours chicago",
+  "map_query": "celebrity tours",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Los Angeles,California,United States"
+  ]
+ },
+ {
+  "niche": "comedians",
+  "source": "screen",
+  "kw_national": "comedian for hire",
+  "kw_chicago": "comedians for hire chicago",
+  "map_query": "comedian for hire",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Atlanta,Georgia,United States"
+  ]
+ },
+ {
+  "niche": "illustrator",
+  "source": "screen",
+  "kw_national": "illustrator near me",
+  "kw_chicago": "illustrator chicago",
+  "map_query": "illustrator",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "New York,New York,United States"
+  ]
+ },
+ {
+  "niche": "music marketing company",
+  "source": "screen",
+  "kw_national": "music marketing company",
+  "kw_chicago": "music marketing company chicago",
+  "map_query": "music marketing company",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Atlanta,Georgia,United States"
+  ]
+ },
+ {
+  "niche": "mobile DJ",
+  "source": "screen",
+  "kw_national": "mobile dj near me",
+  "kw_chicago": "dj chicago",
+  "map_query": "mobile dj",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Atlanta,Georgia,United States"
+  ]
+ },
+ {
+  "niche": "translation services",
+  "source": "screen",
+  "kw_national": "translation services near me",
+  "kw_chicago": "translation services chicago",
+  "map_query": "translation services",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Miami,Florida,United States"
+  ]
+ },
+ {
+  "niche": "celebrity impersonators",
+  "source": "screen",
+  "kw_national": "celebrity impersonators for hire",
+  "kw_chicago": "celebrity impersonators chicago",
+  "map_query": "celebrity impersonator",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Los Angeles,California,United States"
+  ]
+ },
+ {
+  "niche": "flyboarding",
+  "source": "screen",
+  "kw_national": "flyboarding near me",
+  "kw_chicago": "flyboarding chicago",
+  "map_query": "flyboarding",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Miami,Florida,United States"
+  ]
+ },
+ {
+  "niche": "parasailing",
+  "source": "screen",
+  "kw_national": "parasailing near me",
+  "kw_chicago": "parasailing chicago",
+  "map_query": "parasailing",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Miami,Florida,United States"
+  ]
+ },
+ {
+  "niche": "adult entertainment",
+  "source": "screen",
+  "kw_national": "adult entertainment near me",
+  "kw_chicago": "adult entertainment chicago",
+  "map_query": null,
+  "markets": []
+ },
+ {
+  "niche": "screenwriting",
+  "source": "screen",
+  "kw_national": "screenwriting classes near me",
+  "kw_chicago": "screenwriting classes chicago",
+  "map_query": "screenwriting classes",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Los Angeles,California,United States"
+  ]
+ },
+ {
+  "niche": "kitesurfing lessons",
+  "source": "screen",
+  "kw_national": "kitesurfing lessons near me",
+  "kw_chicago": "kitesurfing lessons chicago",
+  "map_query": "kitesurfing lessons",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Miami,Florida,United States"
+  ]
+ },
+ {
+  "niche": "call centers",
+  "source": "screen",
+  "kw_national": "call center services",
+  "kw_chicago": "call center chicago",
+  "map_query": "call center",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Dallas,Texas,United States"
+  ]
+ },
+ {
+  "niche": "barber school",
+  "source": "screen",
+  "kw_national": "barber school near me",
+  "kw_chicago": "barber school chicago",
+  "map_query": "barber school",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Atlanta,Georgia,United States"
+  ]
+ },
+ {
+  "niche": "cosmetology beauty school",
+  "source": "screen",
+  "kw_national": "cosmetology school near me",
+  "kw_chicago": "cosmetology school chicago",
+  "map_query": "cosmetology school",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Atlanta,Georgia,United States"
+  ]
+ },
+ {
+  "niche": "carports",
+  "source": "screen",
+  "kw_national": "carports near me",
+  "kw_chicago": "carports chicago",
+  "map_query": "carports",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Dallas,Texas,United States"
+  ]
+ },
+ {
+  "niche": "room additions",
+  "source": "screen",
+  "kw_national": "room additions near me",
+  "kw_chicago": "room additions chicago",
+  "map_query": "room additions",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Dallas,Texas,United States"
+  ]
+ },
+ {
+  "niche": "pool deck resurfacing",
+  "source": "screen",
+  "kw_national": "pool deck resurfacing near me",
+  "kw_chicago": "pool deck resurfacing chicago",
+  "map_query": "pool deck resurfacing",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Phoenix,Arizona,United States"
+  ]
+ },
+ {
+  "niche": "patio covers",
+  "source": "screen",
+  "kw_national": "patio covers near me",
+  "kw_chicago": "patio covers chicago",
+  "map_query": "patio covers",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Phoenix,Arizona,United States"
+  ]
+ },
+ {
+  "niche": "art consultant",
+  "source": "screen",
+  "kw_national": "art consultant",
+  "kw_chicago": "art consultant chicago",
+  "map_query": "art consultant",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "New York,New York,United States"
+  ]
+ },
+ {
+  "niche": "music consultant",
+  "source": "screen",
+  "kw_national": "music consultant",
+  "kw_chicago": "music consultant chicago",
+  "map_query": "music consultant",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Atlanta,Georgia,United States"
+  ]
+ },
+ {
+  "niche": "loctician",
+  "source": "screen",
+  "kw_national": "loctician near me",
+  "kw_chicago": "loctician chicago",
+  "map_query": "loctician",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Atlanta,Georgia,United States"
+  ]
+ },
+ {
+  "niche": "yacht rental",
+  "source": "spoken",
+  "kw_national": "yacht rental near me",
+  "kw_chicago": "yacht rental chicago",
+  "map_query": "yacht rental",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Miami,Florida,United States"
+  ]
+ },
+ {
+  "niche": "movie theater",
+  "source": "spoken",
+  "kw_national": "movie theater near me",
+  "kw_chicago": "movie theater chicago",
+  "map_query": "movie theater",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Dallas,Texas,United States"
+  ]
+ },
+ {
+  "niche": "bodyguard services",
+  "source": "spoken",
+  "kw_national": "bodyguard services",
+  "kw_chicago": "bodyguard services chicago",
+  "map_query": "bodyguard services",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Los Angeles,California,United States"
+  ]
+ },
+ {
+  "niche": "personal trainer",
+  "source": "spoken",
+  "kw_national": "personal trainer near me",
+  "kw_chicago": "personal trainers chicago",
+  "map_query": "personal trainer",
+  "markets": [
+   "Chicago,Illinois,United States",
+   "Atlanta,Georgia,United States"
+  ]
+ }
+]
