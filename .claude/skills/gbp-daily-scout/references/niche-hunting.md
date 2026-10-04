@@ -101,6 +101,55 @@ Also from the Semrush pass:
 - **Too small to target on their own:** mobile DJ (110 a month), comedian for
   hire (140). They're thin even though the video calls them gold.
 
+## Full study (2026-10-04)
+
+**The list the video shows.** The video holds one Notepad screen the whole time, titled "BONUS DROP SERVICING
+NICHES". It's confirmed from frames at 25%, 50% and 75% of the runtime and from the storyboard.
+
+- **On screen (42):** passenger van rental, escape room, haunted houses, auditions, golf courses, private equity
+  firms, credit union, homeschool program, passport, grocery delivery, airports, makeup artist, the 10 "celebrity"
+  variants (hair stylist, make-up artist, nanny agency, nutritionist, personal trainers, PR, publicist, realtors,
+  tours, impersonators), comedians, illustrator, music marketing company, mobile DJ, translation services,
+  flyboarding, parasailing, adult entertainment, screenwriting, kitesurfing lessons, call centers, barber school,
+  cosmetology beauty school, carports, room additions, pool deck resurfacing, patio covers, art consultant, music
+  consultant, loctician.
+- **Said aloud only:** yacht rental, movie theater, bodyguard services, personal trainer.
+
+**How it was researched.**
+- **Semrush:** national and "<niche> chicago" volume, CPC and KD for all 46 niches, plus 45 adjacent ideas.
+- **OpenRush:** 24-month trends for 16 of them, and 112 live map packs (Chicago plus each niche's natural market).
+- **Where it lives:**
+  - **Code (committed):** `research/video_niches/` has the niche list, the assessment, `rank.py` and the report
+    builder.
+  - **Raw data (gitignored):** `runs/video-niches/`.
+
+**What the data says.**
+1. The "celebrity" niches have almost no demand: 110-880 searches/mo nationally and about 20 in Chicago. The
+   video's main high-ticket angle doesn't hold up.
+2. Nine on-screen niches are off-limits because they are institutions, government offices or misleading. Adult
+   entertainment is out on mission grounds.
+3. **The best opportunities:**
+   - **Answering and after-hours dispatch services.** Clicks cost $57-71; "after hours answering service" has
+     KD 11; the Chicago packs have 1, 1 and 15 reviews.
+   - **In-home personal training.** Demand is up about 2x year over year; Chicago median 41.
+   - **Mobile boat shrink wrap and winterization.** KD 7-8; Chicago shrink-wrap pack 63/3/3; in season now.
+   - **Carports in Dallas.** The pack has 11, 1 and 4 reviews, while Chicago's is locked at 322.
+   - **Room additions.** KD 3; Chicago median 30, Dallas median 23.
+   - **Mobile hair stylist and mobile barber in Chicago.** Medians of 7 and 30.
+   - **Homeschool programs in Chicago.** 4, 11 and 5 reviews.
+   - **Apostille services in Chicago.** 3, 2 and 51 reviews.
+4. Many local "near me" searches fell 8-34% year over year in OpenRush. That looks market-wide, so compare niches
+   with each other rather than against last year alone.
+5. Rank-and-rent listings exist in the wild ("carports dallas tx", 1 review). They are the listings Google's
+   suspension waves target, and they are weak competitors.
+
+**Scout changes from this study:**
+- **Saturday:** answering and dispatch, carports, metal buildings and gazebos, homeschool.
+- **Friday:** mobile beauty and fitness.
+- **Tuesday:** mobile marine.
+
+To re-run the ranking, run `python3 research/video_niches/rank.py`.
+
 ## Provenance
 
 - **From the video:** the drop-servicing model, the niche list, the principles

@@ -103,7 +103,7 @@ def build(frame=None):
     template = (HERE / "report_template.html").read_text()
     return (template.replace("{{NOTEPAD}}", notepad).replace("{{FRAME}}", img).replace("{{PICKS}}", "\n".join(cards))
             .replace("{{ROWS}}", "\n".join(table_rows)).replace("{{OFF}}", off_items)
-            .replace("{{N_TOTAL}}", str(len(rows))).replace("{{N_SCREEN}}", str(sum(r['source'] == 'screen' for r in rows)))
+            .replace("{{DATE}}", "October 4, 2026").replace("{{N_TOTAL}}", str(len(rows))).replace("{{N_SCREEN}}", str(sum(r['source'] == 'screen' for r in rows)))
             .replace("{{N_SPOKEN}}", str(sum(r['source'] == 'spoken' for r in rows)))
             .replace("{{N_ADJ}}", str(sum(r['source'] == 'adjacent' for r in rows)))
             .replace("{{N_GO}}", str(counts["Pursue"])).replace("{{N_TEST}}", str(counts["Test"]))

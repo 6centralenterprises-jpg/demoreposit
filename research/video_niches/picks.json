@@ -1,58 +1,65 @@
 {
-  "after hours answering service": {
-    "title": "Answering & after-hours dispatch for contractors",
-    "why": "The video's 'call centers' idea, done properly. Clicks for answering-service searches cost $57-71 (Semrush), and 'after hours answering service' has a ranking difficulty of just 11. In Chicago the map leaders have 1, 1 and 15 reviews ('answering service') and 5, 9 and 1 ('call center'). Each client pays monthly, so one sale is worth years of revenue.",
-    "model": "6 Central Answer & Dispatch: serve TJ's Nationwide Roadside first, then sell after-hours call handling and dispatch to plumbers, HVAC, towing and restoration companies. Win it through the website, ranking in Google's regular search results and ads; add a Google Business Profile only once there is a staffed office that clients can visit.",
-    "license": "TCPA and the Telemarketing Sales Rule if you ever make outbound calls; HIPAA if you answer for medical offices. Google won't list an online-only business.",
-    "next": "Write the offer (hours covered, price per month, per-minute overage), stand up the phone system on TJ's dispatch, and sign 3 pilot contractors from the partner lists."
-  },
-  "personal trainer": {
-    "title": "In-home personal training (Chicago)",
-    "why": "Demand doubled: 'personal trainer near me' is about 201,000 searches/mo now vs about 110,000 a year ago (OpenRush). In Chicago the map pack median is 41 reviews, and the in-home trainers who show up have no reviews at all.",
-    "model": "An in-home and mobile training brand with certified trainers on staff or contract, sold as monthly packages. Recurring revenue, no license needed, and it runs from home.",
-    "license": "Trainer certification (NASM, ACE or similar) and liability insurance.",
-    "next": "Recruit 2-3 certified trainers, set package pricing, and launch a service-area profile from a real base."
-  },
-  "boat shrink wrap": {
-    "title": "Mobile boat winterization & shrink wrap (Chicago, this month)",
-    "why": "Ranking difficulty is 7-8 and the season is now (searches peak October-November). The top Chicago shrink-wrap listings have 63, 3 and 3 reviews.",
-    "model": "One mobile crew and van: winterize and shrink-wrap in the fall, de-winterize in spring, mobile boat detailing in summer (an extension of the car-detailing project).",
-    "license": "Insurance, heat-gun safety, and marina permission to work on site. No Illinois license found for mobile winterization; confirm.",
-    "next": "If a qualified marine tech is available this month, take fall bookings now. Otherwise build the profile and reviews over the winter for the spring de-winterize season."
-  },
-  "carports": {
-    "title": "Carports & metal buildings (Dallas, not Chicago)",
-    "why": "The Dallas map pack is wide open (11, 1 and 4 reviews, and one listing named 'carports dallas tx', a rank-and-rent listing at risk of suspension). Chicago is locked (median 322). Texas has no state GC license.",
-    "model": "Partner & manage with a dealer-installer, or a 6 Central install crew in Texas.",
-    "license": "City permits; Dallas contractor registration.",
-    "next": "Run qualify-partners on Dallas carport installers, and check Houston and San Antonio next."
-  },
-  "room additions": {
-    "title": "Room additions (Chicago & Dallas)",
-    "why": "Ranking difficulty is 3 and clicks cost $10-17.56. The map packs are open in both cities: Chicago median 30, Dallas 23 (16, 23, 43).",
-    "model": "Partner & manage with licensed general contractors. This plugs straight into the decks & general contracting standing watch.",
-    "license": "Chicago GC license and permits; Dallas contractor registration.",
-    "next": "Add room additions to the GC partner search when we run qualify-partners for Chicago contractors."
-  },
-  "mobile hair stylist": {
-    "title": "Mobile hair, barber & spray tan (Chicago)",
-    "why": "The Chicago packs are thin: mobile hair stylist median 7, mobile barber 30, mobile spray tan 34. Clients rebook every few weeks.",
-    "model": "Partner & manage with licensed stylists and barbers who already go mobile, or a mobile-beauty brand with licensed staff.",
-    "license": "Illinois barber or cosmetology license for hair. Confirm the rules for spray tan.",
-    "next": "Shortlist licensed mobile stylists and barbers in Chicago with thin profiles."
-  },
-  "homeschool program": {
-    "title": "Homeschool enrichment programs",
-    "why": "The Chicago map pack is nearly empty (4, 11 and 5 reviews), and OpenRush shows $22.93 clicks. Demand is steady at 2,400-4,400/mo.",
-    "model": "A real enrichment program (classes and co-op days) with qualified instructors, or Partner & manage with local co-ops.",
-    "license": "Background checks; confirm facility and insurance rules.",
-    "next": "Watch list for now. It needs educators, and it's further from the home-services core."
-  },
-  "translation services": {
-    "title": "Translation & certified translation",
-    "why": "Moderate demand (4,400/mo) with $6.99-8.77 clicks. Chicago's map median is 56 and Miami's 67, but demand is down 34% year over year.",
-    "model": "An agency that vets certified translators and signs for the quality. Mostly sold online.",
-    "license": "USCIS certified-translation statement requirements.",
-    "next": "Test with a landing page before building anything."
-  }
+ "after hours answering service": {
+  "title": "Answering & after-hours dispatch for contractors",
+  "why": "The video's 'call centers' idea, done properly. Clicks for answering-service searches cost $57-71 (Semrush), and 'after hours answering service' has a ranking difficulty of just 11. In Chicago the map leaders have 1, 1 and 15 reviews ('answering service') and 5, 9 and 1 ('call center'). Each client pays monthly, so one sale is worth years of revenue.",
+  "model": "6 Central Answer & Dispatch: serve TJ's Nationwide Roadside first, then sell after-hours call handling and dispatch to plumbers, HVAC, towing and restoration companies. Win it through the website, ranking in Google's regular search results and ads; add a Google Business Profile only once there is a staffed office that clients can visit.",
+  "license": "TCPA and the Telemarketing Sales Rule if you ever make outbound calls; HIPAA if you answer for medical offices. Google won't list an online-only business.",
+  "next": "Write the offer (hours covered, price per month, per-minute overage), stand up the phone system on TJ's dispatch, and sign 3 pilot contractors from the partner lists."
+ },
+ "personal trainer": {
+  "title": "In-home personal training (Chicago)",
+  "why": "Demand doubled: 'personal trainer near me' is about 201,000 searches/mo now vs about 110,000 a year ago (OpenRush). In Chicago the map pack median is 41 reviews, and the in-home trainers who show up have no reviews at all.",
+  "model": "An in-home and mobile training brand with certified trainers on staff or contract, sold as monthly packages. Recurring revenue, no license needed, and it runs from home.",
+  "license": "Trainer certification (NASM, ACE or similar) and liability insurance.",
+  "next": "Recruit 2-3 certified trainers, set package pricing, and launch a service-area profile from a real base."
+ },
+ "boat shrink wrap": {
+  "title": "Mobile boat winterization & shrink wrap (Chicago, this month)",
+  "why": "Ranking difficulty is 7-8 and the season is now (searches peak October-November). The top Chicago shrink-wrap listings have 63, 3 and 3 reviews.",
+  "model": "One mobile crew and van: winterize and shrink-wrap in the fall, de-winterize in spring, mobile boat detailing in summer (an extension of the car-detailing project).",
+  "license": "Insurance, heat-gun safety, and marina permission to work on site. No Illinois license found for mobile winterization; confirm.",
+  "next": "If a qualified marine tech is available this month, take fall bookings now. Otherwise build the profile and reviews over the winter for the spring de-winterize season."
+ },
+ "carports": {
+  "title": "Carports & metal buildings (Dallas, not Chicago)",
+  "why": "The Dallas map pack is wide open (11, 1 and 4 reviews, and one listing named 'carports dallas tx', a rank-and-rent listing at risk of suspension). Chicago is locked (median 322). Texas has no state GC license.",
+  "model": "Partner & manage with a dealer-installer, or a 6 Central install crew in Texas.",
+  "license": "City permits; Dallas contractor registration.",
+  "next": "Run qualify-partners on Dallas carport installers, and check Houston and San Antonio next."
+ },
+ "room additions": {
+  "title": "Room additions (Chicago & Dallas)",
+  "why": "Ranking difficulty is 3 and clicks cost $10-17.56. The map packs are open in both cities: Chicago median 30, Dallas 23 (16, 23, 43).",
+  "model": "Partner & manage with licensed general contractors. This plugs straight into the decks & general contracting standing watch.",
+  "license": "Chicago GC license and permits; Dallas contractor registration.",
+  "next": "Add room additions to the GC partner search when we run qualify-partners for Chicago contractors."
+ },
+ "mobile hair stylist": {
+  "title": "Mobile hair, barber & spray tan (Chicago)",
+  "why": "The Chicago packs are thin: mobile hair stylist median 7, mobile barber 30, mobile spray tan 34. Clients rebook every few weeks.",
+  "model": "Partner & manage with licensed stylists and barbers who already go mobile, or a mobile-beauty brand with licensed staff.",
+  "license": "Illinois barber or cosmetology license for hair. Confirm the rules for spray tan.",
+  "next": "Shortlist licensed mobile stylists and barbers in Chicago with thin profiles."
+ },
+ "homeschool program": {
+  "title": "Homeschool enrichment programs",
+  "why": "The Chicago map pack is nearly empty (4, 11 and 5 reviews), and OpenRush shows $22.93 clicks. Demand is steady at 2,400-4,400/mo.",
+  "model": "A real enrichment program (classes and co-op days) with qualified instructors, or Partner & manage with local co-ops.",
+  "license": "Background checks; confirm facility and insurance rules.",
+  "next": "Watch list for now. It needs educators, and it's further from the home-services core."
+ },
+ "apostille services": {
+  "title": "Apostille & document services (Chicago)",
+  "why": "The Chicago map pack is nearly empty (3, 2 and 51 reviews) on 2,400 searches/mo nationally. People need foreign-use documents authenticated and don't know the steps.",
+  "model": "A document-services desk: prepare, notarize (with a commissioned notary) and courier documents to the Illinois Secretary of State for apostilles. It can share staff with the answering service.",
+  "license": "An Illinois notary commission for anyone notarizing. Apostilles themselves are issued by the Secretary of State; the business only prepares and submits. Confirm the agent rules.",
+  "next": "Price a standard apostille package, confirm Secretary of State turnaround times, and test with a landing page plus a profile at a real office."
+ },
+ "tv mounting": {
+  "title": "TV mounting & furniture assembly",
+  "why": "Steady demand (5,400 and 3,600/mo), $4.45-5.20 clicks, and a home-based, low-risk operation. Chicago packs are beatable but not empty (medians 90 for both).",
+  "model": "One install crew under the existing 'repair and install' project. Bundles well with smart-home and home-theater jobs.",
+  "license": "Low-voltage only; no electrical work without a licensed electrician. Liability insurance.",
+  "next": "Add to the repair-and-install offer and collect reviews from the first 20 jobs."
+ }
 }
