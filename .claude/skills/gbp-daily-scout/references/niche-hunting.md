@@ -180,9 +180,9 @@ presenter repeats that it may break Google's terms and that you should consult a
 - The profile is legitimate because the business is real.
 - **Check first** (researched, not in video):
   - Charging owner-operators fees for a brand plus support can make it a franchise under the FTC
-    Franchise Rule: trademark, significant control or assistance, and at least $500 paid in the
-    first 6 months. Illinois also has its own franchise law. Get a franchise attorney before
-    selling any operator package.
+    Franchise Rule: trademark, significant control or assistance, and at least $735 paid in the
+    first 6 months (the FTC threshold since July 2024, per the snow-removal operator plan). Illinois's
+    own franchise law uses $500. Get a franchise attorney before selling any operator package.
   - Hiring through the workforce system can bring WIOA on-the-job-training reimbursements. Illinois
     allows up to 90% of wages for employers with 50 or fewer employees.
 
