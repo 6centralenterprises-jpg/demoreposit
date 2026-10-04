@@ -53,6 +53,25 @@ holding company, not any one of them.
   - in-home personal training, Chicago: profile around 2026-11-16
   - mobile marine services, Chain O'Lakes: launch 2027-03-01, with an optional capped fall pilot
 
+## Google rules we design around (as of 2026-10-04; see `research/google/`)
+
+- **Every profile is the company whose own staff does the work.**
+  - Google bars lead-generation businesses from holding profiles.
+  - Local Services Ads now requires leads to be fulfilled by your own vetted technicians.
+  - DOJ, the FTC and the Illinois AG sued Chicago's Premium Home Service in May 2026 over 15,000+ fake
+    keyword-plus-city profiles.
+- **Avoid for now:** garage doors (spring 2026 suspension wave) and locksmith work, including "car
+  lockout" (advanced verification). Don't add a locksmith category to TJ's.
+- **Plumbing and HVAC:** expect extra scrutiny in Chicago.
+- **Setup and reviews:**
+  - Choose the true business model at verification.
+  - Hide the address for service-area businesses.
+  - Make edits gradually after verifying, because bursts of edits trigger moderation.
+  - Use the real legal name only.
+  - Ask every customer for reviews the same neutral way: no incentives, quotas or staff names.
+- **AI Overview local packs are cutting calls and clicks** (Q2 2026: calls -11.9% YoY, per Search
+  Engine Land). Diversify with owned websites, phone numbers and direct customer relationships.
+
 ## Repo rules
 
 - The repo is **public**. Lead files, raw research and run data go in `runs/` or `uploads/`, which are
