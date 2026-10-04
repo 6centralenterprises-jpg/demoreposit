@@ -289,7 +289,7 @@
       }
     },
     "auto-at-home": {
-      "label": "Mobile auto (comes to you)",
+      "label": "Mobile auto & marine (comes to you)",
       "discovery_seeds": [
         "mobile tire service",
         "mobile mechanic"
@@ -360,6 +360,16 @@
           "keywords": [
             "mobile ev charging service",
             "ev roadside assistance"
+          ]
+        },
+        "mobile marine": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "boat winterization near me",
+            "boat shrink wrap near me",
+            "mobile boat detailing near me"
           ]
         }
       }
@@ -563,7 +573,7 @@
       }
     },
     "home-care-and-pets": {
-      "label": "Home care & pets",
+      "label": "Home care, pets & personal services",
       "discovery_seeds": [
         "mobile dog grooming",
         "junk removal"
@@ -638,6 +648,20 @@
             "garage door opener repair near me",
             "garage door replacement"
           ]
+        },
+        "mobile beauty and fitness": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 9,
+          "licensed": true,
+          "keywords": [
+            "personal trainer near me",
+            "in home personal trainer near me",
+            "mobile hair stylist near me",
+            "mobile barber near me",
+            "mobile spray tan near me",
+            "loctician near me",
+            "makeup artist near me"
+          ]
         }
       }
     },
@@ -701,7 +725,10 @@
             "outdoor kitchen builders near me",
             "room additions near me",
             "pool deck resurfacing near me",
-            "home theater installation near me"
+            "home theater installation near me",
+            "carports near me",
+            "metal buildings near me",
+            "gazebo builders near me"
           ]
         },
         "garage upgrades": {
@@ -732,6 +759,25 @@
           "keywords": [
             "mobile notary near me",
             "translation services near me"
+          ]
+        },
+        "answering and dispatch": {
+          "portfolio": "6 Central shared services",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "answering service for small business",
+            "after hours answering service",
+            "virtual receptionist service",
+            "call center services"
+          ]
+        },
+        "learning": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 6,
+          "licensed": false,
+          "keywords": [
+            "homeschool programs near me"
           ]
         }
       }
