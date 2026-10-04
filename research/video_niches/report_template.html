@@ -70,6 +70,17 @@ tr:last-child td { border-bottom: 0; }
 .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 16px; }
 .panel { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; display: grid; gap: 10px; min-width: 0; }
 ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.grade { display: inline-grid; place-items: center; min-width: 26px; height: 26px; border-radius: 4px; font: 700 15px/1 var(--display); }
+.g-A { background: var(--go-bg); color: var(--go); } .g-B { background: var(--cobalt-soft); color: var(--cobalt); }
+.g-C { background: var(--test-bg); color: var(--test); } .g-D { background: var(--pass-bg); color: var(--pass); }
+.g-F { background: var(--off-bg); color: var(--off); }
+.board { display: grid; gap: 12px; }
+.lane { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.lane-head { display: flex; gap: 12px; align-items: flex-start; }
+.lane-head .grade { min-width: 36px; height: 36px; font-size: 20px; flex: none; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 4px; border: 1px solid var(--rule); border-radius: 6px; font-size: 14px; }
+.chip .grade { min-width: 22px; height: 22px; font-size: 13px; }
 footer { font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
 </style>
 <div class="wrap">
@@ -91,6 +102,14 @@ footer { font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
 </section>
 
 <section>
+  <h2>Can 6 Central verify it and own it?</h2>
+  <p class="muted" style="margin-bottom:12px">Each row is how a Google Business Profile could be verified (free) and who would own it.
+  The letter on each niche is its opportunity grade from the ranking (A = score 60+, B = 52+, C = 45+, D = 35+, F = below 35 or off-limits).
+  The double-A niches sit at the top left: worth doing and fully ownable.</p>
+  <div class="board">{{BOARD}}</div>
+</section>
+
+<section>
   <h2>Where the real opportunities are</h2>
   <div class="picks">{{PICKS}}</div>
 </section>
@@ -108,7 +127,7 @@ footer { font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
     <button type="button" id="f-off" data-f="off" aria-pressed="false">Off-limits</button>
   </div>
   <div class="table"><table>
-    <thead><tr><th>#</th><th>Niche</th><th>Source</th><th>Verdict</th><th>Score</th><th>US/mo</th><th>Chicago/mo</th>
+    <thead><tr><th>#</th><th>Niche</th><th>Source</th><th>Verdict</th><th>Score</th><th>Grade</th><th>Verify &amp; own</th><th>US/mo</th><th>Chicago/mo</th>
     <th>CPC</th><th>KD</th><th>YoY</th><th>Map pack median</th><th>Why</th></tr></thead>
     <tbody>{{ROWS}}</tbody>
   </table></div>

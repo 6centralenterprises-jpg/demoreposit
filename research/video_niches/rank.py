@@ -44,6 +44,15 @@ def log_scale(volume, floor, ceiling, points):
     return min(points, points * (math.log10(volume) - math.log10(floor)) / (math.log10(ceiling) - math.log10(floor)))
 
 
+VERIFY_GRADE = {"own": "A", "own-licensed": "B", "office": "C", "partner": "D", "no": "F"}
+
+
+def opportunity_grade(verdict_text, score):
+    if verdict_text == "Off-limits":
+        return "F"
+    return "A" if score >= 60 else "B" if score >= 52 else "C" if score >= 45 else "D" if score >= 35 else "F"
+
+
 def verdict(gate, score):
     if gate != "ok":
         return "Off-limits"
@@ -109,14 +118,16 @@ def main():
                                               "openness": round(openness, 1), "fit": fit,
                                               "momentum": momentum},
                     "score": score, "verdict": verdict(a["gate"], score),
-                    "model": a["model"], "license": a["license"], "note": a["note"]})
+                    "model": a["model"], "license": a["license"], "note": a["note"],
+                    "verify": a["verify"], "verify_grade": VERIFY_GRADE[a["verify"]]})
+        out[-1]["grade"] = opportunity_grade(out[-1]["verdict"], score)
     order = {"Pursue": 0, "Test": 1, "Pass": 2, "Off-limits": 3}
     out.sort(key=lambda r: (order[r["verdict"]], -r["score"]))
     (RUNS / "ranked.json").write_text(json.dumps(out, indent=1))
     for i, r in enumerate(out, 1):
         meds = ", ".join(f"{p['market'].split(',')[0]} {p.get('median', p.get('error'))}" for p in r["packs"])
         y = "" if r["yoy"] is None else f" yoy {r['yoy']:+.0%}"
-        print(f"{i:2} {r['verdict']:10} {r['score']:5} {r['niche']:28} nat {r['vol_national']:>7} chi {r['vol_chicago']:>5} "
+        print(f"{i:2} {r['grade']}{r['verify_grade']} {r['verdict']:10} {r['score']:5} {r['niche']:28} nat {r['vol_national']:>7} chi {r['vol_chicago']:>5} "
               f"cpc {r['cpc']:>5} kd {r['kd']}{y} | {meds or r['channel']}")
 
 
