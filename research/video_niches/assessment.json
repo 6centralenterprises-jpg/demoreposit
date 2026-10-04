@@ -12,7 +12,7 @@
   "gate": "ok",
   "fit": 2,
   "model": "Marketing client only: escape rooms are physical venues with their own profiles.",
-  "license": "Venue permits, fire code.",
+  "license": "Fire officials may classify them as 'special amusement buildings' (sprinklers, alarms, fail-safe locks).",
   "note": "Can't hold a profile without a venue.",
   "verify": "partner"
  },
@@ -92,7 +92,7 @@
   "gate": "ok",
   "fit": 5,
   "model": "Mobile glam team (artists as staff/contractors under one accountable brand) or Partner & manage for independent artists.",
-  "license": "Cosmetology/esthetics licensing varies by state; verify.",
+  "license": "Illinois esthetician (750 hours) or cosmetology license. Event and wedding makeup have no exemption; only film, TV and stage crews are exempt.",
   "note": "Wedding and event demand; mobile, home-based.",
   "verify": "own-licensed"
  },
@@ -116,7 +116,7 @@
   "gate": "ok",
   "fit": 3,
   "model": "A real nanny placement agency (drop the 'celebrity' claim).",
-  "license": "Placement agencies may need an employment-agency license; verify for Illinois.",
+  "license": "Illinois Private Employment Agency license (Department of Labor): $5,000 bond, $250-500 a year, and no placement fee before the person accepts a job.",
   "note": "'Nanny agency chicago' has real demand; the celebrity version doesn't.",
   "verify": "office"
  },
@@ -204,7 +204,7 @@
   "gate": "ok",
   "fit": 5,
   "model": "Translation agency with vetted certified translators; the agency signs the work and owns quality.",
-  "license": "Certified/sworn translation requirements vary by document; verify.",
+  "license": "No Illinois agency license found. USCIS needs a full translation plus the translator's certification of completeness, accuracy and competence; no notary required.",
   "note": "$6.99 CPC in Chicago; agency subcontracting is normal and disclosed in this industry.",
   "verify": "office"
  },
@@ -228,7 +228,7 @@
   "gate": "ok",
   "fit": 1,
   "model": "Operator with boats and licensed captains; marketing client otherwise.",
-  "license": "Passenger-for-hire vessels need USCG-credentialed captains; verify.",
+  "license": "USCG passenger-for-hire license. Florida adds $1M/$2M insurance and wind limits.",
   "note": "9,900/mo nationally but seasonal and coastal.",
   "verify": "partner"
  },
@@ -260,7 +260,7 @@
   "gate": "ok",
   "fit": 8,
   "model": "A 6 Central call-handling / dispatch company serving its own portfolio first, then outside clients. Needs a real staffed location for a map listing; otherwise market it online.",
-  "license": "TCPA and telemarketing rules for any outbound calling.",
+  "license": "Inbound answering and dispatch is lightly regulated. Outbound sales calls fall under the TSR and TCPA (consent, 8am-9pm, do-not-call). Google needs a staffed, signed office that customers can visit.",
   "note": "$32 CPC nationally: B2B value is high, and it is a shared service the portfolio already needs (TJ's dispatch).",
   "verify": "office"
  },
@@ -284,7 +284,7 @@
   "gate": "ok",
   "fit": 6,
   "model": "Install crew or dealer-installer partnership (metal carport kits), Partner & manage.",
-  "license": "Permits; contractor rules vary by city.",
+  "license": "Dallas: city contractor registration and permits (no state GC license in Texas). Chicago: a permit plus a city GC license (Class E needs $1M insurance); Illinois requires written contracts on jobs over $1,000.",
   "note": "6,600/mo nationally; strongest in the South and Texas.",
   "verify": "own"
  },
@@ -292,7 +292,7 @@
   "gate": "ok",
   "fit": 5,
   "model": "Partner & manage with licensed GCs (ties into the decks & GC watch).",
-  "license": "General contractor license and permits.",
+  "license": "Chicago GC license and permits. Phoenix: Arizona ROC 'B' license (permitted work never qualifies for the $1,000 handyman exemption).",
   "note": "$10.07 CPC, KD 3: easy to rank, high ticket.",
   "verify": "partner"
  },
@@ -300,7 +300,7 @@
   "gate": "ok",
   "fit": 5,
   "model": "Partner & manage or a coatings crew (pairs with epoxy garage floors).",
-  "license": "Verify local contractor rules.",
+  "license": "Arizona: ROC license (likely R-9 or R-34; confirm the class). Florida: no deck-coating-specific state license found; pool-structure work falls under pool contractors.",
   "note": "Sun Belt niche; KD 12.",
   "verify": "partner"
  },
@@ -308,7 +308,7 @@
   "gate": "ok",
   "fit": 5,
   "model": "Partner & manage with licensed builders.",
-  "license": "Permits; contractor license in many states.",
+  "license": "Phoenix: Arizona ROC R-3 or B license plus a permit.",
   "note": "KD 3; Sun Belt demand (Phoenix, Dallas).",
   "verify": "partner"
  },
@@ -332,7 +332,7 @@
   "gate": "ok",
   "fit": 5,
   "model": "Partner & manage with licensed loctician studios or salons; the stylist's business holds the profile.",
-  "license": "Illinois licenses hair braiders; verify for loc work.",
+  "license": "Illinois Hair Braider license from IDFPR (locking counts as braiding; 300 school hours plus the school's final exam). Mobile work is allowed with a certificate of identification and a mobile salon registration.",
   "note": "18,100/mo nationally; repeat bookings every 4-8 weeks.",
   "verify": "own-licensed"
  },
@@ -340,7 +340,7 @@
   "gate": "ok",
   "fit": 2,
   "model": "Partner with licensed charter operators (their profiles); 6 Central markets them.",
-  "license": "USCG-credentialed captains for charters; verify.",
+  "license": "6 or fewer paying passengers: USCG OUPV license; more than 6: inspected vessel plus Master license. The Coast Guard shut down 4 illegal Chicago charters in July 2025 (penalties over $69K per voyage).",
   "note": "'yacht rental chicago' 2,400/mo, summer-seasonal.",
   "verify": "partner"
  },
@@ -364,7 +364,7 @@
   "gate": "ok",
   "fit": 5,
   "model": "In-home / mobile training brand with certified trainers, or Partner & manage.",
-  "license": "Certification; insurance.",
+  "license": "No state license anywhere in the US. Standard: NCCA-accredited certification (NASM, ACE, ACSM, NSCA), CPR/AED and liability insurance.",
   "note": "550,000/mo nationally; Chicago 720/mo. Recurring revenue.",
   "verify": "own"
  },
@@ -372,7 +372,7 @@
   "gate": "ok",
   "fit": 9,
   "model": "A 6 Central answering and dispatch service for home-service contractors, built on TJ's dispatch. Sold nationally online; a map listing only with a staffed office.",
-  "license": "TCPA / Telemarketing Sales Rule for outbound calls; HIPAA if serving medical offices.",
+  "license": "Inbound answering is lightly regulated; upsells and outbound calls fall under the TSR and TCPA. Google profile only with a staffed, signed office; no virtual offices.",
   "note": "$70.59 CPC: each client is worth hundreds a month, recurring.",
   "verify": "office"
  },
@@ -380,7 +380,7 @@
   "gate": "ok",
   "fit": 9,
   "model": "Same company as above; after-hours dispatch for plumbers, HVAC, towing and roadside.",
-  "license": "Same as above.",
+  "license": "Same as answering service.",
   "note": "$62.03 CPC with KD 11: the easiest high-value keyword in the study.",
   "verify": "office"
  },
@@ -388,7 +388,7 @@
   "gate": "ok",
   "fit": 8,
   "model": "Same company; receptionist plans for small offices.",
-  "license": "Same as above.",
+  "license": "Same as answering service.",
   "note": "$57.31 CPC.",
   "verify": "office"
  },
@@ -444,7 +444,7 @@
   "gate": "ok",
   "fit": 5,
   "model": "Partner & manage with licensed barbers who go mobile.",
-  "license": "Illinois barber license.",
+  "license": "Illinois barber license, plus an IDFPR registration for mobile service.",
   "note": "2,900/mo; KD 18.",
   "verify": "own-licensed"
  },
@@ -452,7 +452,7 @@
   "gate": "ok",
   "fit": 5,
   "model": "Partner & manage with licensed stylists.",
-  "license": "Illinois cosmetology license.",
+  "license": "Illinois cosmetology license, plus an IDFPR salon registration for a mobile salon.",
   "note": "2,400/mo; KD 8.",
   "verify": "own-licensed"
  },
@@ -468,7 +468,7 @@
   "gate": "ok",
   "fit": 6,
   "model": "Certified trainers who come to the client; recurring packages.",
-  "license": "Certification and liability insurance.",
+  "license": "No state license. Accredited certification, CPR/AED and liability insurance.",
   "note": "KD 16.",
   "verify": "own"
  },
@@ -508,7 +508,7 @@
   "gate": "ok",
   "fit": 5,
   "model": "Online certified-translation service (USCIS, courts) with vetted translators.",
-  "license": "Certification statement requirements per USCIS; verify.",
+  "license": "USCIS: full translation plus the translator's signed certification (8 CFR 103.2(b)(3)). No state license found.",
   "note": "$5.68 CPC; national online.",
   "verify": "office"
  },
