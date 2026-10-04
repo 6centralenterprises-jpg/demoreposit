@@ -53,6 +53,27 @@ holding company, not any one of them.
   - in-home personal training, Chicago: profile around 2026-11-16
   - mobile marine services, Chain O'Lakes: launch 2027-03-01, with an optional capped fall pilot
 
+## Terell's operating model: sell the work, subcontract the labor (decided 2026-10-04)
+
+Terell wants to win the jobs and contracts, let subcontractors do the work and hold the licenses, and take
+a percentage. Build every plan on one of these two legitimate structures:
+
+1. **Prime contractor or "snow management" (B2B).** 6 Central signs and invoices the customer, carries
+   insurance and service logs, and is accountable.
+   - Subs are real insured businesses named in the contract, with 6 Central as additional insured.
+     Because of the Illinois ABC test, they can't be individuals paid as contractors.
+   - The margin is the markup.
+   - The work is won through direct sales, bids, a website and Ads, **not** a Google profile for an
+     entity that does no work.
+   - In licensed trades (roofing, general contracting), the company selling the job may need the license
+     too. Get an attorney check.
+2. **Partner & manage (the network).** Each operator owns its own Google profile. 6 Central runs its
+   marketing, profile, reviews and answering/dispatch for a written percentage or fee. This is how the
+   model scales city by city.
+
+**Never:** a Google profile, or a Local Services Ads account, for a business whose own people don't do the
+work. That is lead generation, and it's the Premium Home Service pattern.
+
 ## Google rules we design around (as of 2026-10-04; see `research/google/`)
 
 - **Every profile is the company whose own staff does the work.**
