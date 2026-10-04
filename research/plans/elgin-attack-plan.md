@@ -51,3 +51,24 @@ All four services are wide open in the **Elgin, South Elgin, Streamwood and Bart
 - **Every Sunday:** the scout's owner memo picks the next target area.
 
 Steady, real additions are what Google's 2026 rules reward. Bursts of new listings and edits are what they flag.
+
+## Week 1 findings (2026-10-04)
+- **Elgin home base.** The zoning code allows a home business only if it's incidental to the residence, with
+  minimal customer traffic. Commercial vehicles over 10,000 lbs or 22 ft can't park on residential streets.
+  A van or pickup run from home looks workable; confirm with Elgin Code Enforcement before verifying
+  ([cityrulelookup](https://cityrulelookup.com/parking/commercial-vehicles/elgin-il)).
+- **Towing exemption under the Illinois locksmith law.** Towing-service employees may open vehicle locks so
+  a vehicle can be moved without towing, but only if the towing service does not advertise or hold itself out
+  as a locksmith ([ILGA, P.A. 91-0287](https://lrb.ilga.gov/legislation/publicacts/pubact91/acts/91-0287.html)).
+  A listing that advertises "car lockout" counts as holding out, so lockout listings need a licensed
+  locksmith operator. Confirm against the current 225 ILCS 447 with IDFPR.
+- **Partner shortlist.** Built from the Elgin-area map packs; local file `runs/tire/elgin_partner_candidates.json`.
+  These are real operators with thin profiles who appear across many cities:
+  1. AQ Mobile Mechanic: 5 reviews, mechanic and tire, 8 cities, has a website.
+  2. Jacobs Mobile Mechanic: 12 reviews, 8 cities, no website.
+  3. Michoacan Tire Mobile Repair: 23 reviews, 9 cities, no website.
+  4. Otis Keys Crew: 7 reviews, lockout, 2 cities. Verify the locksmith license.
+  5. Snow Warriors Snow Removal: 2 reviews, 6 cities, has a website.
+
+  Skip listings with city-keyword names: "Central St 24 Hour ... Schaumburg IL" and "Hoffman Estates
+  Auto Keys Replacement". These are suspension risks, not partners.
