@@ -48,14 +48,16 @@ VERIFY_GRADE = {"own": "A", "own-licensed": "B", "office": "C", "partner": "D", 
 
 
 def opportunity_grade(verdict_text, score):
-    if verdict_text == "Off-limits":
+    if verdict_text in ("Off-limits", "Avoid"):
         return "F"
     return "A" if score >= 60 else "B" if score >= 52 else "C" if score >= 45 else "D" if score >= 35 else "F"
 
 
-def verdict(gate, score):
+def verdict(gate, score, risk_level=None):
     if gate != "ok":
         return "Off-limits"
+    if risk_level == "high":
+        return "Avoid"
     if score >= 60:
         return "Pursue"
     if score >= 45:
@@ -71,6 +73,8 @@ def main():
     judged = json.loads((HERE / "assessment.json").read_text())
     nat, chi = semrush(RUNS / "semrush_national.csv"), semrush(RUNS / "semrush_chicago.csv")
     nat.update(semrush(RUNS / "semrush_adjacent.csv"))
+    reg_path = ROOT / "research" / "google" / "risk_register.json"
+    register = json.loads(reg_path.read_text()).get("entries", []) if reg_path.exists() else []
     out = []
     for n in niches:
         a = judged[n["niche"]]
@@ -109,7 +113,9 @@ def main():
         yoy = change["yoy"] if change else None
         momentum = 0.0 if yoy is None else (5.0 if yoy >= 0.25 else 3.0 if yoy >= 0.10 else -5.0 if yoy <= -0.15 else 0.0)
         fit = 3 * a["fit"]
-        score = round(demand + value + openness + fit + momentum, 1)
+        risk = scoring.google_risk(n["niche"], {"keywords": [n["kw_national"], n["map_query"] or ""]}, register)
+        penalty = scoring.RISK_PENALTY.get((risk or {}).get("level"), 0.0)
+        score = round(demand + value + openness + fit + momentum - penalty, 1)
         out.append({"niche": n["niche"], "source": n["source"], "gate": a["gate"], "fit": a["fit"],
                     "kw_national": n["kw_national"], "vol_national": vol_n, "kd": (kn or {}).get("kd"),
                     "kw_chicago": n.get("kw_chicago"), "vol_chicago": vol_c, "cpc": cpc, "channel": "online" if online else "local",
@@ -117,11 +123,11 @@ def main():
                     "packs": packs, "parts": {"demand": round(demand, 1), "value": round(value, 1),
                                               "openness": round(openness, 1), "fit": fit,
                                               "momentum": momentum},
-                    "score": score, "verdict": verdict(a["gate"], score),
+                    "score": score, "verdict": verdict(a["gate"], score, (risk or {}).get("level")), "risk": risk,
                     "model": a["model"], "license": a["license"], "note": a["note"],
                     "verify": a["verify"], "verify_grade": VERIFY_GRADE[a["verify"]]})
         out[-1]["grade"] = opportunity_grade(out[-1]["verdict"], score)
-    order = {"Pursue": 0, "Test": 1, "Pass": 2, "Off-limits": 3}
+    order = {"Pursue": 0, "Test": 1, "Pass": 2, "Avoid": 3, "Off-limits": 4}
     out.sort(key=lambda r: (order[r["verdict"]], -r["score"]))
     (RUNS / "ranked.json").write_text(json.dumps(out, indent=1))
     for i, r in enumerate(out, 1):

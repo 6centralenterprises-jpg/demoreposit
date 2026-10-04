@@ -27,7 +27,7 @@ VERIFY_TEXT = {}
 VERIFY_NAME = {"own": "A · Verify & own it", "own-licensed": "B · Own it, licensed staff do the work",
                "office": "C · Needs a real office", "partner": "D · Partner's profile, we own the site",
                "no": "F · Can't be verified"}
-VERDICT_CLASS = {"Pursue": "go", "Test": "test", "Pass": "pass", "Off-limits": "off"}
+VERDICT_CLASS = {"Pursue": "go", "Test": "test", "Pass": "pass", "Avoid": "off", "Off-limits": "off"}
 SOURCE_LABEL = {"screen": "On screen", "spoken": "Said aloud", "adjacent": "Found by us"}
 
 
@@ -54,12 +54,21 @@ def packs_cell(r):
     return "<br>".join(bits) or "–"
 
 
+def risk_cell(r):
+    risk = r.get("risk")
+    if not risk:
+        return '<span class="muted">none flagged</span>'
+    cls = {"high": "v-off", "medium": "v-test", "low": "v-pass"}.get(risk["level"], "v-pass")
+    return f'<span class="tag {cls}">{escape(risk["level"])}</span> <span class="muted">{escape(risk.get("what") or "")}</span>'
+
+
 def build(frame=None):
     rows = json.loads((RUNS / "ranked.json").read_text())
     VERIFY_TEXT.update({k: v for k, v in json.loads((HERE / "assessment.json").read_text())["_verify"].items()})
     picks = json.loads((HERE / "picks.json").read_text()) if (HERE / "picks.json").exists() else {}
     by_name = {r["niche"]: r for r in rows}
     counts = {v: sum(1 for r in rows if r["verdict"] == v) for v in VERDICT_CLASS}
+    counts["Off-limits"] += counts.pop("Avoid", 0)
 
     # Annotated Notepad list
     words = []
@@ -95,7 +104,7 @@ def build(frame=None):
 <td class="n">{r['score']:.0f}</td><td><span class="grade g-{r['grade']}">{r['grade']}</span></td>
 <td><span class="grade g-{r['verify_grade']}" title="{escape(VERIFY_TEXT[r['verify']])}">{r['verify_grade']}</span></td><td class="n">{num(r['vol_national'])}</td><td class="n">{num(r['vol_chicago']) if r.get('kw_chicago') else '–'}</td>
 <td class="n">${r['cpc']:.2f}</td><td class="n">{num(r['kd'])}</td><td class="n">{pct(r['yoy'])}</td>
-<td>{packs_cell(r)}</td><td class="note">{escape(r['note'])}</td></tr>""")
+<td>{packs_cell(r)}</td><td>{risk_cell(r)}</td><td class="note">{escape(r['note'])}</td></tr>""")
 
     # Grade board: verification path (rows) x opportunity grade (chips sorted best first)
     board = []
