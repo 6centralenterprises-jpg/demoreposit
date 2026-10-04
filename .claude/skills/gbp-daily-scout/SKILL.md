@@ -60,6 +60,11 @@ is `runs/gbp/D/`.
    (Mon water & plumbing, Tue mobile auto, Wed outdoor & seasonal, Thu HVAC
    & energy, Fri home care & pets, Sat emerging, Sun weekly recap), the
    discovery seeds and the budget. On Sunday, skip to step 6.
+   On Saturday (Emerging & discovery), read `references/niche-hunting.md`
+   first and apply its method to the discovery results: favor ignored
+   categories, high-ticket add-ons and repeat-booking services, and drop
+   anything it rules out (institutions, implied celebrity clients,
+   call-forwarding lead-gen).
 
 3. **Discovery.** For each seed, call `mcp__OpenRush__research_keywords`
    with `limit` 30 and `min_volume` 100. Save **only** a short filtered list

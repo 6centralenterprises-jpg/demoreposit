@@ -549,6 +549,16 @@
             "home addition contractors near me",
             "handyman near me"
           ]
+        },
+        "backup power": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 5,
+          "licensed": true,
+          "keywords": [
+            "generator installation near me",
+            "whole house generator installation",
+            "generator repair near me"
+          ]
         }
       }
     },
@@ -600,7 +610,8 @@
             "junk removal near me",
             "furniture removal near me",
             "appliance removal near me",
-            "estate cleanout near me"
+            "estate cleanout near me",
+            "hot tub removal near me"
           ]
         },
         "repair and install": {
@@ -633,9 +644,10 @@
     "emerging": {
       "label": "Emerging & discovery",
       "discovery_seeds": [
+        "installation near me",
+        "rental near me",
         "home service near me",
-        "mobile service near me",
-        "installation near me"
+        "mobile service near me"
       ],
       "niches": {
         "aging in place": {
@@ -678,6 +690,48 @@
             "paver sealing near me",
             "hot tub repair near me",
             "pool opening service near me"
+          ]
+        },
+        "high-ticket add-ons": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 6,
+          "licensed": true,
+          "keywords": [
+            "patio covers near me",
+            "outdoor kitchen builders near me",
+            "room additions near me",
+            "pool deck resurfacing near me",
+            "home theater installation near me"
+          ]
+        },
+        "garage upgrades": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "epoxy garage floor near me",
+            "garage floor coating near me",
+            "garage storage installation near me"
+          ]
+        },
+        "event rentals": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "photo booth rental near me",
+            "bounce house rental near me",
+            "mobile bartending service",
+            "private chef near me"
+          ]
+        },
+        "mobile professional services": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 10,
+          "licensed": true,
+          "keywords": [
+            "mobile notary near me",
+            "translation services near me"
           ]
         }
       }
