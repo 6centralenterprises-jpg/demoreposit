@@ -120,6 +120,17 @@ is `runs/gbp/D/`.
 
 6. **Recap only (Sunday).** `python3 scout.py screen --date D` lists the
    watchlist leaders to re-check. Run those map-pack checks as in step 5.
+   Sunday's report is the **owner's memo**: write it as if you owned 6 Central and wanted to build an
+   AI-leveraged network worth $1B+. Keep it to about 15 lines:
+   - **The 3 best opportunities right now.** Prefer big fish with verify A or B. Give the data behind
+     each, the play, and the market (city, suburb or ZIP codes).
+   - **The next 90 days:** which seasons turn up, and what has to launch now to be ready.
+   - **Google watch:** what changed this week and which niches to avoid or prepare for.
+   - **Portfolio moves:** which planned venture (`research/plans/`) is due for its next step, and
+     whether any watchlist niche deserves a `venture-operator` plan.
+   - **One leverage move:** something that makes every venture cheaper or faster, such as a shared
+     system, an AI agent, a partner network, or an acquisition of a small operator with a real,
+     verified profile.
 
 6b. **Google watch (every day, including Sunday).**
    1. Read `research/google/landscape-*.md` (newest) and `research/google/risk_register.json`.
