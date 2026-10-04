@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Keywords: {{ search.seeds }}{% endblock %}
+{% block content %}
+<p><a href="/keywords">&larr; Keywords</a></p>
+<h1>{{ search.seeds }}</h1>
+<p class="lead">{{ search.location }} · run {{ search.created_at[:10] }} · {{ rows | length }} keywords</p>
+
+<form method="get" class="inline">
+  <label>Sort by
+    <select name="sort">
+      {% for key, label in [("volume", "Volume"), ("trend", "Trend"), ("cpc", "Cost per click"), ("competition_index", "Competition"), ("keyword", "Keyword")] %}
+      <option value="{{ key }}" {% if key == sort %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Minimum monthly volume <input type="number" name="min_volume" value="{{ min_volume }}" min="0"></label>
+  <button class="secondary">Apply</button>
+  <a class="button secondary" href="/keywords/{{ search.id }}/csv">Download CSV</a>
+</form>
+
+<table>
+  <thead><tr><th>Keyword</th><th>Monthly searches</th><th>Last 12 months</th><th>Trend</th><th>Cost per click</th><th>Competition</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r.keyword }}</td>
+    <td>{{ "{:,}".format(r.volume) if r.volume is not none else "—" }}</td>
+    <td>{% if r.spark %}<svg class="spark" width="96" height="24" viewBox="0 0 96 24" aria-hidden="true"><polyline points="{{ r.spark }}"/></svg>{% endif %}</td>
+    <td>{% if r.trend is not none %}<span class="{{ 'up' if r.trend > 0 else 'down' if r.trend < 0 else '' }}">{{ "%+d" | format(r.trend) }}%</span>{% else %}—{% endif %}</td>
+    <td>{{ "${:.2f}".format(r.cpc) if r.cpc is not none else "—" }}</td>
+    <td>{{ r.competition or "—" }}{% if r.competition_index is not none %} <span class="muted">({{ r.competition_index }})</span>{% endif %}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p class="muted small">Trend compares the last 3 months with the 3 before them. Competition is how many advertisers bid on the keyword (Google Ads), a useful proxy for commercial value.</p>
+{% endblock %}

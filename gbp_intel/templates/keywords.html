@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Keywords{% endblock %}
+{% block content %}
+<h1>Keywords</h1>
+<p class="lead">Related searches with monthly volume, trend, cost per click and competition.</p>
+{% if not keywords_ready %}
+<p class="banner warn">DataForSEO is not connected. Set <code>DATAFORSEO_LOGIN</code> and <code>DATAFORSEO_PASSWORD</code> in <code>.env</code>.</p>
+{% endif %}
+
+<section class="card">
+  <form method="post" action="/keywords" class="inline">
+    <label>Seed keywords (comma separated, up to 20) <input name="seeds" placeholder="deck repair, deck staining" required></label>
+    <label>Location <input name="location" value="United States" placeholder="Chicago,Illinois,United States"></label>
+    <button {% if not keywords_ready %}disabled{% endif %}>Research</button>
+  </form>
+  <p class="muted small">Location uses Google Ads names, such as <code>United States</code>, <code>Illinois,United States</code> or <code>Chicago,Illinois,United States</code>. Each search is one DataForSEO call (a few cents).</p>
+</section>
+
+{% if searches %}
+<h2>Recent searches</h2>
+<table>
+  <thead><tr><th>Seeds</th><th>Location</th><th>Keywords</th><th>Run</th></tr></thead>
+  <tbody>
+  {% for s in searches %}
+  <tr><td><a href="/keywords/{{ s.id }}">{{ s.seeds }}</a></td><td>{{ s.location }}</td><td>{{ s.results }}</td><td>{{ s.created_at[:10] }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}
