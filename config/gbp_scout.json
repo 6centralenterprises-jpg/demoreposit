@@ -448,7 +448,9 @@
           "keywords": [
             "snow removal near me",
             "snow plowing near me",
-            "residential snow removal"
+            "residential snow removal",
+            "roof snow removal near me",
+            "ice dam removal near me"
           ],
           "verify": "own"
         },
@@ -1153,11 +1155,12 @@
     }
   },
   "focus": {
-    "label": "Decks & general contracting",
-    "why": "Terell asked for a standing watch on deck building and general contracting.",
+    "label": "Decks, general contracting & snow removal",
+    "why": "Standing watch: decks and general contracting (Terell's ask) plus snow removal for the 2026-27 winter (open Chicago pack, 4.6x season ahead).",
     "map_queries": [
       "deck builders",
-      "general contractor"
+      "general contractor",
+      "snow removal"
     ],
     "licensing": {
       "IL": {

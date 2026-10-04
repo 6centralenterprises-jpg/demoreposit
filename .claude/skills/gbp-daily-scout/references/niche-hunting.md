@@ -150,6 +150,42 @@ NICHES". It's confirmed from frames at 25%, 50% and 75% of the runtime and from 
 
 To re-run the ranking, run `python3 research/video_niches/rank.py`.
 
+## Second video from the same course: rejected
+
+"How To Scale Your Drop Servicing Business To 6 Figures In Half Of A Year GOD COURSE"
+(Godfather Of Drop servicing, uploaded 2020-02-28, 35:48). Captions pulled 2026-10-04.
+
+**What it teaches.** Recruit people at welfare and food-stamp offices, career centers, job fairs,
+parades and train stations, paying a Craigslist hire about $8/hr to sign them up. Promise them "part
+ownership" or "free stock" in businesses in exchange for their home address. Then a VA verifies Google
+profiles at those addresses "with the keyword structure", across many cities and niches at once. The
+presenter repeats that it may break Google's terms and that you should consult a lawyer.
+
+**Why it's out:**
+- Every profile would be at an address where no business operates. That is a fake listing under
+  Google's rules, plus lead generation and keyword-stuffed names.
+- It targets people looking for help with a promise of ownership in businesses that don't exist.
+  That's deceptive, and it puts their homes and names on fake listings.
+- It's exactly the pattern Google's suspension waves remove. It also explains why some "wide-open"
+  packs contain one-review, keyword-named listings ("carports dallas tx"). Treat those as weak,
+  short-lived competitors, never as a model.
+
+**The kind, legitimate version.** It aims at the same goal: many cities, many niches, fast. Call it a
+6 Central Operator Program.
+- Recruit at career centers and job fairs, openly.
+- Hire people as W-2 technicians, or set them up as real owner-operators of simple service
+  businesses (snow removal, gutter cleaning, pressure washing, pet waste, mobile detailing).
+- They do the work from their real base. 6 Central provides the brand, training, equipment,
+  marketing, dispatch and verification support.
+- The profile is legitimate because the business is real.
+- **Check first** (researched, not in video):
+  - Charging owner-operators fees for a brand plus support can make it a franchise under the FTC
+    Franchise Rule: trademark, significant control or assistance, and at least $500 paid in the
+    first 6 months. Illinois also has its own franchise law. Get a franchise attorney before
+    selling any operator package.
+  - Hiring through the workforce system can bring WIOA on-the-job-training reimbursements. Illinois
+    allows up to 90% of wages for employers with 50 or fewer employees.
+
 ## Provenance
 
 - **From the video:** the drop-servicing model, the niche list, the principles
