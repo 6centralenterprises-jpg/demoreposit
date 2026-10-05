@@ -72,3 +72,36 @@ Steady, real additions are what Google's 2026 rules reward. Bursts of new listin
 
   Skip listings with city-keyword names: "Central St 24 Hour ... Schaumburg IL" and "Hoffman Estates
   Auto Keys Replacement". These are suspension risks, not partners.
+
+## Base placement with addresses (2026-10-05)
+Real spaces listed for lease, seen 2026-10-05. Full table with links: `runs/tire/elgin_spaces.md` (local, gitignored).
+Confirm every figure on the live listing before calling a broker; LoopNet and Crexi figures came from snippets.
+
+### Base 1: Elgin (tire, mechanic, snow). Tour in this order.
+1. **765 Villa St, Elgin 60120.** 3,000 sq ft shop + office, 5 drive-in bays, 16' clear, light-industrial zoning,
+   marketed for truck/auto repair. $18/sq ft/yr, about $4,500/mo with utilities and expenses. Off US-20 / IL-25.
+   Best fit: auto use is allowed, bays for vans, room for a tire rack and snow gear.
+2. **1330 Crispin Dr, Elgin 60123.** 1,500 sq ft industrial condo, 10x12 garage door, 1 mile south of Route 20.
+   $9.77/sq ft/yr, about $1,220/mo. Also for sale at $219,000. Cheapest real base; buy it later and 6 Central owns the asset.
+3. **2418 Millennium Dr, Elgin 60124.** 2,920 sq ft, 12x14 drive-in, 16' clear. $14/sq ft/yr, about $3,400/mo.
+   Randall Rd / I-90 / US-20 side of town.
+Avoid: 801–805 N State St (Route 31) and 450 Miles Pkwy (Bartlett) both bar auto work.
+
+### Base 2 (spring): Hoffman Estates / Schaumburg (tire; mechanic later)
+- **2095–2119 Stonington Ave, Hoffman Estates 60169.** 2,513 sq ft units with a drive-in door each, $13.75/sq ft/yr,
+  off Barrington Rd / I-90. Tire medians: Hoffman Estates 14, Schaumburg 14, Des Plaines 26.
+- **1116 Morse Ave, Schaumburg.** 4,050 sq ft, drive-in + dock, fenced yard, $14/sq ft/yr. Flagged "no longer
+  advertised"; call to confirm.
+
+### Base 3: South Elgin / Streamwood overflow (snow, mechanic)
+- **695 Sundown Rd Unit D, South Elgin 60177.** 3,200 sq ft, drive-in doors, 20' clear, $16/sq ft/yr, I-90 access.
+  Only if base 1 fills; South Elgin and Streamwood are already inside base 1's radius.
+
+### Chicago bases (from the earlier LoopNet sweep)
+- **Northwest Side hub:** 3632 N Cicero Ave, Portage Park, 3,800 sq ft at $8.95/sq ft/yr (confirm doors and zoning).
+- **Southwest / Midway:** 2743 W 36th Pl, 5,000 sq ft, about $3,975/mo, drive-in, I-55.
+- **O'Hare corridor:** Franklin Ave, Franklin Park, 3,636–4,160 sq ft, about $3,600/mo.
+
+### Decision
+Start base 1 at home if Elgin Code Enforcement allows a van and trailer; otherwise take Crispin Dr (cheapest) now
+and move to Villa St when jobs justify $4,500/mo. Everything else waits until base 1 has reviews and a partner.
