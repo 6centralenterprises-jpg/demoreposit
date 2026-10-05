@@ -1,0 +1,1200 @@
+{
+  "_about": "Settings for the daily GBP Opportunity Scout. Edit markets, niches and budget here. Keyword data is national (US); map-pack checks run in the markets below.",
+  "markets": {
+    "_about": "Home markets get every map-pack check every day. The roster rotates: a few metros a day, so all of them are covered about every 11 days. Edit freely.",
+    "home": [
+      {
+        "name": "Chicago, IL",
+        "serp_location": "Chicago,Illinois,United States",
+        "state": "IL"
+      }
+    ],
+    "roster": [
+      {
+        "name": "Houston, TX",
+        "serp_location": "Houston,Texas,United States",
+        "state": "TX"
+      },
+      {
+        "name": "Dallas, TX",
+        "serp_location": "Dallas,Texas,United States",
+        "state": "TX"
+      },
+      {
+        "name": "Fort Worth, TX",
+        "serp_location": "Fort Worth,Texas,United States",
+        "state": "TX"
+      },
+      {
+        "name": "Austin, TX",
+        "serp_location": "Austin,Texas,United States",
+        "state": "TX"
+      },
+      {
+        "name": "San Antonio, TX",
+        "serp_location": "San Antonio,Texas,United States",
+        "state": "TX"
+      },
+      {
+        "name": "Phoenix, AZ",
+        "serp_location": "Phoenix,Arizona,United States",
+        "state": "AZ"
+      },
+      {
+        "name": "Atlanta, GA",
+        "serp_location": "Atlanta,Georgia,United States",
+        "state": "GA"
+      },
+      {
+        "name": "Charlotte, NC",
+        "serp_location": "Charlotte,North Carolina,United States",
+        "state": "NC"
+      },
+      {
+        "name": "Raleigh, NC",
+        "serp_location": "Raleigh,North Carolina,United States",
+        "state": "NC"
+      },
+      {
+        "name": "Nashville, TN",
+        "serp_location": "Nashville,Tennessee,United States",
+        "state": "TN"
+      },
+      {
+        "name": "Orlando, FL",
+        "serp_location": "Orlando,Florida,United States",
+        "state": "FL"
+      },
+      {
+        "name": "Tampa, FL",
+        "serp_location": "Tampa,Florida,United States",
+        "state": "FL"
+      },
+      {
+        "name": "Jacksonville, FL",
+        "serp_location": "Jacksonville,Florida,United States",
+        "state": "FL"
+      },
+      {
+        "name": "Miami, FL",
+        "serp_location": "Miami,Florida,United States",
+        "state": "FL"
+      },
+      {
+        "name": "Ocala, FL",
+        "serp_location": "Ocala,Florida,United States",
+        "state": "FL"
+      },
+      {
+        "name": "Las Vegas, NV",
+        "serp_location": "Las Vegas,Nevada,United States",
+        "state": "NV"
+      },
+      {
+        "name": "Denver, CO",
+        "serp_location": "Denver,Colorado,United States",
+        "state": "CO"
+      },
+      {
+        "name": "Salt Lake City, UT",
+        "serp_location": "Salt Lake City,Utah,United States",
+        "state": "UT"
+      },
+      {
+        "name": "Boise, ID",
+        "serp_location": "Boise,Idaho,United States",
+        "state": "ID"
+      },
+      {
+        "name": "Indianapolis, IN",
+        "serp_location": "Indianapolis,Indiana,United States",
+        "state": "IN"
+      },
+      {
+        "name": "Columbus, OH",
+        "serp_location": "Columbus,Ohio,United States",
+        "state": "OH"
+      },
+      {
+        "name": "Kansas City, MO",
+        "serp_location": "Kansas City,Missouri,United States",
+        "state": "MO"
+      },
+      {
+        "name": "St. Louis, MO",
+        "serp_location": "St. Louis,Missouri,United States",
+        "state": "MO"
+      },
+      {
+        "name": "Oklahoma City, OK",
+        "serp_location": "Oklahoma City,Oklahoma,United States",
+        "state": "OK"
+      },
+      {
+        "name": "Greenville, SC",
+        "serp_location": "Greenville,South Carolina,United States",
+        "state": "SC"
+      },
+      {
+        "name": "Charleston, SC",
+        "serp_location": "Charleston,South Carolina,United States",
+        "state": "SC"
+      },
+      {
+        "name": "Washington, DC",
+        "serp_location": "Washington,District of Columbia,United States",
+        "state": "DC"
+      },
+      {
+        "name": "Philadelphia, PA",
+        "serp_location": "Philadelphia,Pennsylvania,United States",
+        "state": "PA"
+      },
+      {
+        "name": "New York, NY",
+        "serp_location": "New York,New York,United States",
+        "state": "NY"
+      },
+      {
+        "name": "Los Angeles, CA",
+        "serp_location": "Los Angeles,California,United States",
+        "state": "CA"
+      },
+      {
+        "name": "Seattle, WA",
+        "serp_location": "Seattle,Washington,United States",
+        "state": "WA"
+      },
+      {
+        "name": "Detroit, MI",
+        "serp_location": "Detroit,Michigan,United States",
+        "state": "MI"
+      },
+      {
+        "name": "Minneapolis, MN",
+        "serp_location": "Minneapolis,Minnesota,United States",
+        "state": "MN"
+      },
+      {
+        "name": "Milwaukee, WI",
+        "serp_location": "Milwaukee,Wisconsin,United States",
+        "state": "WI"
+      }
+    ]
+  },
+  "own_listings": [
+    {
+      "name": "TJ 24 Hour Mobile Tire Repair Service Chicago IL",
+      "market": "Chicago, IL",
+      "track_query": "mobile tire repair",
+      "portfolio": "TJ's Nationwide Roadside",
+      "confirmed": "2026-10-03"
+    }
+  ],
+  "own_brand_markers": [
+    "TJ",
+    "6 Central"
+  ],
+  "budget": {
+    "semrush_keywords_per_day": 45,
+    "openrush_research_seeds": 2,
+    "openrush_deep_dives": 5,
+    "openrush_map_pack_checks": 4,
+    "rotating_markets_per_day": 3,
+    "rotating_checks_per_market": 2
+  },
+  "openrush_credits": {
+    "research_keywords": 3,
+    "inspect_keyword": 5,
+    "inspect_serp": 2
+  },
+  "semrush_units_per_keyword": 10,
+  "rotation": {
+    "Monday": "water-and-plumbing",
+    "Tuesday": "auto-at-home",
+    "Wednesday": "outdoor-and-seasonal",
+    "Thursday": "hvac-and-energy",
+    "Friday": "home-care-and-pets",
+    "Saturday": "emerging",
+    "Sunday": "weekly-recap"
+  },
+  "clusters": {
+    "water-and-plumbing": {
+      "label": "Water, restoration & plumbing",
+      "discovery_seeds": [
+        "water damage restoration",
+        "emergency plumber"
+      ],
+      "niches": {
+        "water damage restoration": {
+          "portfolio": "Water-restoration project",
+          "home_based_fit": 6,
+          "licensed": true,
+          "keywords": [
+            "water damage restoration near me",
+            "water damage restoration",
+            "flood cleanup near me",
+            "basement flooding cleanup",
+            "sewage cleanup near me",
+            "water extraction near me"
+          ],
+          "verify": "own-licensed"
+        },
+        "mold remediation": {
+          "portfolio": "Water-restoration project",
+          "home_based_fit": 6,
+          "licensed": true,
+          "keywords": [
+            "mold remediation near me",
+            "mold removal near me",
+            "mold inspection near me",
+            "black mold removal"
+          ],
+          "verify": "partner"
+        },
+        "crawl space encapsulation": {
+          "portfolio": "Water-restoration project",
+          "home_based_fit": 6,
+          "licensed": false,
+          "keywords": [
+            "crawl space encapsulation near me",
+            "crawl space repair near me",
+            "basement waterproofing near me"
+          ],
+          "verify": "own"
+        },
+        "plumbing": {
+          "portfolio": "Plumbing project",
+          "home_based_fit": 7,
+          "licensed": true,
+          "keywords": [
+            "emergency plumber near me",
+            "plumber near me",
+            "drain cleaning near me",
+            "water heater repair near me",
+            "tankless water heater installation",
+            "sump pump installation near me",
+            "frozen pipe repair near me",
+            "burst pipe repair near me",
+            "leak detection near me"
+          ],
+          "verify": "partner"
+        },
+        "sewer camera inspection": {
+          "portfolio": "Plumbing project",
+          "home_based_fit": 8,
+          "licensed": false,
+          "keywords": [
+            "sewer camera inspection near me",
+            "sewer line inspection near me",
+            "hydro jetting near me"
+          ],
+          "verify": "own"
+        }
+      }
+    },
+    "auto-at-home": {
+      "label": "Mobile auto & marine (comes to you)",
+      "discovery_seeds": [
+        "mobile tire service",
+        "mobile mechanic"
+      ],
+      "niches": {
+        "mobile tire service": {
+          "portfolio": "TJ's Nationwide Roadside",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "mobile tire repair near me",
+            "mobile tire service near me",
+            "mobile tire installation",
+            "flat tire repair near me",
+            "24 hour mobile tire service",
+            "mobile tire change near me"
+          ],
+          "verify": "own"
+        },
+        "roadside assistance": {
+          "portfolio": "TJ's Nationwide Roadside",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "roadside assistance near me",
+            "jump start service near me",
+            "car lockout service near me",
+            "fuel delivery service near me",
+            "mobile battery replacement near me"
+          ],
+          "verify": "own"
+        },
+        "mobile mechanic": {
+          "portfolio": "Mobile mechanic project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "mobile mechanic near me",
+            "mobile brake repair near me",
+            "mobile oil change near me",
+            "mobile car diagnostic near me",
+            "mobile auto electrician near me"
+          ],
+          "verify": "own"
+        },
+        "car detailing": {
+          "portfolio": "Car-detailing project",
+          "home_based_fit": 10,
+          "licensed": false,
+          "keywords": [
+            "mobile detailing near me",
+            "mobile car wash near me",
+            "ceramic coating near me",
+            "headlight restoration near me",
+            "paint correction near me"
+          ],
+          "verify": "own"
+        },
+        "mobile windshield": {
+          "portfolio": "TJ's Nationwide Roadside",
+          "home_based_fit": 8,
+          "licensed": false,
+          "keywords": [
+            "mobile windshield replacement near me",
+            "windshield chip repair near me"
+          ],
+          "verify": "own"
+        },
+        "ev charging help": {
+          "portfolio": "TJ's Nationwide Roadside",
+          "home_based_fit": 7,
+          "licensed": false,
+          "keywords": [
+            "mobile ev charging service",
+            "ev roadside assistance"
+          ],
+          "verify": "own"
+        },
+        "mobile marine": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "boat winterization near me",
+            "boat shrink wrap near me",
+            "mobile boat detailing near me"
+          ],
+          "verify": "own"
+        }
+      }
+    },
+    "outdoor-and-seasonal": {
+      "label": "Outdoor & seasonal",
+      "discovery_seeds": [
+        "tree removal",
+        "christmas light installation"
+      ],
+      "niches": {
+        "tree removal": {
+          "portfolio": "Tree-removal project",
+          "home_based_fit": 7,
+          "licensed": false,
+          "keywords": [
+            "tree removal near me",
+            "emergency tree removal",
+            "stump grinding near me",
+            "tree trimming near me",
+            "storm damage tree removal"
+          ],
+          "verify": "own"
+        },
+        "gutter cleaning": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 10,
+          "licensed": false,
+          "keywords": [
+            "gutter cleaning near me",
+            "gutter guard installation",
+            "gutter repair near me"
+          ],
+          "verify": "own"
+        },
+        "pressure washing": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 10,
+          "licensed": false,
+          "keywords": [
+            "pressure washing near me",
+            "soft washing near me",
+            "roof cleaning near me",
+            "deck staining near me"
+          ],
+          "verify": "own"
+        },
+        "holiday lighting": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 10,
+          "licensed": false,
+          "keywords": [
+            "christmas light installation near me",
+            "holiday light installation",
+            "permanent christmas lights",
+            "christmas light removal"
+          ],
+          "verify": "own"
+        },
+        "snow removal": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "snow removal near me",
+            "snow plowing near me",
+            "residential snow removal",
+            "roof snow removal near me",
+            "ice dam removal near me"
+          ],
+          "verify": "own"
+        },
+        "lawn and leaves": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 10,
+          "licensed": false,
+          "keywords": [
+            "leaf removal near me",
+            "fall cleanup near me",
+            "lawn aeration near me",
+            "lawn care near me"
+          ],
+          "verify": "own"
+        },
+        "pest and mosquito": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 7,
+          "licensed": true,
+          "keywords": [
+            "mosquito control near me",
+            "rodent control near me",
+            "pest control near me"
+          ],
+          "verify": "own-licensed"
+        },
+        "decks and patios": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 5,
+          "licensed": true,
+          "keywords": [
+            "deck builders near me",
+            "deck repair near me",
+            "deck installation near me",
+            "deck resurfacing",
+            "pergola installation near me",
+            "patio cover installation",
+            "porch builders near me",
+            "composite deck builders near me"
+          ],
+          "verify": "partner"
+        },
+        "fences": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 6,
+          "licensed": true,
+          "keywords": [
+            "fence installation near me",
+            "fence company near me",
+            "fence repair near me",
+            "vinyl fence installation"
+          ],
+          "verify": "own-licensed"
+        }
+      }
+    },
+    "hvac-and-energy": {
+      "label": "HVAC, energy, remodeling & upgrades",
+      "discovery_seeds": [
+        "furnace repair",
+        "mini split installation"
+      ],
+      "niches": {
+        "hvac": {
+          "portfolio": "HVAC project",
+          "home_based_fit": 6,
+          "licensed": true,
+          "keywords": [
+            "furnace repair near me",
+            "hvac repair near me",
+            "furnace tune up near me",
+            "heat pump installation near me",
+            "mini split installation near me",
+            "boiler repair near me"
+          ],
+          "verify": "partner"
+        },
+        "duct and vent": {
+          "portfolio": "HVAC project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "air duct cleaning near me",
+            "dryer vent cleaning near me",
+            "chimney sweep near me",
+            "chimney inspection near me"
+          ],
+          "verify": "own"
+        },
+        "home energy": {
+          "portfolio": "HVAC project",
+          "home_based_fit": 7,
+          "licensed": true,
+          "keywords": [
+            "ev charger installation near me",
+            "whole house generator installation",
+            "attic insulation near me",
+            "solar panel cleaning near me"
+          ],
+          "verify": "partner"
+        },
+        "sunrooms": {
+          "portfolio": "Sunroom project",
+          "home_based_fit": 5,
+          "licensed": true,
+          "keywords": [
+            "sunroom installation near me",
+            "sunroom contractors near me",
+            "screened porch builders near me"
+          ],
+          "verify": "partner"
+        },
+        "radon": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 8,
+          "licensed": true,
+          "keywords": [
+            "radon testing near me",
+            "radon mitigation near me"
+          ],
+          "verify": "own-licensed"
+        },
+        "general contracting": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 4,
+          "licensed": true,
+          "keywords": [
+            "general contractor near me",
+            "general contractors near me",
+            "home remodeling contractors near me",
+            "bathroom remodel near me",
+            "kitchen remodel near me",
+            "basement finishing near me",
+            "home addition contractors near me",
+            "handyman near me"
+          ],
+          "verify": "partner"
+        },
+        "backup power": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 5,
+          "licensed": true,
+          "keywords": [
+            "generator installation near me",
+            "whole house generator installation",
+            "generator repair near me"
+          ],
+          "verify": "partner"
+        }
+      }
+    },
+    "home-care-and-pets": {
+      "label": "Home care, pets & personal services",
+      "discovery_seeds": [
+        "mobile dog grooming",
+        "junk removal"
+      ],
+      "niches": {
+        "pet grooming": {
+          "portfolio": "Pet-grooming project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "mobile dog grooming near me",
+            "mobile cat grooming near me",
+            "in home dog grooming",
+            "dog nail trimming near me"
+          ],
+          "verify": "own"
+        },
+        "pet waste": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 10,
+          "licensed": false,
+          "keywords": [
+            "pet waste removal near me",
+            "dog poop pickup service"
+          ],
+          "verify": "own"
+        },
+        "cleaning": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 10,
+          "licensed": false,
+          "keywords": [
+            "house cleaning near me",
+            "move out cleaning near me",
+            "deep cleaning service near me",
+            "carpet cleaning near me",
+            "window cleaning near me",
+            "upholstery cleaning near me"
+          ],
+          "verify": "own"
+        },
+        "junk removal": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "junk removal near me",
+            "furniture removal near me",
+            "appliance removal near me",
+            "estate cleanout near me",
+            "hot tub removal near me"
+          ],
+          "verify": "own"
+        },
+        "repair and install": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "handyman near me",
+            "appliance repair near me",
+            "tv mounting near me",
+            "furniture assembly near me",
+            "smart home installation near me",
+            "grab bar installation near me"
+          ],
+          "verify": "own"
+        },
+        "garage doors": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 6,
+          "licensed": true,
+          "keywords": [
+            "garage door repair near me",
+            "garage door installation near me",
+            "garage door spring repair near me",
+            "garage door opener repair near me",
+            "garage door replacement"
+          ],
+          "verify": "partner"
+        },
+        "mobile fitness": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "personal trainer near me",
+            "in home personal trainer near me",
+            "mobile personal trainer near me"
+          ],
+          "verify": "own"
+        },
+        "mobile beauty": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 8,
+          "licensed": true,
+          "keywords": [
+            "mobile hair stylist near me",
+            "mobile barber near me",
+            "mobile spray tan near me",
+            "loctician near me",
+            "makeup artist near me"
+          ],
+          "verify": "own-licensed"
+        }
+      }
+    },
+    "emerging": {
+      "label": "Emerging & discovery",
+      "discovery_seeds": [
+        "installation near me",
+        "rental near me",
+        "home service near me",
+        "mobile service near me"
+      ],
+      "niches": {
+        "aging in place": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 8,
+          "licensed": false,
+          "keywords": [
+            "aging in place remodeling",
+            "wheelchair ramp installation near me",
+            "stair lift installation near me"
+          ],
+          "verify": "own"
+        },
+        "home tech": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "home network installation near me",
+            "security camera installation near me",
+            "starlink installation near me",
+            "smart thermostat installation"
+          ],
+          "verify": "own"
+        },
+        "water quality": {
+          "portfolio": "Plumbing project",
+          "home_based_fit": 8,
+          "licensed": false,
+          "keywords": [
+            "water softener installation near me",
+            "water testing near me",
+            "whole house water filter installation"
+          ],
+          "verify": "own"
+        },
+        "outdoor living": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 8,
+          "licensed": false,
+          "keywords": [
+            "fence repair near me",
+            "paver sealing near me",
+            "hot tub repair near me",
+            "pool opening service near me"
+          ],
+          "verify": "own"
+        },
+        "high-ticket add-ons": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 6,
+          "licensed": true,
+          "keywords": [
+            "patio covers near me",
+            "outdoor kitchen builders near me",
+            "room additions near me",
+            "pool deck resurfacing near me",
+            "home theater installation near me",
+            "carports near me",
+            "metal buildings near me",
+            "gazebo builders near me"
+          ],
+          "verify": "partner"
+        },
+        "garage upgrades": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "epoxy garage floor near me",
+            "garage floor coating near me",
+            "garage storage installation near me"
+          ],
+          "verify": "own"
+        },
+        "event rentals": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "photo booth rental near me",
+            "bounce house rental near me",
+            "mobile bartending service",
+            "private chef near me"
+          ],
+          "verify": "own"
+        },
+        "mobile professional services": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 10,
+          "licensed": true,
+          "keywords": [
+            "mobile notary near me",
+            "translation services near me"
+          ],
+          "verify": "own-licensed"
+        },
+        "answering and dispatch": {
+          "portfolio": "6 Central shared services",
+          "home_based_fit": 9,
+          "licensed": false,
+          "keywords": [
+            "answering service for small business",
+            "after hours answering service",
+            "virtual receptionist service",
+            "call center services"
+          ],
+          "verify": "office"
+        },
+        "learning": {
+          "portfolio": "Home-services project",
+          "home_based_fit": 6,
+          "licensed": false,
+          "keywords": [
+            "homeschool programs near me"
+          ],
+          "verify": "office"
+        }
+      }
+    },
+    "weekly-recap": {
+      "label": "Weekly recap",
+      "discovery_seeds": [],
+      "niches": {}
+    }
+  },
+  "playbook": [
+    "Pick the primary category that matches the money keyword exactly; add secondary categories only for services the business really performs.",
+    "List every real service in the Services section using the words customers search (from today's keyword list), with an honest description.",
+    "Service-area setup for home-based businesses: hide the home address and list only the areas the business really drives to. Plan for the video verification walkthrough before you start: tools, vehicle, signage and proof you run the business.",
+    "Build a review habit: ask every happy customer the same day with a direct review link. Never buy, gate or write reviews.",
+    "Post weekly with real job photos (before/after) and seasonal offers tied to the surging keywords.",
+    "Answer every review, good or bad, within 24 hours. It shows responsiveness and adds real service words.",
+    "Keep name, phone and website identical everywhere (site, Yelp, BBB, Facebook, Apple Business Connect, Bing Places).",
+    "Use the business's real name only. Adding city or keyword words to the name is a suspension risk.",
+    "Track calls and leads with a tracking number set as the primary phone and the main line kept as an additional phone, so the profile stays consistent.",
+    "For managed clients, request Manager access to the client's profile. The client stays Primary Owner and keeps control."
+  ],
+  "brand_stoplist": [
+    "discount tire",
+    "walmart",
+    "costco",
+    "firestone",
+    "goodyear",
+    "pep boys",
+    "big o",
+    "les schwab",
+    "jiffy",
+    "aaa",
+    "geico",
+    "allstate",
+    "progressive",
+    "state farm",
+    "safelite",
+    "servpro",
+    "servicemaster",
+    "roto-rooter",
+    "mr. rooter",
+    "home depot",
+    "lowes",
+    "lowe's",
+    "sears",
+    "petco",
+    "petsmart",
+    "stanley steemer",
+    "1-800-got-junk",
+    "college hunks",
+    "molly maid",
+    "merry maids",
+    "terminix",
+    "orkin",
+    "bleifus",
+    "used tire express",
+    "tire rack",
+    "ntb",
+    "mavis",
+    "midas",
+    "meineke",
+    "valvoline",
+    "amazon",
+    "angi",
+    "thumbtack"
+  ],
+  "discovery": {
+    "min_volume": 100,
+    "max_new_keywords": 15,
+    "junk_words": [
+      "supplies",
+      "supply",
+      "kit",
+      "school",
+      "course",
+      "certification",
+      "jobs",
+      "job",
+      "salary",
+      "hiring",
+      "franchise",
+      "flyers",
+      "leads",
+      "diy",
+      "how to",
+      "for sale",
+      "used",
+      "parts",
+      "rental",
+      "cheat",
+      "schedule",
+      "free",
+      "pickup day"
+    ]
+  },
+  "verification": {
+    "_about": "Daily Amazon research for verification-readiness kits. Kits help REAL businesses show Google what it asks for. They never stand in for a business that doesn't exist.",
+    "source": "https://support.google.com/business/answer/14271705",
+    "kits_per_day": 10,
+    "proofs": {
+      "location": "Show where your business operates: street signs, landmarks or other identifiers at your business address.",
+      "exists": "Show proof the business exists: the professional tools, equipment or products you use, business cards, branded apparel.",
+      "management": "Show proof you manage it: perform a service, unlock your branded van, or show a business document (permit, invoice, utility bill) matching the profile name."
+    },
+    "common_items": [
+      {
+        "proof": "management",
+        "item": "Custom magnetic vehicle signs with business name",
+        "search": "custom magnetic vehicle signs business"
+      },
+      {
+        "proof": "exists",
+        "item": "Custom embroidered work shirts with logo",
+        "search": "custom embroidered work shirts logo"
+      },
+      {
+        "proof": "exists",
+        "item": "Custom business cards",
+        "search": "custom business cards"
+      },
+      {
+        "proof": "management",
+        "item": "Carbonless invoice / work-order book (personalized)",
+        "search": "personalized carbonless invoice book"
+      },
+      {
+        "proof": "location",
+        "item": "Phone gimbal stabilizer for one steady, continuous take",
+        "search": "smartphone gimbal stabilizer"
+      }
+    ],
+    "niche_items": {
+      "mobile tire service": [
+        {
+          "proof": "exists",
+          "item": "Portable tire changer / bead breaker",
+          "search": "portable manual tire changer bead breaker"
+        },
+        {
+          "proof": "exists",
+          "item": "Cordless impact wrench + socket set",
+          "search": "cordless impact wrench lug nut socket set"
+        },
+        {
+          "proof": "exists",
+          "item": "Tire plug and patch repair kit (pro)",
+          "search": "heavy duty tire plug repair kit professional"
+        }
+      ],
+      "roadside assistance": [
+        {
+          "proof": "exists",
+          "item": "Commercial jump starter pack",
+          "search": "commercial jump starter pack 12v"
+        },
+        {
+          "proof": "exists",
+          "item": "Car lockout kit (air wedge + reach tool)",
+          "search": "car lockout kit air wedge long reach tool"
+        }
+      ],
+      "mobile mechanic": [
+        {
+          "proof": "exists",
+          "item": "OBD2 diagnostic scanner (pro)",
+          "search": "professional obd2 diagnostic scanner"
+        },
+        {
+          "proof": "exists",
+          "item": "Mechanic rolling tool chest / tool set",
+          "search": "mechanic tool set rolling case"
+        }
+      ],
+      "car detailing": [
+        {
+          "proof": "exists",
+          "item": "Dual-action polisher kit",
+          "search": "dual action polisher kit detailing"
+        },
+        {
+          "proof": "exists",
+          "item": "Hot-water carpet & upholstery extractor",
+          "search": "carpet upholstery extractor auto detailing"
+        },
+        {
+          "proof": "exists",
+          "item": "Branded detailing caddy / pressure washer",
+          "search": "mobile detailing pressure washer kit"
+        }
+      ],
+      "cleaning": [
+        {
+          "proof": "exists",
+          "item": "Professional cleaning caddy + supply kit",
+          "search": "professional house cleaning caddy kit"
+        },
+        {
+          "proof": "exists",
+          "item": "Commercial backpack vacuum",
+          "search": "commercial backpack vacuum"
+        },
+        {
+          "proof": "exists",
+          "item": "Microfiber color-coded system",
+          "search": "color coded microfiber cloths professional"
+        }
+      ],
+      "pet grooming": [
+        {
+          "proof": "exists",
+          "item": "Professional grooming clipper kit",
+          "search": "professional dog grooming clippers kit"
+        },
+        {
+          "proof": "exists",
+          "item": "High-velocity pet dryer",
+          "search": "high velocity dog dryer professional"
+        }
+      ],
+      "junk removal": [
+        {
+          "proof": "exists",
+          "item": "Furniture dolly + moving straps",
+          "search": "heavy duty furniture dolly moving straps"
+        },
+        {
+          "proof": "exists",
+          "item": "Contractor trash bags + work gloves",
+          "search": "contractor trash bags heavy duty"
+        }
+      ],
+      "garage doors": [
+        {
+          "proof": "exists",
+          "item": "Torsion spring winding bars",
+          "search": "garage door torsion spring winding bars"
+        },
+        {
+          "proof": "exists",
+          "item": "Garage door repair tool kit",
+          "search": "garage door repair tool kit"
+        }
+      ],
+      "pressure washing": [
+        {
+          "proof": "exists",
+          "item": "Gas pressure washer + surface cleaner",
+          "search": "gas pressure washer surface cleaner commercial"
+        }
+      ],
+      "gutter cleaning": [
+        {
+          "proof": "exists",
+          "item": "Stabilized extension ladder + standoff",
+          "search": "ladder standoff stabilizer gutter"
+        },
+        {
+          "proof": "exists",
+          "item": "Gutter cleaning wand attachment",
+          "search": "gutter cleaning wand pressure washer"
+        }
+      ],
+      "snow removal": [
+        {
+          "proof": "exists",
+          "item": "Two-stage snow blower",
+          "search": "two stage snow blower"
+        },
+        {
+          "proof": "exists",
+          "item": "Commercial ice-melt spreader",
+          "search": "walk behind salt spreader commercial"
+        }
+      ],
+      "holiday lighting": [
+        {
+          "proof": "exists",
+          "item": "Commercial-grade C9 light strands + clips",
+          "search": "commercial c9 christmas lights clips"
+        }
+      ],
+      "decks and patios": [
+        {
+          "proof": "exists",
+          "item": "Deck board straightening + fastening tools",
+          "search": "deck board straightener tool"
+        }
+      ],
+      "fences": [
+        {
+          "proof": "exists",
+          "item": "Post hole digger / auger",
+          "search": "post hole auger fence"
+        },
+        {
+          "proof": "exists",
+          "item": "Fence stretcher / post level",
+          "search": "fence post level stretcher tool"
+        }
+      ],
+      "tree removal": [
+        {
+          "proof": "exists",
+          "item": "Chainsaw PPE kit (chaps, helmet, face shield, ear protection)",
+          "search": "chainsaw chaps helmet forestry safety kit"
+        },
+        {
+          "proof": "exists",
+          "item": "Arborist climbing saddle + rigging",
+          "search": "arborist climbing saddle harness"
+        },
+        {
+          "proof": "exists",
+          "item": "Stump grinder / professional chainsaw",
+          "search": "professional chainsaw 20 inch gas"
+        }
+      ]
+    }
+  },
+  "focus": {
+    "label": "Decks, general contracting & snow removal",
+    "why": "Standing watch: decks and general contracting (Terell's ask) plus snow removal for the 2026-27 winter (open Chicago pack, 4.6x season ahead).",
+    "map_queries": [
+      "deck builders",
+      "general contractor",
+      "snow removal"
+    ],
+    "licensing": {
+      "IL": {
+        "note": "City of Chicago requires a general contractor license from the Department of Buildings; decks need permits.",
+        "source": "https://webapps1.chicago.gov/licensedcontractors/general"
+      },
+      "TN": {
+        "note": "Home Improvement License for $3,000-$24,999 jobs in 9 counties incl. Davidson (Nashville) and Shelby; full contractor license at $25,000+.",
+        "source": "https://tn.gov/commerce/regboards/hi/home-improvement-licensing-requirements.html"
+      },
+      "GA": {
+        "note": "State residential/general contractor license required for jobs over $2,500.",
+        "source": "https://www.fayetteville-ga.gov/165/Contractor-Licensing-Requirements"
+      },
+      "NC": {
+        "note": "State GC license required for projects of $40,000 or more (raised from $30,000 in Oct 2023).",
+        "source": "https://abc11.com/amp/post/nc-contractors-home-construction-license-unlicensed/13961419/"
+      },
+      "TX": {
+        "note": "No statewide GC license; Dallas requires contractor registration with insurance, and attached decks need a permit.",
+        "source": "https://permitmint.com/permits/texas/dallas/deck/"
+      }
+    }
+  },
+  "google_risk_register": "research/google/risk_register.json",
+  "google_watch": {
+    "why": "Watch what Google is flagging so we avoid or prepare before a suspension wave hits a niche.",
+    "flag_days": 60,
+    "searches": [
+      "Google Business Profile suspensions this week",
+      "Google Business Profile verification change",
+      "site:seroundtable.com Google Business Profile",
+      "Google local search update",
+      "Local Services Ads change"
+    ]
+  }
+}

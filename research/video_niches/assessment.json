@@ -1,0 +1,562 @@
+{
+ "_about": "Judgment calls for each niche from the drop-servicing video (on-screen list + spoken extras). gate: ok = a real business 6 Central could legitimately run or partner into; blocked = cannot hold a legitimate Google profile for it (institution, government, impersonation, mission conflict). fit: 0-10 for 6 Central's portfolio (home/local services, Chicago base, shared dispatch/call/marketing services). license: what to check before any move; 'verify' means not yet confirmed from a primary source.",
+ "passenger van rental": {
+  "gate": "ok",
+  "fit": 3,
+  "model": "Own a small fleet or partner with a fleet owner (their profile).",
+  "license": "Commercial auto insurance; rental contracts.",
+  "note": "Capital-heavy; a profile without owned vans is lead-gen.",
+  "verify": "office"
+ },
+ "escape room": {
+  "gate": "ok",
+  "fit": 2,
+  "model": "Marketing client only: escape rooms are physical venues with their own profiles.",
+  "license": "Fire officials may classify them as 'special amusement buildings' (sprinklers, alarms, fail-safe locks).",
+  "note": "Can't hold a profile without a venue.",
+  "verify": "partner"
+ },
+ "haunted houses": {
+  "gate": "ok",
+  "fit": 1,
+  "model": "Seasonal venue; marketing client only.",
+  "license": "Event permits.",
+  "note": "Seasonal (October) venue business.",
+  "verify": "partner"
+ },
+ "auditions": {
+  "gate": "blocked",
+  "fit": 0,
+  "model": "None.",
+  "license": "-",
+  "note": "Not a service business; a listing would mislead people looking for real casting calls.",
+  "verify": "no"
+ },
+ "golf courses": {
+  "gate": "blocked",
+  "fit": 0,
+  "model": "None.",
+  "license": "-",
+  "note": "A venue you would have to own; a listing otherwise impersonates one.",
+  "verify": "no"
+ },
+ "private equity firms": {
+  "gate": "blocked",
+  "fit": 0,
+  "model": "None.",
+  "license": "SEC/state securities rules.",
+  "note": "Regulated financial firm; a referral listing would be impersonation.",
+  "verify": "no"
+ },
+ "credit union": {
+  "gate": "blocked",
+  "fit": 0,
+  "model": "None.",
+  "license": "NCUA-chartered institution.",
+  "note": "Chartered institution; cannot be represented by a third party.",
+  "verify": "no"
+ },
+ "homeschool program": {
+  "gate": "ok",
+  "fit": 3,
+  "model": "Real tutoring / homeschool co-op business with instructors.",
+  "license": "Background checks; verify state rules.",
+  "note": "Needs real educators and a curriculum.",
+  "verify": "office"
+ },
+ "passport": {
+  "gate": "blocked",
+  "fit": 0,
+  "model": "None.",
+  "license": "Government service.",
+  "note": "Government office; private 'passport' listings are a known scam pattern.",
+  "verify": "no"
+ },
+ "grocery delivery": {
+  "gate": "ok",
+  "fit": 2,
+  "model": "Courier business.",
+  "license": "Commercial auto insurance.",
+  "note": "Dominated by national apps; thin margins.",
+  "verify": "own"
+ },
+ "airports": {
+  "gate": "blocked",
+  "fit": 0,
+  "model": "None.",
+  "license": "-",
+  "note": "Public infrastructure; a listing would impersonate it.",
+  "verify": "no"
+ },
+ "makeup artist": {
+  "gate": "ok",
+  "fit": 5,
+  "model": "Mobile glam team (artists as staff/contractors under one accountable brand) or Partner & manage for independent artists.",
+  "license": "Illinois esthetician (750 hours) or cosmetology license. Event and wedding makeup have no exemption; only film, TV and stage crews are exempt.",
+  "note": "Wedding and event demand; mobile, home-based.",
+  "verify": "own-licensed"
+ },
+ "celebrity hair stylist": {
+  "gate": "blocked",
+  "fit": 1,
+  "model": "Only as true premium positioning by a stylist who has celebrity clients.",
+  "license": "Cosmetology license.",
+  "note": "'Celebrity' implies a clientele you don't have; tiny search volume.",
+  "verify": "no"
+ },
+ "celebrity makeup artist": {
+  "gate": "blocked",
+  "fit": 1,
+  "model": "Same as above.",
+  "license": "Verify.",
+  "note": "Implied clientele; ~20 searches/mo in Chicago.",
+  "verify": "no"
+ },
+ "celebrity nanny agency": {
+  "gate": "ok",
+  "fit": 3,
+  "model": "A real nanny placement agency (drop the 'celebrity' claim).",
+  "license": "Illinois Private Employment Agency license (Department of Labor): $5,000 bond, $250-500 a year, and no placement fee before the person accepts a job.",
+  "note": "'Nanny agency chicago' has real demand; the celebrity version doesn't.",
+  "verify": "office"
+ },
+ "celebrity nutritionist": {
+  "gate": "blocked",
+  "fit": 1,
+  "model": "Partner with licensed dietitians.",
+  "license": "Illinois licenses dietitian nutritionists.",
+  "note": "Licensed profession plus implied clientele.",
+  "verify": "no"
+ },
+ "celebrity personal trainer": {
+  "gate": "blocked",
+  "fit": 2,
+  "model": "See personal trainer.",
+  "license": "Certification (no state license in most states).",
+  "note": "170 searches/mo nationally; the real market is plain 'personal trainer'.",
+  "verify": "no"
+ },
+ "celebrity PR": {
+  "gate": "blocked",
+  "fit": 0,
+  "model": "None.",
+  "license": "-",
+  "note": "Zero search volume.",
+  "verify": "no"
+ },
+ "celebrity publicist": {
+  "gate": "blocked",
+  "fit": 0,
+  "model": "None.",
+  "license": "-",
+  "note": "140/mo nationally; an online, not local, service.",
+  "verify": "no"
+ },
+ "celebrity realtors": {
+  "gate": "blocked",
+  "fit": 0,
+  "model": "None.",
+  "license": "Real estate license; brokers must hold the listing.",
+  "note": "Licensed profession; implied clientele.",
+  "verify": "no"
+ },
+ "celebrity tours": {
+  "gate": "ok",
+  "fit": 1,
+  "model": "A real tour operator (LA-centric).",
+  "license": "Tour/transport permits.",
+  "note": "Only works in LA; small volume.",
+  "verify": "no"
+ },
+ "comedians": {
+  "gate": "ok",
+  "fit": 1,
+  "model": "Entertainment booking agency that contracts acts and is accountable for the booking.",
+  "license": "Talent agency licensing in some states (e.g. CA); verify.",
+  "note": "Tiny search volume.",
+  "verify": "no"
+ },
+ "illustrator": {
+  "gate": "ok",
+  "fit": 1,
+  "model": "Online freelance service, not a map-pack business.",
+  "license": "-",
+  "note": "50 searches/mo 'near me'.",
+  "verify": "no"
+ },
+ "music marketing company": {
+  "gate": "ok",
+  "fit": 2,
+  "model": "Online agency (fits 6 Central's marketing capability, not a local profile play).",
+  "license": "-",
+  "note": "90 searches/mo; artists are price-sensitive and often targeted by scams. Requires a clean reputation.",
+  "verify": "no"
+ },
+ "mobile DJ": {
+  "gate": "ok",
+  "fit": 4,
+  "model": "Event-services brand bundling DJ, photo booth and rentals with real staff.",
+  "license": "Business license; event insurance.",
+  "note": "'dj chicago' 390/mo.",
+  "verify": "own"
+ },
+ "translation services": {
+  "gate": "ok",
+  "fit": 5,
+  "model": "Translation agency with vetted certified translators; the agency signs the work and owns quality.",
+  "license": "No Illinois agency license found. USCIS needs a full translation plus the translator's certification of completeness, accuracy and competence; no notary required.",
+  "note": "$6.99 CPC in Chicago; agency subcontracting is normal and disclosed in this industry.",
+  "verify": "office"
+ },
+ "celebrity impersonators": {
+  "gate": "ok",
+  "fit": 1,
+  "model": "Booking agency.",
+  "license": "Verify talent-agency rules.",
+  "note": "20 searches/mo in Chicago.",
+  "verify": "no"
+ },
+ "flyboarding": {
+  "gate": "ok",
+  "fit": 1,
+  "model": "Water-sports operator (owns equipment, insurance).",
+  "license": "Watercraft and operator rules; verify.",
+  "note": "Equipment- and insurance-heavy; coastal.",
+  "verify": "partner"
+ },
+ "parasailing": {
+  "gate": "ok",
+  "fit": 1,
+  "model": "Operator with boats and licensed captains; marketing client otherwise.",
+  "license": "USCG passenger-for-hire license. Florida adds $1M/$2M insurance and wind limits.",
+  "note": "9,900/mo nationally but seasonal and coastal.",
+  "verify": "partner"
+ },
+ "adult entertainment": {
+  "gate": "blocked",
+  "fit": 0,
+  "model": "None.",
+  "license": "-",
+  "note": "Outside 6 Central's mission and brand standards.",
+  "verify": "no"
+ },
+ "screenwriting": {
+  "gate": "ok",
+  "fit": 1,
+  "model": "Classes/coaching business.",
+  "license": "-",
+  "note": "Tiny search volume.",
+  "verify": "office"
+ },
+ "kitesurfing lessons": {
+  "gate": "ok",
+  "fit": 1,
+  "model": "Instructor-run school.",
+  "license": "Instructor certification; verify.",
+  "note": "Small, seasonal, coastal.",
+  "verify": "partner"
+ },
+ "call centers": {
+  "gate": "ok",
+  "fit": 8,
+  "model": "A 6 Central call-handling / dispatch company serving its own portfolio first, then outside clients. Needs a real staffed location for a map listing; otherwise market it online.",
+  "license": "Inbound answering and dispatch is lightly regulated. Outbound sales calls fall under the TSR and TCPA (consent, 8am-9pm, do-not-call). Google needs a staffed, signed office that customers can visit.",
+  "note": "$32 CPC nationally: B2B value is high, and it is a shared service the portfolio already needs (TJ's dispatch).",
+  "verify": "office"
+ },
+ "barber school": {
+  "gate": "ok",
+  "fit": 1,
+  "model": "Marketing client only.",
+  "license": "State-approved school.",
+  "note": "Schools are licensed institutions.",
+  "verify": "partner"
+ },
+ "cosmetology beauty school": {
+  "gate": "ok",
+  "fit": 1,
+  "model": "Marketing client only.",
+  "license": "State-approved school.",
+  "note": "Same as barber schools.",
+  "verify": "partner"
+ },
+ "carports": {
+  "gate": "ok",
+  "fit": 6,
+  "model": "Install crew or dealer-installer partnership (metal carport kits), Partner & manage.",
+  "license": "Dallas: city contractor registration and permits (no state GC license in Texas). Chicago: a permit plus a city GC license (Class E needs $1M insurance); Illinois requires written contracts on jobs over $1,000.",
+  "note": "6,600/mo nationally; strongest in the South and Texas.",
+  "verify": "own"
+ },
+ "room additions": {
+  "gate": "ok",
+  "fit": 5,
+  "model": "Partner & manage with licensed GCs (ties into the decks & GC watch).",
+  "license": "Chicago GC license and permits. Phoenix: Arizona ROC 'B' license (permitted work never qualifies for the $1,000 handyman exemption).",
+  "note": "$10.07 CPC, KD 3: easy to rank, high ticket.",
+  "verify": "partner"
+ },
+ "pool deck resurfacing": {
+  "gate": "ok",
+  "fit": 5,
+  "model": "Partner & manage or a coatings crew (pairs with epoxy garage floors).",
+  "license": "Arizona: ROC license (likely R-9 or R-34; confirm the class). Florida: no deck-coating-specific state license found; pool-structure work falls under pool contractors.",
+  "note": "Sun Belt niche; KD 12.",
+  "verify": "partner"
+ },
+ "patio covers": {
+  "gate": "ok",
+  "fit": 5,
+  "model": "Partner & manage with licensed builders.",
+  "license": "Phoenix: Arizona ROC R-3 or B license plus a permit.",
+  "note": "KD 3; Sun Belt demand (Phoenix, Dallas).",
+  "verify": "partner"
+ },
+ "art consultant": {
+  "gate": "ok",
+  "fit": 1,
+  "model": "Advisory business, mostly online/referral.",
+  "license": "-",
+  "note": "720/mo nationally; 30 in Chicago.",
+  "verify": "no"
+ },
+ "music consultant": {
+  "gate": "ok",
+  "fit": 0,
+  "model": "None worth pursuing.",
+  "license": "-",
+  "note": "~0 local volume.",
+  "verify": "no"
+ },
+ "loctician": {
+  "gate": "ok",
+  "fit": 5,
+  "model": "Partner & manage with licensed loctician studios or salons; the stylist's business holds the profile.",
+  "license": "Illinois Hair Braider license from IDFPR (locking counts as braiding; 300 school hours plus the school's final exam). Mobile work is allowed with a certificate of identification and a mobile salon registration.",
+  "note": "18,100/mo nationally; repeat bookings every 4-8 weeks.",
+  "verify": "own-licensed"
+ },
+ "yacht rental": {
+  "gate": "ok",
+  "fit": 2,
+  "model": "Partner with licensed charter operators (their profiles); 6 Central markets them.",
+  "license": "6 or fewer paying passengers: USCG OUPV license; more than 6: inspected vessel plus Master license. The Coast Guard shut down 4 illegal Chicago charters in July 2025 (penalties over $69K per voyage).",
+  "note": "'yacht rental chicago' 2,400/mo, summer-seasonal.",
+  "verify": "partner"
+ },
+ "movie theater": {
+  "gate": "blocked",
+  "fit": 0,
+  "model": "None.",
+  "license": "-",
+  "note": "A venue; the video's 'thousands of searches, no competition' claim ignores that people are looking for showtimes.",
+  "verify": "no"
+ },
+ "bodyguard services": {
+  "gate": "ok",
+  "fit": 2,
+  "model": "Licensed private security contractor only.",
+  "license": "Illinois licenses private security contractors.",
+  "note": "1,300/mo nationally; 20 in Chicago.",
+  "verify": "partner"
+ },
+ "personal trainer": {
+  "gate": "ok",
+  "fit": 5,
+  "model": "In-home / mobile training brand with certified trainers, or Partner & manage.",
+  "license": "No state license anywhere in the US. Standard: NCCA-accredited certification (NASM, ACE, ACSM, NSCA), CPR/AED and liability insurance.",
+  "note": "550,000/mo nationally; Chicago 720/mo. Recurring revenue.",
+  "verify": "own"
+ },
+ "answering service": {
+  "gate": "ok",
+  "fit": 9,
+  "model": "A 6 Central answering and dispatch service for home-service contractors, built on TJ's dispatch. Sold nationally online; a map listing only with a staffed office.",
+  "license": "Inbound answering is lightly regulated; upsells and outbound calls fall under the TSR and TCPA. Google profile only with a staffed, signed office; no virtual offices.",
+  "note": "$70.59 CPC: each client is worth hundreds a month, recurring.",
+  "verify": "office"
+ },
+ "after hours answering service": {
+  "gate": "ok",
+  "fit": 9,
+  "model": "Same company as above; after-hours dispatch for plumbers, HVAC, towing and roadside.",
+  "license": "Same as answering service.",
+  "note": "$62.03 CPC with KD 11: the easiest high-value keyword in the study.",
+  "verify": "office"
+ },
+ "virtual receptionist": {
+  "gate": "ok",
+  "fit": 8,
+  "model": "Same company; receptionist plans for small offices.",
+  "license": "Same as answering service.",
+  "note": "$57.31 CPC.",
+  "verify": "office"
+ },
+ "boat winterization": {
+  "gate": "ok",
+  "fit": 8,
+  "model": "Mobile marine service run from home: winterize, shrink-wrap, spring de-winterize. Seasonal, Chicago-native.",
+  "license": "No Illinois license found yet for mobile winterization; insurance and marine-engine skill required; verify.",
+  "note": "KD 7; demand peaks Oct-Nov, which is now.",
+  "verify": "own"
+ },
+ "boat shrink wrap": {
+  "gate": "ok",
+  "fit": 8,
+  "model": "Bundled with winterization; one crew, one van.",
+  "license": "Open-flame heat-gun safety; insurance; verify local rules.",
+  "note": "KD 8; $3.37 CPC; same season.",
+  "verify": "own"
+ },
+ "mobile boat detailing": {
+  "gate": "ok",
+  "fit": 8,
+  "model": "Extension of the car-detailing project to boats; spring and summer counterpart to winterization.",
+  "license": "Water-runoff rules at marinas; marina permission.",
+  "note": "KD 11; fills the summer gap.",
+  "verify": "own"
+ },
+ "firewood delivery": {
+  "gate": "ok",
+  "fit": 6,
+  "model": "Seasonal delivery route (Nov-Feb) with a truck and a sourced supplier.",
+  "license": "Firewood transport/quarantine rules; verify for Illinois.",
+  "note": "KD 5; winter demand.",
+  "verify": "own"
+ },
+ "tv mounting": {
+  "gate": "ok",
+  "fit": 8,
+  "model": "Home-based install service; pairs with the 'repair and install' project.",
+  "license": "Low-voltage only; no electrical work without a license.",
+  "note": "5,400/mo; $4.45 CPC.",
+  "verify": "own"
+ },
+ "furniture assembly": {
+  "gate": "ok",
+  "fit": 8,
+  "model": "Same install crew as TV mounting.",
+  "license": "None notable; insurance.",
+  "note": "3,600/mo; $5.20 CPC.",
+  "verify": "own"
+ },
+ "mobile barber": {
+  "gate": "ok",
+  "fit": 5,
+  "model": "Partner & manage with licensed barbers who go mobile.",
+  "license": "Illinois barber license, plus an IDFPR registration for mobile service.",
+  "note": "2,900/mo; KD 18.",
+  "verify": "own-licensed"
+ },
+ "mobile hair stylist": {
+  "gate": "ok",
+  "fit": 5,
+  "model": "Partner & manage with licensed stylists.",
+  "license": "Illinois cosmetology license, plus an IDFPR salon registration for a mobile salon.",
+  "note": "2,400/mo; KD 8.",
+  "verify": "own-licensed"
+ },
+ "mobile spray tan": {
+  "gate": "ok",
+  "fit": 6,
+  "model": "Home-based mobile service; event and wedding bookings.",
+  "license": "Spray-tan licensing unclear; verify for Illinois.",
+  "note": "KD 0.",
+  "verify": "own"
+ },
+ "in home personal trainer": {
+  "gate": "ok",
+  "fit": 6,
+  "model": "Certified trainers who come to the client; recurring packages.",
+  "license": "No state license. Accredited certification, CPR/AED and liability insurance.",
+  "note": "KD 16.",
+  "verify": "own"
+ },
+ "metal buildings": {
+  "gate": "ok",
+  "fit": 5,
+  "model": "Dealer-installer for metal buildings and carports.",
+  "license": "Permits; contractor rules vary.",
+  "note": "6,600/mo; KD 10.",
+  "verify": "partner"
+ },
+ "gazebo builders": {
+  "gate": "ok",
+  "fit": 5,
+  "model": "Partner & manage with builders.",
+  "license": "Permits.",
+  "note": "KD 10.",
+  "verify": "partner"
+ },
+ "pet sitting": {
+  "gate": "ok",
+  "fit": 6,
+  "model": "Pairs with the pet-grooming project; sitters as staff.",
+  "license": "Bonding and insurance.",
+  "note": "8,100/mo; KD 16.",
+  "verify": "own"
+ },
+ "dog walker": {
+  "gate": "ok",
+  "fit": 6,
+  "model": "Same pet-care brand.",
+  "license": "Bonding and insurance.",
+  "note": "5,400/mo; $4.99 CPC.",
+  "verify": "own"
+ },
+ "certified translation": {
+  "gate": "ok",
+  "fit": 5,
+  "model": "Online certified-translation service (USCIS, courts) with vetted translators.",
+  "license": "USCIS: full translation plus the translator's signed certification (8 CFR 103.2(b)(3)). No state license found.",
+  "note": "$5.68 CPC; national online.",
+  "verify": "office"
+ },
+ "apostille services": {
+  "gate": "ok",
+  "fit": 4,
+  "model": "Document courier/agent for state apostilles, paired with notary work.",
+  "license": "Notary commission for notarizing; verify.",
+  "note": "2,400/mo.",
+  "verify": "office"
+ },
+ "wedding dj": {
+  "gate": "ok",
+  "fit": 4,
+  "model": "Event-services brand.",
+  "license": "Event insurance.",
+  "note": "4,400/mo; KD 42.",
+  "verify": "own"
+ },
+ "tent rental": {
+  "gate": "ok",
+  "fit": 4,
+  "model": "Equipment-heavy event rental.",
+  "license": "Tent permits for large tents.",
+  "note": "9,900/mo; KD 44.",
+  "verify": "own"
+ },
+ "event planner": {
+  "gate": "ok",
+  "fit": 3,
+  "model": "Planner business.",
+  "license": "-",
+  "note": "2,400/mo; KD 18.",
+  "verify": "own"
+ },
+ "mobile car wash": {
+  "gate": "ok",
+  "fit": 7,
+  "model": "Part of the car-detailing project.",
+  "license": "Water-runoff rules.",
+  "note": "5,400/mo; KD 40.",
+  "verify": "own"
+ },
+ "_verify": {
+  "own": "A: 6 Central runs it and verifies its own service-area profile for free with Google's standard video verification (tools, branded vehicle, real jobs).",
+  "own-licensed": "B: 6 Central can own the profile, but the people doing the work must hold the state license (barber, cosmetology).",
+  "office": "C: Eligible only with a real staffed location customers can visit; online-only versions can't hold a profile. Costs rent.",
+  "partner": "D: The license, venue, boats or equipment belong to an operator. The profile is theirs; 6 Central owns the website, phone number and data.",
+  "no": "F: Can't be verified: an institution, government office, online-only or 'artist' business, or a misleading name."
+ }
+}
