@@ -1,0 +1,802 @@
+{
+ "as_of": "2026-10-04",
+ "entries": [
+  {
+   "id": "garage-door-crackdown",
+   "niches": [
+    "garage doors",
+    "garage door repair",
+    "garage door installation"
+   ],
+   "keywords": [
+    "garage door repair near me",
+    "garage door spring repair",
+    "garage door opener repair",
+    "garage door installation"
+   ],
+   "level": "high",
+   "what": "Agencies report a spring 2026 suspension wave hitting garage door companies hardest (Apr 27 and May 3-4), and Google still requires Advanced Verification for garage door Ads/LSA and excluded the category from LSA pre-badge ads in Aug 2026.",
+   "since": "2026-04",
+   "plan": "Enter only as a licensed, insured, staffed operation with branded trucks, signage and documents ready for video verification, Advanced Verification and appeals, run from one clean Google account.",
+   "sources": [
+    {
+     "url": "https://www.jcerme.com/news/google-business-profile-mass-suspension-wave-april-2026",
+     "date": "2026-04-27"
+    },
+    {
+     "url": "https://www.jcerme.com/news/google-account-restrictions-wave-2-may-2026",
+     "date": "2026-05-04"
+    },
+    {
+     "url": "https://logikdigital.com/blog/google-suspensions-garage-door-dealers-2026/",
+     "date": "2026-05-14"
+    },
+    {
+     "url": "https://support.google.com/google-ads/answer/7167922",
+     "date": "undated (accessed 2026-10-04)"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-lsa-prebadge-new-verticals-41920.html",
+     "date": "2026-08-21"
+    }
+   ],
+   "scope": "niche"
+  },
+  {
+   "id": "locksmith-verification-wall",
+   "niches": [
+    "locksmith",
+    "emergency locksmith",
+    "car lockout",
+    "rekeying"
+   ],
+   "keywords": [
+    "locksmith near me",
+    "car lockout service",
+    "rekey locks",
+    "24 hour locksmith"
+   ],
+   "level": "high",
+   "what": "Locksmiths need Advanced Verification for Ads/LSA and an LSA technician background check, were excluded from LSA pre-badge ads in Aug 2026, and were named in the agency-reported April 2026 suspension wave.",
+   "since": "2026-04",
+   "plan": "Avoid unless a real licensed locksmith with a verifiable staffed location runs it; budget for slow onboarding and high suspension risk.",
+   "sources": [
+    {
+     "url": "https://www.jcerme.com/news/google-business-profile-mass-suspension-wave-april-2026",
+     "date": "2026-04-27"
+    },
+    {
+     "url": "https://support.google.com/google-ads/answer/7167922",
+     "date": "undated (accessed 2026-10-04)"
+    },
+    {
+     "url": "https://support.google.com/localservices/answer/12174778?hl=en&co=GENIE.CountryCode%3DUS",
+     "date": "undated (accessed 2026-10-04)"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-lsa-prebadge-new-verticals-41920.html",
+     "date": "2026-08-21"
+    }
+   ],
+   "scope": "niche"
+  },
+  {
+   "id": "chicago-fake-home-repair-listings-case",
+   "niches": [
+    "plumbing",
+    "hvac",
+    "electrical",
+    "garage doors",
+    "heating and cooling"
+   ],
+   "keywords": [
+    "plumber near me",
+    "hvac repair near me",
+    "electrician near me",
+    "furnace repair",
+    "garage door repair"
+   ],
+   "level": "medium",
+   "what": "DOJ (for the FTC) and the Illinois AG sued Chicago-based Premium Home Service in May 2026 over 15,000+ fake Google profiles using keyword-plus-city names, other businesses' addresses, routed phone numbers and fabricated reviews.",
+   "since": "2026-05",
+   "plan": "Use only the real legal business name, a real staffed address and local crews who do the work; expect Chicago-area home-repair listings to face extra scrutiny.",
+   "sources": [
+    {
+     "url": "https://www.justice.gov/opa/pr/department-justice-files-complaint-against-best-gdr-llc-doing-business-premium-home-service",
+     "date": "2026-05-11"
+    },
+    {
+     "url": "https://www.ftc.gov/system/files/ftc_gov/pdf/premium_home_service_-_filed_complaint.pdf",
+     "date": "2026-05-11"
+    },
+    {
+     "url": "https://www.wbez.org/business/2026/05/15/west-ridge-premium-home-service-banath-millions-customers-nationwide-scam",
+     "date": "2026-05-15"
+    }
+   ],
+   "scope": "niche",
+   "note": "Set to medium by 6 Central: the case targets fake-listing operators; for legitimate businesses it means extra scrutiny in Chicago home repair, not a reason to avoid the niche."
+  },
+  {
+   "id": "lead-gen-referral-ineligible",
+   "niches": [
+    "lead generation",
+    "job referral",
+    "contractor referral",
+    "home services marketplace"
+   ],
+   "keywords": [
+    "get free quotes",
+    "find a contractor near me",
+    "local pros near me"
+   ],
+   "level": "high",
+   "what": "Google bars lead-generation agents from Business Profiles, LSA requires leads to be fulfilled by your own vetted technicians, and the 2026 Premium Home Service case targets passing jobs to third-party contractors under local-looking identities.",
+   "since": "2026-05",
+   "plan": "Never list or advertise a business that hands its jobs to partners; each profile must belong to the company whose own staff performs the work.",
+   "sources": [
+    {
+     "url": "https://support.google.com/business/answer/13763036",
+     "date": "undated (accessed 2026-10-04)"
+    },
+    {
+     "url": "https://support.google.com/adspolicy/answer/6245891",
+     "date": "undated (accessed 2026-10-04)"
+    },
+    {
+     "url": "https://www.justice.gov/opa/pr/department-justice-files-complaint-against-best-gdr-llc-doing-business-premium-home-service",
+     "date": "2026-05-11"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "review-policy-tightening-2026",
+   "niches": [
+    "all niches",
+    "restaurants",
+    "photographers",
+    "home services"
+   ],
+   "keywords": [
+    "reviews",
+    "review request",
+    "leave us a review"
+   ],
+   "level": "high",
+   "what": "Google's 2026 review policy bans unusual review-volume patterns, incentives, staff quotas and staff-name requests, and enforces with paused reviews, unpublished reviews, consumer warning banners and doubled restrictions for repeat offenders.",
+   "since": "2026-02",
+   "plan": "Ask every real customer the same neutral way, never use quotas, contests, discounts or staff-name prompts, and keep review pace in line with job volume.",
+   "sources": [
+    {
+     "url": "https://www.seroundtable.com/google-business-profile-review-policies-updated-40962.html",
+     "date": "2026-02-20"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-reviews-being-removed-again-40950.html",
+     "date": "2026-02-19"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-reviews-policy-staff-mentions-solicitations-41175.html",
+     "date": "2026-04-17"
+    },
+    {
+     "url": "https://support.google.com/contributionpolicy/answer/7400114",
+     "date": "undated (accessed 2026-10-04)"
+    },
+    {
+     "url": "https://support.google.com/business/answer/14114287",
+     "date": "undated (accessed 2026-10-04)"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-business-profile-restrictions-double-41594.html",
+     "date": "2026-07-03"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-business-profiles-spike-in-spam-reviews-42123.html",
+     "date": "2026-09-22"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-rewards-exchange-reviews-41419.html",
+     "date": "2026-06-05"
+    },
+    {
+     "url": "https://blog.google/products-and-platforms/products/maps/new-ways-were-protecting-businesses-on-maps/",
+     "date": "2026-04-16"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "account-restriction-suspensions",
+   "niches": [
+    "garage doors",
+    "locksmith",
+    "hvac",
+    "plumbing",
+    "landscaping",
+    "general contractors"
+   ],
+   "keywords": [
+    "garage door repair",
+    "locksmith near me",
+    "hvac repair",
+    "plumber near me",
+    "landscaping near me"
+   ],
+   "level": "medium",
+   "what": "In early May 2026, profile suspensions spiked because the managing Google accounts were restricted; agencies tie it to accounts running LSA/Ads and to messy multi-account setups, and Google gave no statement.",
+   "since": "2026-05",
+   "plan": "Keep one clean owner account per business, remove stale agency or manager access and duplicate Ads/LSA accounts before launching ads.",
+   "sources": [
+    {
+     "url": "https://www.seroundtable.com/google-business-profile-suspensions-account-restrictions-41268.html",
+     "date": "2026-05-05"
+    },
+    {
+     "url": "https://www.jcerme.com/news/google-account-restrictions-wave-2-may-2026",
+     "date": "2026-05-04"
+    },
+    {
+     "url": "https://logikdigital.com/blog/google-suspensions-garage-door-dealers-2026/",
+     "date": "2026-05-14"
+    }
+   ],
+   "scope": "niche"
+  },
+  {
+   "id": "edit-burst-moderation",
+   "niches": [
+    "all niches"
+   ],
+   "keywords": [
+    "new business profile",
+    "claim business profile",
+    "profile optimization"
+   ],
+   "level": "medium",
+   "what": "After Google's Gemini-powered edit moderation launched in Apr 2026, agencies report newly claimed or dormant profiles being suspended after bursts of optimization edits flagged by automated moderation.",
+   "since": "2026-04",
+   "plan": "Verify first, then make edits gradually over weeks, avoid automated optimization tools, and keep registration, license and utility documents ready for appeals.",
+   "sources": [
+    {
+     "url": "https://blog.google/products-and-platforms/products/maps/new-ways-were-protecting-businesses-on-maps/",
+     "date": "2026-04-16"
+    },
+    {
+     "url": "https://localsearchforum.com/threads/help-suspensions-wrecking-our-agency.63237/",
+     "date": "2026-05-28"
+    },
+    {
+     "url": "https://wolfpackadvising.com/blog/thousands-just-got-their-google-business-profile-suspended/",
+     "date": "2026-05-19"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "sab-address-and-business-model",
+   "niches": [
+    "mobile services",
+    "cleaning",
+    "pest control",
+    "junk removal",
+    "roofing",
+    "landscaping",
+    "personal trainers"
+   ],
+   "keywords": [
+    "house cleaning near me",
+    "pest control near me",
+    "junk removal near me",
+    "mobile personal trainer"
+   ],
+   "level": "medium",
+   "what": "Since Feb 2026, verification asks for the business model and a wrong pick can trigger suspension or a hidden address. Agencies report 2026 suspensions of service-area businesses showing home, virtual or mailbox addresses, which the guidelines bar.",
+   "since": "2026-02",
+   "plan": "Pick the true business model, hide the address for service-area-only operations, keep the service area within about 2 hours' drive, and never use unstaffed virtual or co-working addresses.",
+   "sources": [
+    {
+     "url": "https://www.seroundtable.com/google-business-profile-verification-flow-caution-40991.html",
+     "date": "2026-02-25"
+    },
+    {
+     "url": "https://support.google.com/business/answer/3038177",
+     "date": "undated (accessed 2026-10-04)"
+    },
+    {
+     "url": "https://wolfpackadvising.com/blog/thousands-just-got-their-google-business-profile-suspended/",
+     "date": "2026-05-19"
+    },
+    {
+     "url": "https://support.google.com/business/answer/14271705",
+     "date": "undated (accessed 2026-10-04)"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "keyword-stuffed-names",
+   "niches": [
+    "locksmith",
+    "movers",
+    "roofing",
+    "plumbing",
+    "garage doors",
+    "hvac"
+   ],
+   "keywords": [
+    "24/7 plumber chicago",
+    "best roofer near me",
+    "cheap movers chicago"
+   ],
+   "level": "medium",
+   "what": "Keyword-stuffed business names are the most-cited 2026 suspension trigger in agency reports, Google banned repeated bilingual names in Aug 2026, and the Premium Home Service complaint centers on keyword-plus-city names.",
+   "since": "2026-05",
+   "plan": "Register and brand the real legal name before launch, and never add city, service or slogan words to the profile name.",
+   "sources": [
+    {
+     "url": "https://wolfpackadvising.com/blog/thousands-just-got-their-google-business-profile-suspended/",
+     "date": "2026-05-19"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-business-profiles-disallows-repeated-bilingual-names-41839.html",
+     "date": "2026-08-10"
+    },
+    {
+     "url": "https://www.ftc.gov/system/files/ftc_gov/pdf/premium_home_service_-_filed_complaint.pdf",
+     "date": "2026-05-11"
+    },
+    {
+     "url": "https://support.google.com/business/answer/3038177",
+     "date": "undated (accessed 2026-10-04)"
+    }
+   ],
+   "scope": "niche"
+  },
+  {
+   "id": "identity-change-acquisitions",
+   "niches": [
+    "all niches"
+   ],
+   "keywords": [
+    "buy existing business",
+    "rebrand business profile",
+    "change business name"
+   ],
+   "level": "medium",
+   "what": "Since Apr 2026, Google's identity-change policy rejects significant name or category changes and says a new business at a location must mark the old profile closed rather than rename it and inherit its reviews.",
+   "since": "2026-04",
+   "plan": "When acquiring or rebranding, keep the profile only if the same business continues; otherwise mark it permanently closed and verify a new profile.",
+   "sources": [
+    {
+     "url": "https://www.seroundtable.com/google-business-profile-updates-identity-change-language-41150.html",
+     "date": "2026-04-14"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "ai-local-packs-call-decline",
+   "niches": [
+    "all niches",
+    "lawyers",
+    "home services"
+   ],
+   "keywords": [
+    "near me",
+    "best plumber near me",
+    "personal injury lawyer near me"
+   ],
+   "level": "medium",
+   "what": "AI Overview local packs replace the 3-pack on some queries and show about a third as many businesses, often without call buttons. SEL reports Q2 2026 US GBP calls down 11.9% and website clicks down 12.5% year over year, while direction requests rose.",
+   "since": "2026-01",
+   "plan": "Budget for fewer organic calls per profile, track direction requests and LSA leads, and keep website and review content specific enough for AI surfaces to cite.",
+   "sources": [
+    {
+     "url": "https://www.seroundtable.com/google-ai-overview-local-pack-drops-40773.html",
+     "date": "2026-01-16"
+    },
+    {
+     "url": "https://whitespark.ca/blog/20-local-developments-you-need-to-know-about-from-q1-2026/",
+     "date": "2026-04-02"
+    },
+    {
+     "url": "https://www.brightlocal.com/research/local-ai-visibility-study/",
+     "date": "2026-09-16"
+    },
+    {
+     "url": "https://searchengineland.com/calls-clicks-falling-google-maps-destination-486276",
+     "date": "2026-08-31"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-ai-overview-local-results-listicles-41854.html",
+     "date": "2026-08-12"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "lsa-missed-call-billing",
+   "niches": [
+    "plumbing",
+    "hvac",
+    "electrical",
+    "roofing",
+    "pest control",
+    "house cleaning",
+    "moving"
+   ],
+   "keywords": [
+    "local services ads",
+    "google verified",
+    "plumber near me"
+   ],
+   "level": "medium",
+   "what": "From Oct 1, 2026, LSA bills missed business-hours calls when the caller stays on the line more than 20 seconds, and charges once for follow-up calls within 15 days.",
+   "since": "2026-10",
+   "plan": "Staff phones or a live answering service for every listed hour before turning LSA on, and set hours that match real availability.",
+   "sources": [
+    {
+     "url": "https://www.seroundtable.com/google-lsa-missed-subsequent-calls-41940.html",
+     "date": "2026-08-25"
+    },
+    {
+     "url": "https://ppc.land/google-lsa-advertisers-face-missed-call-charges-from-october-1/",
+     "date": "2026-09-25"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "lsa-requirements-jul-2026",
+   "niches": [
+    "all lsa categories",
+    "plumbing",
+    "hvac",
+    "roofing",
+    "cleaning"
+   ],
+   "keywords": [
+    "local services ads",
+    "google verified"
+   ],
+   "level": "medium",
+   "what": "LSA requirements updated Jul 31, 2026 prohibit raising prices on arrival and asking for reviews on site, and require leads to be fulfilled only by your own vetted technicians.",
+   "since": "2026-07",
+   "plan": "Train crews to quote honestly and keep pricing consistent, request reviews only after the visit, and never pass LSA leads to other companies.",
+   "sources": [
+    {
+     "url": "https://support.google.com/adspolicy/answer/17083421",
+     "date": "2026-06-05"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-renames-local-services-platform-policies-to-requirements-41809.html",
+     "date": "2026-08-05"
+    },
+    {
+     "url": "https://support.google.com/adspolicy/answer/6245891",
+     "date": "undated (accessed 2026-10-04)"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "lsa-prebadge-healthcare-excluded",
+   "niches": [
+    "healthcare",
+    "medical",
+    "dentists"
+   ],
+   "keywords": [
+    "doctor near me",
+    "dentist near me",
+    "clinic near me"
+   ],
+   "level": "medium",
+   "what": "Aug 2026 LSA pre-badge ads let most advertisers get leads before verification is complete, but healthcare (along with garage door and locksmith) is excluded, and healthcare still needs provider and practice checks.",
+   "since": "2026-08",
+   "plan": "Expect full licensing and verification before any LSA leads; don't plan healthcare launches around fast LSA volume.",
+   "sources": [
+    {
+     "url": "https://www.seroundtable.com/google-lsa-prebadge-new-verticals-41920.html",
+     "date": "2026-08-21"
+    },
+    {
+     "url": "https://support.google.com/localservices/answer/12174778?hl=en&co=GENIE.CountryCode%3DUS",
+     "date": "undated (accessed 2026-10-04)"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "ftc-review-rule-letters",
+   "niches": [
+    "property management",
+    "personal injury lawyer",
+    "accounting"
+   ],
+   "keywords": [
+    "property management company",
+    "personal injury lawyer near me",
+    "accountant near me"
+   ],
+   "level": "medium",
+   "what": "The FTC sent Consumer Review Rule warning letters (Dec 2025, publicized in 2026) to property managers, personal-injury law firms and an accounting firm over incentivized reviews.",
+   "since": "2025-12",
+   "plan": "Do not offer tenants, clients or staff anything for reviews, and document a neutral review-request process.",
+   "sources": [
+    {
+     "url": "https://www.dlapiper.com/en/insights/publications/2026/07/ftcs-2026-enforcement-approach-to-fake-reviews-takes-shape-takeaways-for-companies",
+     "date": "2026-07-27"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "spam-updates-2026",
+   "niches": [
+    "all niches"
+   ],
+   "keywords": [
+    "city service pages",
+    "near me landing pages"
+   ],
+   "level": "low",
+   "what": "Google ran spam updates in March, June, August and September 2026 (September's still rolling out with a two-week window) with no new spam policy named, plus core updates in March and May; it also warned against buying mentions for AI visibility.",
+   "since": "2026-03",
+   "plan": "Keep each business website original and specific, with no mass city doorway pages, bought links or paid mentions.",
+   "sources": [
+    {
+     "url": "https://status.search.google.com/products/rGHU1u87FJnkP6W2GwMi/history",
+     "date": "accessed 2026-10-04"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-september-2026-spam-update-two-42209.html",
+     "date": "2026-10-01"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-inauthentic-mentions-ai-41401.html",
+     "date": "2026-05-28"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "lsa-pmax-migration",
+   "niches": [
+    "plumbing",
+    "hvac",
+    "electrical",
+    "appliance repair",
+    "house cleaning",
+    "lawn care",
+    "roofing",
+    "pest control",
+    "moving"
+   ],
+   "keywords": [
+    "local services ads",
+    "performance max",
+    "pay per lead"
+   ],
+   "level": "low",
+   "what": "LSA is moving into Google Ads as pay-per-lead Performance Max: phase 1 started Aug 2026 for these categories, service-area businesses follow in late 2026, and manual bidding and vertical target CPA are being dropped.",
+   "since": "2026-08",
+   "plan": "Set up Google Ads under the business's own account and expect less manual bid control.",
+   "sources": [
+    {
+     "url": "https://www.seroundtable.com/google-local-services-ads-transition-google-ads-41717.html",
+     "date": "2026-07-21"
+    },
+    {
+     "url": "https://support.google.com/google-ads/answer/17213585",
+     "date": "undated (accessed 2026-10-04)"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "lsa-cost-inflation",
+   "niches": [
+    "appliance repair",
+    "junk removal",
+    "landscaping",
+    "electrical",
+    "roofing",
+    "water damage"
+   ],
+   "keywords": [
+    "appliance repair near me",
+    "junk removal near me",
+    "water damage restoration"
+   ],
+   "level": "low",
+   "what": "Vendor data (99 Calls, Sept 2026) shows LSA cost per lead up 11-69% year over year (appliance repair $20 to $34, water damage $172 to $215), with plumbing slightly down.",
+   "since": "2026-09",
+   "plan": "Model unit economics with current lead costs rather than 2025 benchmarks before choosing these niches.",
+   "sources": [
+    {
+     "url": "https://pr.davisjournal.com/article/Lead-Smart-Inc-Google-Lead-Costs-Rose-Up-to-69percent-in-a-Year-What-the-Same-Calls-Pay-Publishers/6a9d61185e47130002855182",
+     "date": "2026-09-06"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "lsa-beauty-auto-expansion",
+   "niches": [
+    "beauty",
+    "hair salons",
+    "barbers",
+    "nail salons",
+    "makeup artist",
+    "eyelash",
+    "auto repair"
+   ],
+   "keywords": [
+    "hair salon near me",
+    "eyelash extensions near me",
+    "makeup artist near me",
+    "brake shop near me"
+   ],
+   "level": "low",
+   "what": "In Aug 2026 LSA added granular beauty, auto and dining verticals and dropped the California/Florida-only limit for barbers, hair and nail salons, but these verticals don't get the Google Verified badge.",
+   "since": "2026-08",
+   "plan": "Opportunity: real beauty or auto shops in Chicago can test LSA, with no trust badge to lean on.",
+   "sources": [
+    {
+     "url": "https://www.seroundtable.com/google-lsa-prebadge-new-verticals-41920.html",
+     "date": "2026-08-21"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "ai-agent-calls-to-businesses",
+   "niches": [
+    "home repair",
+    "handyman",
+    "beauty",
+    "pet care",
+    "pet grooming"
+   ],
+   "keywords": [
+    "handyman near me",
+    "dog grooming near me",
+    "hair salon near me"
+   ],
+   "level": "low",
+   "what": "At I/O in May 2026, Google said Search will call businesses on users' behalf in home repair, beauty and pet care to check pricing and availability, rolling out in the US in summer 2026 (full rollout unconfirmed).",
+   "since": "2026-05",
+   "plan": "Answer the phone with clear prices and availability, and choose automated-call preferences in Business Profile Advanced settings.",
+   "sources": [
+    {
+     "url": "https://blog.google/products-and-platforms/products/search/search-io-2026/",
+     "date": "2026-05-19"
+    },
+    {
+     "url": "https://support.google.com/business/answer/16190256",
+     "date": "undated (accessed 2026-10-04)"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "automated-profile-edits",
+   "niches": [
+    "all niches"
+   ],
+   "keywords": [
+    "business hours",
+    "business phone number",
+    "suggested edits"
+   ],
+   "level": "low",
+   "what": "Google now texts or calls the verified number to confirm details and applies the answers automatically, publishes user-suggested edits not rejected within 4 days, and removes Posts with unverified contact details.",
+   "since": "2026-03",
+   "plan": "Have one person own the verified phone line and check GBP notifications daily.",
+   "sources": [
+    {
+     "url": "https://www.seroundtable.com/google-business-profiles-call-text-or-whatsapp-41126.html",
+     "date": "2026-03-31"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-business-profiles-collected-info-41535.html",
+     "date": "2026-06-22"
+    },
+    {
+     "url": "https://www.seroundtable.com/google-business-profiles-4-days-42139.html",
+     "date": "2026-09-23"
+    },
+    {
+     "url": "https://www.seroundtable.com/unverified-contact-information-google-posts-42159.html",
+     "date": "2026-09-25"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "maps-photo-phone-scam",
+   "niches": [
+    "roofing",
+    "contractors"
+   ],
+   "keywords": [
+    "roofer near me",
+    "roof repair near me"
+   ],
+   "level": "low",
+   "what": "In Sept 2026 scammers uploaded AI-generated photos with fake phone numbers to Maps listings, including roofers; Google removed them after reports.",
+   "since": "2026-09",
+   "plan": "Check customer-uploaded photos on each profile weekly and report any with foreign phone numbers.",
+   "sources": [
+    {
+     "url": "https://www.seroundtable.com/google-maps-phone-number-in-photo-scam-42056.html",
+     "date": "2026-09-10"
+    }
+   ],
+   "scope": "niche"
+  },
+  {
+   "id": "photo-verification-option",
+   "niches": [
+    "storefront businesses",
+    "salons",
+    "retail"
+   ],
+   "keywords": [
+    "verify business profile",
+    "storefront signage"
+   ],
+   "level": "low",
+   "what": "In Sept 2026 Google began offering a photo verification method requiring business-name signage on a permanent fixture and the whole storefront in one frame; it is not yet documented.",
+   "since": "2026-09",
+   "plan": "For storefronts, install permanent exterior signage matching the GBP name before verifying.",
+   "sources": [
+    {
+     "url": "https://www.seroundtable.com/google-business-profiles-business-photo-verification-42019.html",
+     "date": "2026-09-04"
+    },
+    {
+     "url": "https://support.google.com/business/answer/14271705",
+     "date": "undated (accessed 2026-10-04)"
+    }
+   ],
+   "scope": "general"
+  },
+  {
+   "id": "legacy-2024-category-sweep",
+   "niches": [
+    "dumpster rental",
+    "tree service",
+    "personal injury lawyer",
+    "garage doors"
+   ],
+   "keywords": [
+    "dumpster rental near me",
+    "tree removal near me",
+    "personal injury lawyer"
+   ],
+   "level": "low",
+   "what": "A Sept 2024 mass suspension hit garage door, dumpster rental, tree service and personal-injury law profiles; no 2026 repeat for dumpster, tree or legal was confirmed.",
+   "since": "2024-09",
+   "plan": "Treat these as historically high-scrutiny categories and keep verification evidence on hand.",
+   "sources": [
+    {
+     "url": "https://www.seroundtable.com/google-business-profile-suspensions-disabled-38086.html",
+     "date": "2024-09-19"
+    },
+    {
+     "url": "https://www.websitebuilderexpert.com/news/google-business-profile-suspensions/",
+     "date": "2024-09-24"
+    }
+   ],
+   "scope": "niche"
+  }
+ ],
+ "scopes": {
+  "general": "Rules every profile must follow; shown in the Google watch, never used to penalize a niche.",
+  "niche": "Applies to specific niches or keywords; high = Avoid, medium = caution and a score penalty."
+ }
+}

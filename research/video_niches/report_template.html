@@ -1,0 +1,177 @@
+<title>Drop-Servicing Niche Audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;600&display=swap">
+<style>
+/* Layout: an investigator's file. The video's own Notepad list sits up top, color-coded by verdict;
+   picks follow as dossier cards; the full ledger is one filterable table. */
+:root {
+  --paper: #f3f5f7; --sheet: #ffffff; --ink: #17212b; --muted: #5d6b78; --rule: #d6dde4;
+  --cobalt: #2453c7; --cobalt-soft: #e4ebfb;
+  --go: #17724a; --go-bg: #dcf1e5; --test: #8f5f00; --test-bg: #fbedcc;
+  --pass: #5b6773; --pass-bg: #e6eaee; --off: #a8322a; --off-bg: #f7e0dd;
+  --display: "Archivo Narrow", "Arial Narrow", sans-serif;
+  --body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #10161c; --sheet: #172028; --ink: #e3e9ee; --muted: #94a3b0; --rule: #2a3742;
+  --cobalt: #8eaaf5; --cobalt-soft: #1b2847;
+  --go: #7cd6a6; --go-bg: #15392a; --test: #f0c56a; --test-bg: #3a2d10;
+  --pass: #a7b3be; --pass-bg: #26313b; --off: #f1998f; --off-bg: #3e1d1a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #10161c; --sheet: #172028; --ink: #e3e9ee; --muted: #94a3b0; --rule: #2a3742;
+  --cobalt: #8eaaf5; --cobalt-soft: #1b2847;
+  --go: #7cd6a6; --go-bg: #15392a; --test: #f0c56a; --test-bg: #3a2d10;
+  --pass: #a7b3be; --pass-bg: #26313b; --off: #f1998f; --off-bg: #3e1d1a; color-scheme: dark; }
+body { background: var(--paper); color: var(--ink); font: 16px/1.55 var(--body); }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; padding-block: 32px 64px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; }
+.wrap > * { min-width: 0; }
+header { display: grid; gap: 10px; }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--cobalt); }
+h1 { font: 700 clamp(34px, 6vw, 56px)/1 var(--display); margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+h2 { font: 700 28px/1.1 var(--display); margin: 0 0 14px; text-wrap: balance; }
+h3 { font: 600 18px/1.3 var(--body); margin: 0; }
+p { margin: 0; max-width: 70ch; }
+.muted { color: var(--muted); }
+a { color: var(--cobalt); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 2px; }
+.tally { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { font: 500 12px/1 var(--mono); padding: 5px 8px; border-radius: 4px; white-space: nowrap; display: inline-block; }
+.v-go { background: var(--go-bg); color: var(--go); } .v-test { background: var(--test-bg); color: var(--test); }
+.v-pass { background: var(--pass-bg); color: var(--pass); } .v-off { background: var(--off-bg); color: var(--off); }
+.listing { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 820px) { .listing { grid-template-columns: minmax(0, 1fr); } }
+.notepad { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; min-width: 0; }
+.notepad .bar { font: 500 12px/1 var(--mono); padding: 9px 12px; border-bottom: 1px solid var(--rule); color: var(--muted); }
+.notepad .text { font: 400 14px/2 var(--mono); padding: 14px 16px; overflow-wrap: anywhere; }
+.notepad mark { border-radius: 3px; padding: 1px 3px; }
+mark.v-go { background: var(--go-bg); color: var(--go); } mark.v-test { background: var(--test-bg); color: var(--test); }
+mark.v-pass { background: var(--pass-bg); color: var(--pass); } mark.v-off { background: var(--off-bg); color: var(--off); text-decoration: line-through; }
+.frame { margin: 0; display: grid; gap: 6px; min-width: 0; }
+.frame img { width: 100%; border: 1px solid var(--rule); border-radius: 6px; display: block; }
+.frame figcaption { font-size: 13px; color: var(--muted); }
+.picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 16px; }
+.pick { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.pick-head { display: flex; gap: 8px; align-items: center; }
+.pick-head .src { font: 500 12px/1 var(--mono); color: var(--muted); }
+.pick-head .score { margin-left: auto; font: 700 26px/1 var(--display); font-variant-numeric: tabular-nums; }
+.facts { font: 400 13px/1.6 var(--mono); color: var(--muted); }
+.lic, .next { font-size: 15px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.filters button { font: 500 13px/1 var(--mono); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); cursor: pointer; }
+.filters button[aria-pressed="true"] { background: var(--cobalt-soft); border-color: var(--cobalt); color: var(--cobalt); }
+.table { overflow-x: auto; background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 9px 11px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font: 500 11px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; position: sticky; top: 0; background: var(--sheet); }
+td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.note { min-width: 240px; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 16px; }
+.panel { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; display: grid; gap: 10px; min-width: 0; }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.grade { display: inline-grid; place-items: center; min-width: 26px; height: 26px; border-radius: 4px; font: 700 15px/1 var(--display); }
+.g-A { background: var(--go-bg); color: var(--go); } .g-B { background: var(--cobalt-soft); color: var(--cobalt); }
+.g-C { background: var(--test-bg); color: var(--test); } .g-D { background: var(--pass-bg); color: var(--pass); }
+.g-F { background: var(--off-bg); color: var(--off); }
+.board { display: grid; gap: 12px; }
+.lane { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.lane-head { display: flex; gap: 12px; align-items: flex-start; }
+.lane-head .grade { min-width: 36px; height: 36px; font-size: 20px; flex: none; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 4px; border: 1px solid var(--rule); border-radius: 6px; font-size: 14px; }
+.chip .grade { min-width: 22px; height: 22px; font-size: 13px; }
+footer { font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
+</style>
+<div class="wrap">
+<header>
+  <span class="eyebrow">6 Central Enterprises · Niche investigation · {{DATE}}</span>
+  <h1>Drop-Servicing Niche Audit</h1>
+  <p>Every niche from “All Niches That Works With Drop Servicing GOD COURSE” ({{N_SCREEN}} on screen, {{N_SPOKEN}} said aloud),
+  plus {{N_ADJ}} similar niches we found by applying the video’s ideas, checked against live search demand and Google’s map pack.</p>
+  <div class="tally"><span class="tag v-go">{{N_GO}} Pursue</span><span class="tag v-test">{{N_TEST}} Test</span>
+  <span class="tag v-pass">{{N_PASS}} Pass</span><span class="tag v-off">{{N_OFF}} Off-limits or Avoid</span></div>
+</header>
+
+<section>
+  <h2>The list from the video, graded</h2>
+  <div class="listing">
+    <div class="notepad"><div class="bar">BONUS DROP SERVICING NICHES · Notepad</div><div class="text">{{NOTEPAD}}</div></div>
+    {{FRAME}}
+  </div>
+</section>
+
+<section>
+  <h2>Can 6 Central verify it and own it?</h2>
+  <p class="muted" style="margin-bottom:12px">Each row is how a Google Business Profile could be verified (free) and who would own it.
+  The letter on each niche is its opportunity grade from the ranking (A = score 60+, B = 52+, C = 45+, D = 35+, F = below 35 or off-limits).
+  The double-A niches sit at the top left: worth doing and fully ownable.</p>
+  <div class="board">{{BOARD}}</div>
+</section>
+
+<section>
+  <h2>Where the real opportunities are</h2>
+  <div class="picks">{{PICKS}}</div>
+</section>
+
+<section>
+  <h2>Every niche, ranked</h2>
+  <p class="muted" style="margin-bottom:12px">Score out of 100: demand (30), job value from cost per click (15), map-pack openness or,
+  for online-sold services, ranking difficulty (25), fit with 6 Central (30), and ±5 for the year-over-year trend.
+  Map pack = median reviews of Google’s top 3 local results; under 50 is open.</p>
+  <div class="filters" role="group" aria-label="Filter by verdict">
+    <button type="button" id="f-all" data-f="all" aria-pressed="true">All</button>
+    <button type="button" id="f-go" data-f="go" aria-pressed="false">Pursue</button>
+    <button type="button" id="f-test" data-f="test" aria-pressed="false">Test</button>
+    <button type="button" id="f-pass" data-f="pass" aria-pressed="false">Pass</button>
+    <button type="button" id="f-off" data-f="off" aria-pressed="false">Off-limits</button>
+  </div>
+  <div class="table"><table>
+    <thead><tr><th>#</th><th>Niche</th><th>Source</th><th>Verdict</th><th>Score</th><th>Grade</th><th>Verify &amp; own</th><th>US/mo</th><th>Chicago/mo</th>
+    <th>CPC</th><th>KD</th><th>YoY</th><th>Map pack median</th><th>Google risk</th><th>Why</th></tr></thead>
+    <tbody>{{ROWS}}</tbody>
+  </table></div>
+</section>
+
+<section class="cols">
+  <div class="panel"><h3>Off-limits, and why</h3><ul>{{OFF}}</ul></div>
+  <div class="panel"><h3>What we kept from the video, and what we dropped</h3>
+    <ul>
+      <li><strong>Kept:</strong> look where other marketers don’t, favor big-ticket jobs, trust search intent, research before spending, line up several real operators per city, sell repeat bookings.</li>
+      <li><strong>Dropped:</strong> ranking a Google profile for a business you don’t run and forwarding the calls. Google bars lead-generation businesses from holding profiles.</li>
+      <li><strong>Dropped:</strong> “celebrity” wording without celebrity clients, and listings for institutions (airports, passport offices, credit unions).</li>
+      <li><strong>Unverified claims:</strong> “instant rankings”, “no competition in every city”, “$9,000 per deal”.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <p>Sources: Semrush phrase reports (US database) and OpenRush 24-month trends and live map packs, pulled {{DATE}}.
+  Semrush and OpenRush measure volume differently; the table uses Semrush for volume and KD, OpenRush for YoY.
+  Map packs are one snapshot each and shift with the searcher’s location.</p>
+  <p>License and eligibility sources: <a href="https://support.google.com/business/answer/13763036">Google eligibility guidelines</a> ·
+  <a href="https://idfpr.illinois.gov/content/dam/soi/en/web/idfpr/core/dpr/258-qualifications-for-licensure.pdf">IDFPR hair braider</a> ·
+  <a href="https://lig.ilga.gov/legislation/ilcs/documents/022504100K3A-1.htm">Illinois esthetics (makeup)</a> ·
+  <a href="https://labor.illinois.gov/faqs/private-employment-agency-faq.html">Illinois private employment agencies</a> ·
+  <a href="https://www.nasm.org/resource-center/blog/certification/do-you-need-a-license-to-be-a-personal-trainer-state-by-state-rules">Personal trainer licensing (NASM)</a> ·
+  <a href="https://www.uscis.gov/policy-manual/volume-1-part-e-chapter-6">USCIS translations</a> ·
+  <a href="https://www.ftc.gov/business-guidance/resources/complying-telemarketing-sales-rule">FTC Telemarketing Sales Rule</a> ·
+  <a href="https://www.chicago.gov/city/en/sites/guide-to-building-permits/home/help/faq/DOB/GC-license.html">Chicago GC license</a> ·
+  <a href="https://www.azleg.gov/ars/32/01121.htm">Arizona ROC exemptions</a> ·
+  <a href="https://www.dvidshub.net/news/542599/coast-guard-sector-lake-michigan-terminates-four-illegal-charters-over-fourth-july-weekend">USCG Chicago charter enforcement</a></p>
+  <p>Video: “All Niches That Works With Drop Servicing GOD COURSE”, Godfather Of Drop servicing, uploaded 2020-02-28.</p>
+</footer>
+</div>
+<script>
+(function () {
+  var buttons = document.querySelectorAll('.filters button');
+  var rows = document.querySelectorAll('tbody tr');
+  buttons.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var f = b.getAttribute('data-f');
+      buttons.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      rows.forEach(function (r) { r.hidden = f !== 'all' && r.getAttribute('data-verdict') !== f; });
+    });
+  });
+})();
+</script>
