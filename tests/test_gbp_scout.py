@@ -3,7 +3,7 @@ from argparse import Namespace
 
 import scout
 from gbp_scout import scoring
-from gbp_scout.brief import render_html
+from gbp_scout.brief import render_html, render_summary
 
 
 def trend(newest_first, year=2026, month=8):
@@ -246,3 +246,31 @@ def test_general_rules_never_penalize_and_risk_is_per_keyword():
     assert scoring.google_risk("cleaning", {"keywords": ["house cleaning near me"]}, register) is None
     assert scoring.google_risk("roadside assistance", {"keywords": ["roadside assistance near me"]}, register) is None
     assert scoring.google_risk("roadside assistance", {"keywords": ["car lockout service near me"]}, register)["level"] == "high"
+
+
+def test_target_bases_checked_daily_and_rotating(tmp_path, monkeypatch):
+    cfg = scout.load_config()
+    daily = [b["name"] for b in cfg["bases"]["list"] if b.get("cadence", "daily") == "daily"]
+    for d in ("2026-10-13", "2026-10-14", "2026-10-15"):
+        names = {b["name"] for b, q, p in scout.base_checks(cfg, d)}
+        assert set(daily) <= names and len(names) == len(daily) + 1
+    seen = set()
+    for i in range(3):
+        seen |= {b["name"] for b, q, p in scout.base_checks(cfg, f"2026-10-{13 + i}")}
+    assert seen == {b["name"] for b in cfg["bases"]["list"]}  # every rotating base gets a turn
+    monkeypatch.setattr(scout, "RUNS", tmp_path)
+    day = "2026-10-13"; out = tmp_path / day
+    for sub in ("discovery", "keywords", "serp"):
+        (out / sub).mkdir(parents=True)
+    (out / "plan.json").write_text(json.dumps({"date": day, "weekday": "Tuesday", "cluster": "weekly-recap",
+                                               "label": "Recap", "recap": True, "markets": []}))
+    (out / "serp" / "base__portage-park-chicago-nw__mobile-tire-repair.json").write_text(json.dumps({
+        "query": "mobile tire repair", "local_pack": [
+            {"title": "Sal's mobile tire service", "rating": {"value": 4.8, "votes_count": 113}},
+            {"title": "TJ 24 Hour Mobile Tire Repair Service Chicago IL", "rating": {"value": 4.6, "votes_count": 10}},
+            {"title": "We Come to You TIRES", "rating": {"value": 5, "votes_count": 101}}]}))
+    brief = scout.build(day, cfg)
+    row = next(v for v in brief["bases"] if v["base"].startswith("Portage") and v["query"] == "mobile tire repair")
+    assert row["today"]["our_position"] == 2 and row["today"]["median"] == 101
+    assert "Target bases" in render_html(brief) and "we're #2" in render_summary(brief)
+    assert brief["state"]["bases"]["Portage Park (Chicago NW) | mobile tire repair"][0]["our_position"] == 2

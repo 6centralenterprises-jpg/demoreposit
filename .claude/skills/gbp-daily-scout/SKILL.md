@@ -55,6 +55,12 @@ Apply steady pressure every day:
 - **Standing watch** (`focus` in config: decks & general contracting).
   `screen` adds one focus map search to every market each day, alternating
   "deck builders" / "general contractor" (about 8 credits a day).
+- **Target bases** (`bases` in config) are the places 6 Central plans its own
+  service-area listings (Portage Park, Elgin, and three rotating bases).
+  `screen` prints their checks every day under "Target-base checks"; run them
+  with inspect_serp and save to the `serp/base__...` path shown. `build` reports
+  our spot, the top 3, the median and the change since the last check. This is
+  Terell's standing request: it must be in every morning report.
 - **Our listings** (`own_listings` in config) are confirmed 6 Central
   profiles. `screen` adds each one's tracked search in its market every day
   (2 credits each). Never edit those profiles; only report on them.
@@ -212,6 +218,8 @@ is `runs/gbp/D/`.
       entered the top 5 today
     - each of our listings: today's map position and reviews vs the last
       check, and its open "fix before Google asks" items (from `summary.md`)
+    - **target bases:** one line per base and search from `summary.md` ("Target
+      bases today"), always, with any change in our spot or the median called out
     - the standing watch (decks & general contracting): its most open
       markets, and any new market that showed a median under 50 reviews
     - any "possibly ours" map-pack sighting, as a question to confirm

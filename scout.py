@@ -75,6 +75,25 @@ def market_checks(plan, cfg):
     return out
 
 
+def base_checks(cfg, day):
+    """Target bases checked today: every daily base, plus the rotating bases taking turns.
+
+    Returns a list of (base, query, relative serp path)."""
+    bases = (cfg.get("bases") or {}).get("list") or []
+    daily = [b for b in bases if b.get("cadence", "daily") == "daily"]
+    rotating = [b for b in bases if b.get("cadence") == "rotating"]
+    per_day = (cfg.get("bases") or {}).get("daily_rotating", 1)
+    todays = list(daily)
+    if rotating and day:
+        start = (datetime.strptime(day, "%Y-%m-%d").toordinal() * per_day) % len(rotating)
+        todays += [rotating[(start + i) % len(rotating)] for i in range(min(per_day, len(rotating)))]
+    out = []
+    for b in todays:
+        for q in b["queries"]:
+            out.append((b, q, f"serp/base__{scoring.slug(b['name'])}__{scoring.slug(q)}.json"))
+    return out
+
+
 def focus_query(cfg, day):
     """Today's standing-watch map search (alternates daily between the focus searches)."""
     queries = (cfg.get("focus") or {}).get("map_queries") or []
@@ -134,6 +153,7 @@ def cmd_plan(args):
     markets = todays_markets(cfg, day)
     checks = sum(budget["openrush_map_pack_checks"] if m["role"] == "home" else budget["rotating_checks_per_market"]
                  for m in markets) + len(markets) * bool(focus_query(cfg, day)) + len(cfg.get("own_listings", []))
+    checks += len(base_checks(cfg, day))
     est = (len(seeds) * credits["research_keywords"]
            + (0 if recap else budget["openrush_deep_dives"] * credits["inspect_keyword"])
            + checks * credits["inspect_serp"])
@@ -283,6 +303,9 @@ def cmd_screen(args):
     for m, queries in market_checks(plan, cfg):
         for q in queries:
             print(f"  '{q}' @ {m['serp_location']}  ->  serp/{scoring.slug(m['name'])}__{scoring.slug(q)}.json")
+    print("Target-base checks (our planned bases, every day; same tool, same save format):")
+    for b, q, path in base_checks(cfg, args.date):
+        print(f"  '{q}' @ {b['serp_location']}  ->  {path}")
 
 
 # ------------------------------------------------------------------- build
@@ -299,6 +322,8 @@ def build(day, cfg):
 
     serps = {}
     for path in sorted((out / "serp").glob("*.json")):
+        if path.name.startswith("base__"):
+            continue  # target bases are read separately below
         data = payload(read_json(path))
         market_slug, _, q = path.stem.partition("__")
         market = next((m["name"] for m in all_markets(cfg) if scoring.slug(m["name"]) == market_slug), market_slug)
@@ -395,8 +420,9 @@ def build(day, cfg):
         focus_view = {"label": focus["label"], "today": today_checks,
                       "leaderboard": scoring.leaderboard({m: r for m, r in focus_board.items() if r}),
                       "licensing": {s: focus["licensing"][s] for s in sorted(states) if s in focus.get("licensing", {})}}
+    bases_view, base_state = target_bases(cfg, day, out, prev)
     state = {"version": 1, "updated": day, "watchlist": watch, "briefs": briefs, "markets": board,
-             "own_listings": own_state, "google_flags": flags}
+             "own_listings": own_state, "google_flags": flags, "bases": base_state}
 
     own_sightings = [dict(p, query=c["query"], market=c["market"])
                      for checks in serps.values() for c in checks for p in c["pack"] if p["possibly_ours"]]
@@ -407,7 +433,7 @@ def build(day, cfg):
              "markets": [m["name"] for m in plan["markets"]], "leaderboard": scoring.leaderboard(board),
              "opportunities": opportunities,
              "serps": serps, "signals": signals, "kits": kits, "verification": cfg["verification"], "own_sightings": own_sightings,
-             "own_listings": own_listings, "focus": focus_view, "tactic": tactic,
+             "own_listings": own_listings, "focus": focus_view, "tactic": tactic, "bases": bases_view,
              "google": {"register": [e for e in register if e.get("level") in ("high", "medium")],
                         "flags": flags, "as_of": (read_json(ROOT / cfg.get("google_risk_register", ""), {}) or {}).get("as_of")
                         if cfg.get("google_risk_register") else None},
@@ -415,6 +441,32 @@ def build(day, cfg):
                                     key=lambda o: -o["season"]["ratio"]),
              "spend": spend_for(out, cfg), "state": state}
     return brief
+
+
+def target_bases(cfg, day, out, prev):
+    """Today's reading for every planned base: our position, the top 3, the median, and the change since last time."""
+    own_names = [x["name"] for x in cfg.get("own_listings", [])]
+    markers = cfg.get("own_brand_markers", [])
+    base_state = prev.get("bases") or {}
+    view = []
+    for b, q, rel in base_checks(cfg, day):
+        path = out / rel
+        key = f"{b['name']} | {q}"
+        history = [h for h in base_state.get(key, []) if h.get("date") != day]
+        reading = None
+        if path.exists():
+            data = payload(read_json(path))
+            pw = scoring.pack_weakness(data, markers, own_names)
+            ours = next((i for i, p in enumerate(pw["pack"], 1) if p.get("ours")), None)
+            reading = {"date": day, "median": pw.get("median_reviews"), "weakness": pw.get("weakness"),
+                       "our_position": ours,
+                       "top3": [{"name": p["name"], "reviews": p["reviews"]} for p in pw["pack"][:3]]}
+            history = (history + [reading])[-MAX_HISTORY:]
+        base_state[key] = history
+        previous = next((h for h in reversed(history) if h.get("date") != day), None)
+        view.append({"base": b["name"], "location": b["serp_location"], "query": q, "plan": b.get("plan", ""),
+                     "today": reading, "previous": previous})
+    return view, base_state
 
 
 def google_watch(cfg, prev, todays, day):

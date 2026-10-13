@@ -53,6 +53,38 @@ or a 6 Central company that holds the license itself. Checked in every market, a
 </section>"""
 
 
+def base_line(v):
+    t = v.get("today")
+    if not t:
+        return "not checked today"
+    spot = f"we're #{t['our_position']}" if t.get("our_position") else "we're not in the top 3"
+    top = ", ".join(f"{p['name']} ({num(p['reviews'])})" for p in t["top3"]) or "no pack"
+    line = f"{spot}; median {num(t.get('median'))}; top 3: {top}"
+    prev = v.get("previous")
+    if prev and prev.get("median") is not None and t.get("median") is not None and prev["median"] != t["median"]:
+        line += f"; median was {num(prev['median'])} on {prev['date']}"
+    if prev and prev.get("our_position") != t.get("our_position"):
+        was = f"#{prev['our_position']}" if prev.get("our_position") else "out"
+        now = f"#{t['our_position']}" if t.get("our_position") else "out"
+        line += f"; our spot {was} → {now}"
+    return line
+
+
+def bases_section(bases):
+    if not bases:
+        return ""
+    by_base = {}
+    for v in bases:
+        by_base.setdefault(v["base"], []).append(v)
+    panels = []
+    for name, rows in by_base.items():
+        lis = "".join(f"<li><strong>{escape(v['query'])}</strong>: {escape(base_line(v))}</li>" for v in rows)
+        panels.append(f"""<div class="panel"><h3>{escape(name)}</h3><p class="muted">{escape(rows[0]['plan'])}</p><ul>{lis}</ul></div>""")
+    return f"""<section><h2>Target bases, checked today</h2><p class="muted" style="margin-bottom:10px">Where 6 Central plans
+its own service-area listings. Checked every morning: our spot, the top 3 and the median review count. Under 50 is open.</p>
+<div class="grid2">{''.join(panels)}</div></section>"""
+
+
 def own_line(o):
     if not o["checked"]:
         return f"{o['name']}: not checked today."
@@ -345,6 +377,7 @@ Google's video verification and suspension checks look for exactly this.</p></se
 {season_section(b.get("season_ahead"))}
 {google_section(b.get("google"))}
 {mine}
+{bases_section(b.get("bases"))}
 {own}
 {focus_section(b.get("focus"))}
 {f'<section><h2>Keywords checked today</h2>{table}<p class="muted" style="margin-top:8px">Score parts: D demand (20) · V job value from CPC (15) · M momentum or season ahead (15) · C map-pack openness (25) · A ease of verification (15) · F home-based fit (10) · G Google-risk penalty. Semrush and OpenRush volumes differ by vendor and are never compared with each other.</p></section>' if table else ''}
@@ -415,6 +448,9 @@ def render_summary(b):
             f"{r['market']} ({r['best_query']}, median {r['best_median']:g})" for r in f["leaderboard"][:3])]
     for o in b.get("own_listings") or []:
         lines += ["", f"Our listing: {own_line(o)}"] + [f"- Fix: {i}" for i in o["issues"]]
+    if b.get("bases"):
+        lines += ["", "Target bases today:"]
+        lines += [f"- {v['base']} / {v['query']}: {base_line(v)}" for v in b["bases"]]
     if b["own_sightings"]:
         lines += ["", "Possibly ours in the map pack (confirm): "
                   + "; ".join(f"{s['name']} ({s['query']})" for s in b["own_sightings"])]

@@ -1196,5 +1196,63 @@
       "Google local search update",
       "Local Services Ads change"
     ]
+  },
+  "bases": {
+    "why": "Target bases for 6 Central's own service-area listings. Checked every morning so Terell sees rank, reviews and movement daily.",
+    "daily_rotating": 1,
+    "list": [
+      {
+        "name": "Portage Park (Chicago NW)",
+        "serp_location": "60641,Illinois,United States",
+        "cadence": "daily",
+        "queries": [
+          "mobile tire repair",
+          "mobile mechanic",
+          "roadside assistance"
+        ],
+        "plan": "TJ's second base; tire dominant, mechanic strong, roadside via partners."
+      },
+      {
+        "name": "Elgin",
+        "serp_location": "Elgin,Illinois,United States",
+        "cadence": "daily",
+        "queries": [
+          "mobile tire repair",
+          "mobile mechanic",
+          "car lockout service",
+          "snow removal"
+        ],
+        "plan": "Home base; most open zone in the study for all four services."
+      },
+      {
+        "name": "Midway / Southwest (60638)",
+        "serp_location": "60638,Illinois,United States",
+        "cadence": "rotating",
+        "queries": [
+          "mobile tire repair",
+          "mobile mechanic",
+          "car lockout service"
+        ],
+        "plan": "Only Chicago zone open for all three; Jan-Feb."
+      },
+      {
+        "name": "O'Hare corridor (Des Plaines)",
+        "serp_location": "Des Plaines,Illinois,United States",
+        "cadence": "rotating",
+        "queries": [
+          "mobile tire repair"
+        ],
+        "plan": "Tire gap; spring."
+      },
+      {
+        "name": "South Chicago (60617)",
+        "serp_location": "60617,Illinois,United States",
+        "cadence": "rotating",
+        "queries": [
+          "mobile mechanic"
+        ],
+        "plan": "Mechanic median 5; partner base in spring."
+      }
+    ]
   }
 }
