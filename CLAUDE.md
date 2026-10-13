@@ -30,7 +30,7 @@ holding company, not any one of them.
 
 | Piece | What it does | Where |
 |---|---|---|
-| GBP Opportunity Scout | Daily 7:35 AM CT research brief: keywords, map packs (Chicago plus 34 rotating metros), Google watch, season ahead, Amazon verification kits, our own listings. Publishes to the dashboard | `.claude/skills/gbp-daily-scout/`, `scout.py`, `gbp_scout/`, `config/gbp_scout.json` |
+| GBP Opportunity Scout | Daily 7:35 AM CT research brief: the three picks (best seasonal, best nationwide, best international), keywords, map packs (Chicago plus 34 rotating metros, plus one market abroad a day), all five target bases every day, Google watch, season ahead, Amazon verification kits, our own listings. Publishes to the dashboard | `.claude/skills/gbp-daily-scout/`, `scout.py`, `gbp_scout/`, `config/gbp_scout.json` |
 | Niche hunting playbook | How to find wide-open niches; the drop-servicing video study | `.claude/skills/gbp-daily-scout/references/niche-hunting.md`, `research/video_niches/` |
 | Google risk register | What Google is flagging, with a plan or "avoid" for each item | `research/google/` |
 | venture-operator agent | Launch and run plans: verification script, hiring, unit economics, season timeline, risks, kill criteria | `.claude/agents/venture-operator.md`, output in `research/plans/` |
@@ -99,3 +99,5 @@ work. That is lead generation, and it's the Premium Home Service pattern.
   gitignored, and never get committed.
 - Develop on the assigned branch; commit and push when work is done; open a PR only when asked.
 - Run `python3 -m pytest -q tests` before pushing scout changes.
+- Semrush ran out of API units around 2026-10-09; the scout falls back to OpenRush deep dives until it is topped up
+  (https://www.semrush.com/mcp-access). Say so in every report until then.
