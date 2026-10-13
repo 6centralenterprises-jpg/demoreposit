@@ -111,9 +111,24 @@ def test_markets_rotate_and_keep_chicago_every_day():
         day = f"2026-10-{i + 1:02d}"
         markets = scout.todays_markets(cfg, day)
         assert markets[0]["name"] == "Chicago, IL" and markets[0]["role"] == "home"
-        assert len(markets) == 1 + cfg["budget"]["rotating_markets_per_day"]
+        assert len(markets) == 1 + cfg["budget"]["rotating_markets_per_day"] + cfg["budget"]["international_markets_per_day"]
         seen.update(m["name"] for m in markets if m["role"] == "rotating")
     assert len(seen) == len(cfg["markets"]["roster"])  # whole roster covered in 12 days
+
+
+def test_international_markets_rotate_and_spell_locally():
+    cfg = scout.load_config()
+    abroad = set()
+    for i in range(len(cfg["markets"]["international"])):
+        markets = scout.todays_markets(cfg, f"2026-11-{i + 1:02d}")
+        abroad |= {m["name"] for m in markets if m["role"] == "international"}
+        assert all(scout.market_country(m) != "United States" for m in markets if m["role"] == "international")
+    assert abroad == {m["name"] for m in cfg["markets"]["international"]}  # every market abroad gets a turn
+    london = next(m for m in cfg["markets"]["international"] if m["name"] == "London, UK")
+    assert scout.localize("mobile tire repair", london) == "mobile tyre repair"
+    plan = {"date": "2026-11-01", "markets": [dict(london, role="international")], "map_checks": ["mobile tire repair", "mobile mechanic", "x"]}
+    (m, queries), = scout.market_checks(plan, cfg)
+    assert queries == ["mobile tyre repair", "mobile mechanic"]  # 2 checks, local spelling, no focus or own-listing searches
 
 
 def test_rotating_markets_get_fewer_checks():
@@ -205,9 +220,13 @@ def test_focus_watch_adds_one_search_per_market_and_alternates():
     assert {scout.focus_query(cfg, d) for d in days} == set(cfg["focus"]["map_queries"])  # rotates through all
     a = scout.focus_query(cfg, "2026-10-03")
     plan = {"date": "2026-10-03", "markets": scout.todays_markets(cfg, "2026-10-03"), "map_checks": ["x", "y", "z"]}
-    checks = dict((m["name"], q) for m, q in scout.market_checks(plan, cfg))
-    assert all(a in q for q in checks.values())
-    assert all(len(q) == 3 for name, q in checks.items() if name != "Chicago, IL")  # 2 cluster + 1 focus
+    allowed = cfg["focus"].get("query_states", {}).get(a)
+    for m, q in scout.market_checks(plan, cfg):
+        expected = m["role"] != "international" and (allowed is None or m.get("state") in allowed)
+        assert (a in q) == expected  # every US market gets the focus search, unless the search makes no sense there
+        if m["name"] != "Chicago, IL":
+            assert len(q) == 2 + expected  # 2 cluster + the focus search
+    assert any(a in q for m, q in scout.market_checks(plan, cfg))
 
 
 def test_blank_ratings_are_unknown_not_zero():
@@ -250,14 +269,19 @@ def test_general_rules_never_penalize_and_risk_is_per_keyword():
 
 def test_target_bases_checked_daily_and_rotating(tmp_path, monkeypatch):
     cfg = scout.load_config()
-    daily = [b["name"] for b in cfg["bases"]["list"] if b.get("cadence", "daily") == "daily"]
+    everyone = {b["name"] for b in cfg["bases"]["list"]}
     for d in ("2026-10-13", "2026-10-14", "2026-10-15"):
-        names = {b["name"] for b, q, p in scout.base_checks(cfg, d)}
-        assert set(daily) <= names and len(names) == len(daily) + 1
+        assert {b["name"] for b, q, p in scout.base_checks(cfg, d)} == everyone  # Terell: all of them, every day
+    mixed = {"bases": {"daily_rotating": 1, "list": [
+        {"name": "A", "cadence": "daily", "serp_location": "a", "queries": ["q"]},
+        {"name": "B", "cadence": "rotating", "serp_location": "b", "queries": ["q"]},
+        {"name": "C", "cadence": "rotating", "serp_location": "c", "queries": ["q"]}]}}
     seen = set()
-    for i in range(3):
-        seen |= {b["name"] for b, q, p in scout.base_checks(cfg, f"2026-10-{13 + i}")}
-    assert seen == {b["name"] for b in cfg["bases"]["list"]}  # every rotating base gets a turn
+    for i in range(2):
+        names = {b["name"] for b, q, p in scout.base_checks(mixed, f"2026-10-{13 + i}")}
+        assert "A" in names and len(names) == 2
+        seen |= names
+    assert seen == {"A", "B", "C"}  # a rotating base, when configured, still takes turns
     monkeypatch.setattr(scout, "RUNS", tmp_path)
     day = "2026-10-13"; out = tmp_path / day
     for sub in ("discovery", "keywords", "serp"):
@@ -274,3 +298,64 @@ def test_target_bases_checked_daily_and_rotating(tmp_path, monkeypatch):
     assert row["today"]["our_position"] == 2 and row["today"]["median"] == 101
     assert "Target bases" in render_html(brief) and "we're #2" in render_summary(brief)
     assert brief["state"]["bases"]["Portage Park (Chicago NW) | mobile tire repair"][0]["our_position"] == 2
+
+
+def test_ads_in_the_pack_are_not_competitors():
+    serp = {"local_pack": [
+        {"title": "Arctic Fox Snow Services", "domain": "arcticfoxsnow.com", "rating": {"value": 5, "votes_count": 8}},
+        {"title": "Gama's Lawncare", "rating": {"value": 5, "votes_count": 4}},
+        {"title": "Great Lakes Snow Systems        My Ad Center", "domain": "google.com", "rating": {"value": 4.6, "votes_count": 160}}]}
+    result = scoring.pack_weakness(serp)
+    assert result["ads"] == 1 and len(result["pack"]) == 2 and result["median_reviews"] == 6
+    assert "sponsored" in result["reason"]
+
+
+def test_best_picks_seasonal_nationwide_international():
+    cfg = scout.load_config()
+    watch = {"mobile tire repair near me": {"score": 87, "play": "Own it", "niche": "mobile tire service", "last_seen": "2026-10-06",
+                                            "season": {"ratio": 1.5, "peak_month": "Nov", "peak_volume": 90500}},
+             "water damage restoration": {"score": 86, "play": "Partner & manage", "niche": "water", "last_seen": "2026-10-05",
+                                          "season": {"ratio": 1.2, "peak_month": "Dec", "peak_volume": 1}},
+             "fence company near me": {"score": 67, "play": "Watch", "niche": "fences", "last_seen": "2026-10-07",
+                                       "season": {"ratio": 2.9, "peak_month": "Jan", "peak_volume": 823000}}}
+    board = {"Chicago, IL": [{"date": "2026-10-13", "query": "mobile tire repair", "median": 10, "weakness": 1.0}],
+             "Phoenix, AZ": [{"date": "2026-10-09", "query": "snow removal", "median": 12, "weakness": 1.0}],
+             "Nashville, TN": [{"date": "2026-10-10", "query": "deck builders", "median": 6, "weakness": 1.0}],
+             "Houston, TX": [{"date": "2026-10-07", "query": "mobile tire repair", "median": 40, "weakness": 0.75},
+                             {"date": "2026-10-07", "query": "something unscored", "median": 1, "weakness": 1.0}],
+             "London, UK": [{"date": "2026-10-13", "query": "mobile tyre fitting", "median": 34, "weakness": 0.75}],
+             "Toronto, ON": [{"date": "2026-10-13", "query": "snow removal", "median": 25, "weakness": 0.85}]}
+    demand = [{"keyword": "snow removal", "country": "Canada", "volume": 9900, "cpc": 3.56, "yoy": -0.1, "latest_month": "2026-08", "season": None}]
+    picks = scout.best_picks(cfg, "2026-10-13", [], watch, board, demand)
+    assert picks["seasonal"]["keyword"] == "mobile tire repair near me" and "1.5x" in picks["seasonal"]["why"]  # Own it beats a cooling Watch
+    assert picks["seasonal"]["also"][0].startswith("fence company near me")
+    assert picks["nationwide"]["market"] == "Nashville, TN"  # Chicago is home, Phoenix snow is excluded, unscored searches skipped
+    assert "mobile tire repair in Houston, TX" in picks["nationwide"]["also"][0]
+    assert picks["international"]["market"] == "Toronto, ON" and picks["international"]["play"] == "Partner & manage"
+    assert "9,900 searches/mo in Canada" in picks["international"]["why"]
+    html = render_html({"picks": picks, "opportunities": [], "state": {"watchlist": {}, "briefs": []}, "recap": False,
+                        "own_sightings": [], "serps": {}, "signals": {}, "kits": [], "verification": {"proofs": {}, "source": ""},
+                        "weekday": "Tue", "date": "2026-10-13", "label": "x", "markets": [], "tactic": "t", "leaderboard": []})
+    assert "Best opportunities right now" in html and "Nashville, TN" in html and "Toronto, ON" in html
+
+
+def test_semrush_fallback_builds_rows_from_openrush(tmp_path, monkeypatch):
+    cfg = scout.load_config()
+    cluster = cfg["clusters"]["auto-at-home"]
+    kw = next(iter(cluster["niches"].values()))["keywords"][0]
+    raw = {"keyword": kw, "monthly_volume": 12100, "cpc_usd": 2.5,
+           "trend": [{"year": 2024 + (m - 1) // 12, "month": (m - 1) % 12 + 1, "search_volume": 1000 + 10 * m} for m in range(9, 33)]}
+    row = scout.openrush_row(kw, raw, cluster)
+    assert row["source"] == "openrush" and row["volume"] == 12100 and row["kd"] is None and row["momentum"] is not None
+    monkeypatch.setattr(scout, "RUNS", tmp_path)
+    day = "2026-10-13"; out = tmp_path / day
+    for sub in ("discovery", "keywords", "serp"):
+        (out / sub).mkdir(parents=True)
+    (out / "plan.json").write_text(json.dumps({"date": day, "weekday": "Tuesday", "cluster": "auto-at-home", "label": "Auto",
+                                               "recap": False, "markets": [], "deep_dives": [kw], "map_checks": []}))
+    (out / "keywords" / f"{scoring.slug(kw)}.json").write_text(json.dumps(raw))
+    assert scout.fallback_deep_dives(cfg, {"cluster": "auto-at-home"}, out, 3)[0] in {k for n in cluster["niches"].values() for k in n["keywords"]}
+    brief = scout.build(day, cfg)
+    o = brief["opportunities"][0]
+    assert o["keyword"] == kw and o["semrush"]["volume"] is None and o["openrush"]["volume"] == 12100  # vendors never mixed
+    assert "12,100" in render_summary(brief) and "Semrush" not in render_summary(brief).split("Today's moves")[1].split("\n")[1]

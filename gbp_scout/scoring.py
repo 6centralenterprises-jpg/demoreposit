@@ -128,9 +128,12 @@ def pack_weakness(serp, own_markers=(), own_names=()):
     organic = serp.get("organic") or []
     if not pack:
         return {"weakness": None, "reason": "No map pack on this search.", "pack": [], "directories": 0}
-    reviews = []
-    rows = []
+    reviews, rows, ads = [], [], 0
     for item in pack:
+        title = item.get("title") or item.get("name") or ""
+        if (item.get("domain") or "").removeprefix("www.") == "google.com" or "My Ad Center" in title:
+            ads += 1  # a sponsored slot inside the pack, not a competitor's listing
+            continue
         rating = item.get("rating") or {}
         votes = rating.get("votes_count")
         if votes is None:
@@ -138,7 +141,6 @@ def pack_weakness(serp, own_markers=(), own_names=()):
         # A blank rating is unknown, not zero: the data feed sometimes omits ratings for listings that have reviews.
         if votes is not None:
             reviews.append(votes)
-        title = item.get("title") or item.get("name") or ""
         rows.append({
             "name": title,
             "domain": item.get("domain") or "",
@@ -149,7 +151,7 @@ def pack_weakness(serp, own_markers=(), own_names=()):
                               and any(re.search(rf"\b{re.escape(m)}\b", title) for m in own_markers)),
         })
     if not reviews:
-        return {"weakness": None, "median_reviews": None, "pack": rows, "directories": 0,
+        return {"weakness": None, "median_reviews": None, "pack": rows, "directories": 0, "ads": ads,
                 "reason": "Review counts weren't returned for this pack; check it by hand before trusting it."}
     mid = median(reviews)
     if mid < 20:
@@ -166,8 +168,9 @@ def pack_weakness(serp, own_markers=(), own_names=()):
     if directories >= 4:
         weakness = min(1.0, weakness + 0.1)
     return {"weakness": round(weakness, 2), "median_reviews": mid, "pack": rows,
-            "directories": directories,
-            "reason": f"Map-pack median {mid:g} reviews; {directories} directory/forum results in the top 10."}
+            "directories": directories, "ads": ads,
+            "reason": f"Map-pack median {mid:g} reviews; {directories} directory/forum results in the top 10."
+                      + (f" {ads} sponsored slot in the pack ignored." if ads else "")}
 
 
 # ------------------------------------------------- verification, Google risk, season

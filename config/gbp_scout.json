@@ -1,7 +1,7 @@
 {
   "_about": "Settings for the daily GBP Opportunity Scout. Edit markets, niches and budget here. Keyword data is national (US); map-pack checks run in the markets below.",
   "markets": {
-    "_about": "Home markets get every map-pack check every day. The roster rotates: a few metros a day, so all of them are covered about every 11 days. Edit freely.",
+    "_about": "Home markets get every map-pack check every day. The roster rotates: a few metros a day, so all of them are covered about every 11 days. International markets rotate one a day; their map packs are ranked separately and the play there is always Partner & manage. 'spelling' rewrites US words in the search ('tire' -> 'tyre'). Edit freely.",
     "home": [
       {
         "name": "Chicago, IL",
@@ -180,6 +180,96 @@
         "serp_location": "Milwaukee,Wisconsin,United States",
         "state": "WI"
       }
+    ],
+    "international": [
+      {
+        "name": "Toronto, ON",
+        "serp_location": "Toronto,Ontario,Canada",
+        "country": "Canada",
+        "state": "ON"
+      },
+      {
+        "name": "London, UK",
+        "serp_location": "London,England,United Kingdom",
+        "country": "United Kingdom",
+        "state": "ENG",
+        "spelling": {
+          "tire": "tyre",
+          "tires": "tyres"
+        }
+      },
+      {
+        "name": "Sydney, AU",
+        "serp_location": "Sydney,New South Wales,Australia",
+        "country": "Australia",
+        "state": "NSW",
+        "spelling": {
+          "tire": "tyre",
+          "tires": "tyres"
+        }
+      },
+      {
+        "name": "Vancouver, BC",
+        "serp_location": "Vancouver,British Columbia,Canada",
+        "country": "Canada",
+        "state": "BC"
+      },
+      {
+        "name": "Manchester, UK",
+        "serp_location": "Manchester,England,United Kingdom",
+        "country": "United Kingdom",
+        "state": "ENG",
+        "spelling": {
+          "tire": "tyre",
+          "tires": "tyres"
+        }
+      },
+      {
+        "name": "Melbourne, AU",
+        "serp_location": "Melbourne,Victoria,Australia",
+        "country": "Australia",
+        "state": "VIC",
+        "spelling": {
+          "tire": "tyre",
+          "tires": "tyres"
+        }
+      },
+      {
+        "name": "Calgary, AB",
+        "serp_location": "Calgary,Alberta,Canada",
+        "country": "Canada",
+        "state": "AB"
+      },
+      {
+        "name": "Dublin, IE",
+        "serp_location": "Dublin,County Dublin,Ireland",
+        "country": "Ireland",
+        "state": "IE",
+        "spelling": {
+          "tire": "tyre",
+          "tires": "tyres"
+        }
+      },
+      {
+        "name": "Auckland, NZ",
+        "serp_location": "Auckland,Auckland,New Zealand",
+        "country": "New Zealand",
+        "state": "NZ",
+        "spelling": {
+          "tire": "tyre",
+          "tires": "tyres"
+        }
+      },
+      {
+        "name": "Brisbane, AU",
+        "serp_location": "Brisbane,Queensland,Australia",
+        "country": "Australia",
+        "state": "QLD",
+        "spelling": {
+          "tire": "tyre",
+          "tires": "tyres"
+        }
+      }
     ]
   },
   "own_listings": [
@@ -201,7 +291,9 @@
     "openrush_deep_dives": 5,
     "openrush_map_pack_checks": 4,
     "rotating_markets_per_day": 3,
-    "rotating_checks_per_market": 2
+    "rotating_checks_per_market": 2,
+    "international_markets_per_day": 1,
+    "international_demand_checks": 1
   },
   "openrush_credits": {
     "research_keywords": 3,
@@ -1183,7 +1275,51 @@
         "note": "No statewide GC license; Dallas requires contractor registration with insurance, and attached decks need a permit.",
         "source": "https://permitmint.com/permits/texas/dallas/deck/"
       }
-    }
+    },
+    "query_states": {
+      "snow removal": [
+        "IL",
+        "IN",
+        "MI",
+        "WI",
+        "MN",
+        "OH",
+        "PA",
+        "NY",
+        "NJ",
+        "MA",
+        "CT",
+        "RI",
+        "VT",
+        "NH",
+        "ME",
+        "CO",
+        "UT",
+        "ID",
+        "MT",
+        "WY",
+        "ND",
+        "SD",
+        "NE",
+        "IA",
+        "MO",
+        "KS",
+        "WA",
+        "OR",
+        "MD",
+        "DC",
+        "VA",
+        "KY",
+        "WV",
+        "NM",
+        "AK",
+        "ON",
+        "BC",
+        "AB",
+        "QC"
+      ]
+    },
+    "_query_states": "Focus searches that only make sense in some states: the scout skips the check elsewhere (no snow removal in Phoenix)."
   },
   "google_risk_register": "research/google/risk_register.json",
   "google_watch": {
@@ -1198,7 +1334,7 @@
     ]
   },
   "bases": {
-    "why": "Target bases for 6 Central's own service-area listings. Checked every morning so Terell sees rank, reviews and movement daily.",
+    "why": "Target bases for 6 Central's own service-area listings. All of them are checked every morning (Terell, 2026-10-13: 'between all of those'), so the report shows rank, reviews and movement daily.",
     "daily_rotating": 1,
     "list": [
       {
@@ -1227,7 +1363,7 @@
       {
         "name": "Midway / Southwest (60638)",
         "serp_location": "60638,Illinois,United States",
-        "cadence": "rotating",
+        "cadence": "daily",
         "queries": [
           "mobile tire repair",
           "mobile mechanic",
@@ -1238,7 +1374,7 @@
       {
         "name": "O'Hare corridor (Des Plaines)",
         "serp_location": "Des Plaines,Illinois,United States",
-        "cadence": "rotating",
+        "cadence": "daily",
         "queries": [
           "mobile tire repair"
         ],
@@ -1247,7 +1383,7 @@
       {
         "name": "South Chicago (60617)",
         "serp_location": "60617,Illinois,United States",
-        "cadence": "rotating",
+        "cadence": "daily",
         "queries": [
           "mobile mechanic"
         ],

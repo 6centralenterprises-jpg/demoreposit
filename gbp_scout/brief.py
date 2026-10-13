@@ -253,6 +253,61 @@ def season_section(opps):
 turn up in the next 1-3 months. A profile launched now has reviews before the peak.</p><div class="panel"><ul>{lis}</ul></div></section>"""
 
 
+def pick_card(title, p, empty):
+    if not p:
+        return (f'<article class="move"><div class="row"><span class="pill flat">{escape(title)}</span></div>'
+                f'<p class="muted">{escape(empty)}</p></article>')
+    head = p.get("keyword") or p.get("query") or ""
+    where = f" · {p['market']}" if p.get("market") else ""
+    pills = [pill(p["play"])] if p.get("play") else []
+    if p.get("ratio"):
+        pills.append(f'<span class="pill up">Season ahead ×{p["ratio"]:.1f}</span>')
+    if p.get("weakness") is not None:
+        pills.append(f'<span class="pill">openness {p["weakness"]:.2f}</span>')
+    also = f'<p class="muted">Next in line: {escape("; ".join(p["also"]))}</p>' if p.get("also") else ""
+    return f"""<article class="move"><div class="row"><span class="pill flat">{escape(title)}</span>{''.join(pills)}</div>
+<h3>{escape(head + where)}</h3><p>{escape(p['why'])}</p>{also}
+<p class="muted">As of {escape(p.get('as_of') or p.get('date') or '')}</p></article>"""
+
+
+def picks_section(p):
+    if not p:
+        return ""
+    cards = (pick_card("Best seasonal", p.get("seasonal"), "No keyword on the watchlist shows a 1.3x season-ahead signal yet.")
+             + pick_card("Best nationwide", p.get("nationwide"), "No open map pack outside Chicago for a scored search yet.")
+             + pick_card("Best international", p.get("international"),
+                         "No international map pack checked yet. One market abroad rotates in every day."))
+    return f"""<section><h2>Best opportunities right now</h2><p class="muted" style="margin-bottom:10px">Three standing picks,
+recomputed every morning: the season turning up next, the most open market in the US, and the most open market abroad.</p>
+<div class="moves">{cards}</div></section>"""
+
+
+def international_section(i):
+    if not i or not (i.get("today") or i.get("leaderboard") or i.get("demand")):
+        return ""
+    today = "".join(f"<li>“{escape(c['query'])}” in {escape(c['market'])}: median {num(c.get('median_reviews'))} reviews"
+                    f" (openness {c['weakness']:.2f})</li>" for c in i.get("today") or [] if c.get("weakness") is not None)
+    demand = ""
+    for d in i.get("demand") or []:
+        season = (f"; next 3 months ran {d['season']['ratio']:.1f}x last year, peak {escape(d['season']['peak_month'])}"
+                  if d.get("season") else "")
+        demand += (f"<li><strong>{escape(d['keyword'])}</strong> in {escape(d.get('country') or '')}: {num(d.get('volume'))} searches/mo"
+                   f" at {money(d.get('cpc'))} CPC, {pct(d.get('yoy'))} vs last year (OpenRush, {escape(d.get('latest_month') or '–')})"
+                   f"{season}</li>")
+    rows = "".join(f"<tr><td class=\"n\">{n}</td><td>{escape(r['market'])}</td><td class=\"n\">{r['openness']:.2f}</td>"
+                   f"<td>{escape(r['best_query'])} <span class=\"muted\">(median {num(r['best_median'])})</span></td>"
+                   f"<td class=\"n\">{escape(r['last'])}</td></tr>" for n, r in enumerate(i.get("leaderboard") or [], 1))
+    table = (f'<div class="table" style="margin-top:14px"><table><thead><tr><th>#</th><th>Market</th><th>Openness</th>'
+             f'<th>Most open</th><th>Last checked</th></tr></thead><tbody>{rows}</tbody></table></div>') if rows else ""
+    markets = ", ".join(i.get("markets") or []) or "none"
+    return f"""<section><h2>International watch</h2><p class="muted" style="margin-bottom:10px">One market abroad rotates in
+every day (today: {escape(markets)}). A profile abroad belongs to the local operator who does the work, so the play there is
+always Partner &amp; manage: 6 Central exports the back office (answering, dispatch, reviews, marketing) and the playbook.</p>
+<div class="grid2"><div class="panel"><h3>Today's checks</h3><ul>{today or '<li class="muted">No international checks saved today.</li>'}</ul></div>
+<div class="panel"><h3>Demand, country level</h3><ul>{demand or '<li class="muted">No country-level keyword reads yet.</li>'}</ul></div></div>
+{table}</section>"""
+
+
 def serp_panels(serps):
     panels = []
     for checks in serps.values():
@@ -373,6 +428,8 @@ Google's video verification and suspension checks look for exactly this.</p></se
   national (US); map packs checked in {escape(', '.join(b['markets']))}.</p>
 </header>
 
+{picks_section(b.get("picks"))}
+{''.join(f'<section class="note"><h3>Run note</h3><p>{escape(n)}</p></section>' for n in b.get("notes") or [])}
 <section><h2>Today's moves</h2><div class="moves">{moves}</div></section>
 {season_section(b.get("season_ahead"))}
 {google_section(b.get("google"))}
@@ -380,11 +437,12 @@ Google's video verification and suspension checks look for exactly this.</p></se
 {bases_section(b.get("bases"))}
 {own}
 {focus_section(b.get("focus"))}
+{international_section(b.get("international"))}
 {f'<section><h2>Keywords checked today</h2>{table}<p class="muted" style="margin-top:8px">Score parts: D demand (20) · V job value from CPC (15) · M momentum or season ahead (15) · C map-pack openness (25) · A ease of verification (15) · F home-based fit (10) · G Google-risk penalty. Semrush and OpenRush volumes differ by vendor and are never compared with each other.</p></section>' if table else ''}
 
 <section><h2>Map pack check</h2><div class="grid2">{serp_panels(b['serps'])}</div></section>
 
-{f'''<section><h2>Best markets so far</h2><p class="muted" style="margin-bottom:10px">Ranked by map-pack openness across every check (1.00 = top 3 have under 20 reviews; 0.10 = hundreds). Chicago is checked daily; 34 national metros rotate, 3 a day. Early rankings compare different searches, so they firm up after a few weeks once every market has been checked across all business groups.</p><div class="table"><table>
+{f'''<section><h2>Best markets so far</h2><p class="muted" style="margin-bottom:10px">Ranked by map-pack openness across every check (1.00 = top 3 have under 20 reviews; 0.10 = hundreds). Chicago is checked daily; 34 national metros rotate, 3 a day; markets abroad are ranked in the International watch. Early rankings compare different searches, so they firm up after a few weeks once every market has been checked across all business groups.</p><div class="table"><table>
 <thead><tr><th>#</th><th>Market</th><th>Openness</th><th>Checks</th><th>Most open search</th><th>Last checked</th></tr></thead>
 <tbody>{leaderboard_rows(b.get("leaderboard", []))}</tbody></table></div></section>''' if b.get("leaderboard") else ''}
 
@@ -423,12 +481,29 @@ def render_summary(b):
             tags = "".join([" [big fish]" if o.get("big_fish") else "", f" [verify {o.get('verify_grade')}]" if o.get("verify_grade") else "",
                             f" [Google risk: {o['risk']['level']}]" if o.get("risk") else ""])
             lines.append(f"{i}. {o['keyword']}{tags}: {o['play']}, score {o['score']:.0f}, {o['label']} "
-                         f"({pct(o['change'])}), {vol:,}/mo. {o['why']}")
+                         f"({pct(o['change'])}), {num(vol)}/mo. {o['why']}")
     elif b["recap"]:
         lines += ["", "Weekly recap. Top of the watchlist:"]
         for kw, w in sorted(b["state"]["watchlist"].items(), key=lambda kv: -kv[1].get("score", 0))[:5]:
             lines.append(f"- {kw}: {w.get('play')}, score {w.get('score', 0):.0f}, {w.get('label')}")
-    weak = [c for checks in b["serps"].values() for c in checks if (c.get("weakness") or 0) >= 0.75]
+    for n in b.get("notes") or []:
+        lines += ["", f"Note: {n}"]
+    p = b.get("picks") or {}
+    if any(p.values()):
+        lines += ["", "Best opportunities right now:"]
+        for key, title in (("seasonal", "Seasonal"), ("nationwide", "Nationwide"), ("international", "International")):
+            x = p.get(key)
+            if x:
+                where = f" in {x['market']}" if x.get("market") else ""
+                lines.append(f"- {title}: {x.get('keyword') or x.get('query')}{where}. {x['why']}")
+            else:
+                lines.append(f"- {title}: nothing qualifies yet.")
+    intl = b.get("international") or {}
+    if intl.get("today"):
+        lines += ["", "International today:"] + [f"- '{c['query']}' in {c['market']}: median {c['median_reviews']:g} reviews"
+                                                  for c in intl["today"] if c.get("weakness") is not None]
+    weak = [c for checks in b["serps"].values() for c in checks
+            if (c.get("weakness") or 0) >= 0.75 and c.get("country", "United States") == "United States"]
     if weak:
         lines += ["", "Open map packs (few reviews to beat):"]
         lines += [f"- '{c['query']}' in {c['market']}: median {c['median_reviews']:g} reviews" for c in weak]

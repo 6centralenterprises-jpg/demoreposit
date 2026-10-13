@@ -46,7 +46,17 @@ def payload(obj):
 
 
 def all_markets(cfg):
-    return cfg["markets"]["home"] + cfg["markets"]["roster"]
+    return cfg["markets"]["home"] + cfg["markets"]["roster"] + (cfg["markets"].get("international") or [])
+
+
+def market_country(m):
+    return m.get("country", "United States")
+
+
+def localize(query, market):
+    """Spell a US search the way the market searches it ('mobile tire repair' -> 'mobile tyre repair')."""
+    words = market.get("spelling") or {}
+    return " ".join(words.get(w, w) for w in query.split()) if words else query
 
 
 def todays_markets(cfg, day):
@@ -55,19 +65,31 @@ def todays_markets(cfg, day):
     per_day = cfg["budget"]["rotating_markets_per_day"]
     start = (datetime.strptime(day, "%Y-%m-%d").toordinal() * per_day) % len(roster) if roster else 0
     rotating = [roster[(start + i) % len(roster)] for i in range(min(per_day, len(roster)))]
+    intl = cfg["markets"].get("international") or []
+    per_intl = cfg["budget"].get("international_markets_per_day", 0)
+    abroad = []
+    if intl and per_intl:
+        start = (datetime.strptime(day, "%Y-%m-%d").toordinal() * per_intl) % len(intl)
+        abroad = [intl[(start + i) % len(intl)] for i in range(min(per_intl, len(intl)))]
     return ([dict(m, role="home") for m in cfg["markets"]["home"]]
-            + [dict(m, role="rotating") for m in rotating])
+            + [dict(m, role="rotating") for m in rotating]
+            + [dict(m, role="international") for m in abroad])
 
 
 def market_checks(plan, cfg):
     """Which map-pack searches run in which market today."""
     per_rotating = cfg["budget"]["rotating_checks_per_market"]
+    focus = cfg.get("focus") or {}
     out = []
     for m in plan["markets"]:
+        if m.get("role") == "international":  # the cluster's top searches, spelled the local way; no focus, no own listings
+            out.append((m, [localize(q, m) for q in plan["map_checks"][:per_rotating]]))
+            continue
         queries = list(plan["map_checks"] if m["role"] == "home" else plan["map_checks"][:per_rotating])
         focus_q = focus_query(cfg, plan.get("date"))
-        if focus_q and focus_q not in queries:  # standing focus watch: one search per market per day
-            queries.append(focus_q)
+        allowed = (focus.get("query_states") or {}).get(focus_q)  # no snow-removal check in Phoenix
+        if focus_q and focus_q not in queries and (allowed is None or m.get("state") in allowed):
+            queries.append(focus_q)  # standing focus watch: one search per market per day
         for listing in cfg.get("own_listings", []):  # our own listings are tracked every day
             if listing["market"] == m["name"] and listing["track_query"] not in queries:
                 queries.append(listing["track_query"])
@@ -152,10 +174,14 @@ def cmd_plan(args):
     seeds = cluster["discovery_seeds"][:budget["openrush_research_seeds"]]
     markets = todays_markets(cfg, day)
     checks = sum(budget["openrush_map_pack_checks"] if m["role"] == "home" else budget["rotating_checks_per_market"]
-                 for m in markets) + len(markets) * bool(focus_query(cfg, day)) + len(cfg.get("own_listings", []))
-    checks += len(base_checks(cfg, day))
+                 for m in markets)
+    checks += sum(1 for m in markets if m["role"] != "international") * bool(focus_query(cfg, day))
+    checks += len(cfg.get("own_listings", [])) + len(base_checks(cfg, day))
+    abroad = [m for m in markets if m["role"] == "international"]
+    demand_checks = budget.get("international_demand_checks", 0) if abroad else 0
     est = (len(seeds) * credits["research_keywords"]
            + (0 if recap else budget["openrush_deep_dives"] * credits["inspect_keyword"])
+           + demand_checks * credits["inspect_keyword"]
            + checks * credits["inspect_serp"])
     plan = {"date": day, "weekday": weekday, "cluster": cluster_id, "label": cluster["label"],
             "recap": recap, "seeds": seeds, "keywords": keywords,
@@ -167,6 +193,10 @@ def cmd_plan(args):
     print(f"{day} ({weekday}): {cluster['label']}")
     print(f"Run folder: {out}")
     print("Markets today: " + ", ".join(f"{m['name']} ({m['role']})" for m in markets))
+    for m in abroad:
+        spelled = ", ".join(f"{a} -> {b}" for a, b in (m.get("spelling") or {}).items()) or "US spelling"
+        print(f"International today: {m['name']} ({market_country(m)}; {spelled}). Map packs ranked separately; "
+              f"the play abroad is always Partner & manage.")
     if recap:
         print("Weekly recap: no new keyword research. Re-check the watchlist leaders' map packs.")
     else:
@@ -285,7 +315,7 @@ def cmd_screen(args):
         checks = [scoring.local_query(k) for k, v in leaders if v.get("play") != "Watch"]
         checks = checks[:budget["openrush_map_pack_checks"]]
         plan.update(deep_dives=[], map_checks=checks)
-    else:
+    elif (out / "semrush.csv").exists():
         rows = screened(args.date, cfg, plan)
         dives = pick_deep_dives(rows, budget["openrush_deep_dives"])
         plan.update(deep_dives=[r["keyword"] for r in dives],
@@ -295,6 +325,13 @@ def cmd_screen(args):
         for r in rows[:10]:
             print(f"  {r['screen']:5.1f}  {r['keyword']}  vol {r['volume']}  cpc ${r['cpc']}  "
                   f"3-vs-9 {r['momentum']}  [{r['niche']}]")
+    else:  # Semrush unavailable (no units, tool down): keep the day alive on OpenRush alone
+        dives = fallback_deep_dives(cfg, plan, out, budget["openrush_deep_dives"])
+        plan.update(deep_dives=dives, screen_source="openrush-fallback",
+                    map_checks=[scoring.local_query(k) for k in dives][:budget["openrush_map_pack_checks"]])
+        print("No semrush.csv saved, so there is no Semrush screen today. Falling back to OpenRush: deep-dive the "
+              "cluster's best-known keywords directly (volume and CPC come from inspect_keyword; the Semrush "
+              "columns stay blank). Say so in the report.")
     out.joinpath("plan.json").write_text(json.dumps(plan, indent=2))
     print("\nDeep dives (OpenRush inspect_keyword, save `data` to keywords/<slug>.json):")
     for k in plan["deep_dives"]:
@@ -303,9 +340,139 @@ def cmd_screen(args):
     for m, queries in market_checks(plan, cfg):
         for q in queries:
             print(f"  '{q}' @ {m['serp_location']}  ->  serp/{scoring.slug(m['name'])}__{scoring.slug(q)}.json")
+    abroad = [m for m in plan["markets"] if m.get("role") == "international"]
+    if abroad and cfg["budget"].get("international_demand_checks", 0):
+        print("International demand (OpenRush inspect_keyword is country-level: pass the country as the location; "
+              "save `data` to the path shown):")
+        for m in abroad:
+            for q in [localize(q, m) for q in plan["map_checks"]][:cfg["budget"]["international_demand_checks"]]:
+                print(f"  '{q}' @ {market_country(m)}  ->  keywords/intl__{scoring.slug(market_country(m))}__{scoring.slug(q)}.json")
     print("Target-base checks (our planned bases, every day; same tool, same save format):")
     for b, q, path in base_checks(cfg, args.date):
         print(f"  '{q}' @ {b['serp_location']}  ->  {path}")
+
+
+def fallback_deep_dives(cfg, plan, out, limit):
+    """Without a Semrush screen, deep-dive the cluster's keywords we already know best (watchlist score first)."""
+    cluster = cfg["clusters"][plan["cluster"]]
+    watch = (read_json(out / "prev_state.json", {}) or {}).get("watchlist", {})
+    rows = [{"keyword": kw, "niche": n, "score": watch.get(kw, {}).get("score", 0), "order": i}
+            for i, (n, v) in enumerate(cluster["niches"].items()) for kw in v["keywords"]]
+    rows.sort(key=lambda r: (-r["score"], r["order"]))
+    return [r["keyword"] for r in pick_deep_dives(rows, limit)]
+
+
+def openrush_row(kw, raw, cluster):
+    """A screen row built from an OpenRush deep dive alone, for days when Semrush is unavailable."""
+    niche = niche_index(cluster).get(kw)
+    if not niche:
+        return None
+    trend = sorted(raw.get("trend") or [], key=lambda p: (p["year"], p["month"]))
+    values = [p.get("search_volume") or 0 for p in trend][-12:]
+    momentum = round((sum(values[9:]) / 3) / (sum(values[:9]) / 9), 2) if len(values) == 12 and sum(values[:9]) else None
+    return {"keyword": kw, "volume": raw.get("monthly_volume") or 0, "cpc": raw.get("cpc_usd") or 0, "kd": None,
+            "momentum": momentum, "trend": values, "niche": niche, "discovered": False, "source": "openrush"}
+
+
+def international_demand(out, day):
+    """Country-level OpenRush keyword reads saved as keywords/intl__<country>__<query>.json."""
+    reads = []
+    for path in sorted((out / "keywords").glob("intl__*.json")):
+        raw = payload(read_json(path) or {})
+        if not raw.get("keyword"):
+            continue
+        yoy = scoring.yoy(raw.get("trend")) or {}
+        reads.append({"keyword": raw["keyword"], "country": raw.get("location"), "volume": raw.get("monthly_volume"),
+                      "cpc": raw.get("cpc_usd"), "yoy": yoy.get("yoy"), "latest_month": yoy.get("latest_month"),
+                      "season": scoring.season_ahead(raw.get("trend"), day)})
+    return reads
+
+
+def best_picks(cfg, day, opportunities, watch, board, demand):
+    """The three picks Terell asked for (2026-10-13): best seasonal, best nationwide, best international."""
+    countries = {m["name"]: market_country(m) for m in all_markets(cfg)}
+    states = {m["name"]: m.get("state") for m in all_markets(cfg)}
+    home = {m["name"] for m in cfg["markets"]["home"]}
+    focus = cfg.get("focus") or {}
+    focus_qs = {scoring.slug(q): q for q in focus.get("map_queries", [])}
+    query_states = focus.get("query_states") or {}
+    by_slug = {}
+    for kw, w in watch.items():
+        by_slug.setdefault(scoring.slug(scoring.local_query(kw)), []).append((kw, w))
+
+    seen, cands = set(), []
+    for o in opportunities:
+        s = o.get("season") or {}
+        if s.get("ratio", 0) >= 1.3 and o["play"] != "Avoid":
+            cands.append({"keyword": o["keyword"], "niche": o["niche"], "score": o["score"], "play": o["play"],
+                          "ratio": s["ratio"], "peak_month": s.get("peak_month"), "peak_volume": s.get("peak_volume"),
+                          "as_of": day})
+            seen.add(o["keyword"])
+    for kw, w in watch.items():
+        s = w.get("season") or {}
+        if kw not in seen and s.get("ratio", 0) >= 1.3 and w.get("play") != "Avoid":
+            cands.append({"keyword": kw, "niche": w.get("niche"), "score": w.get("score", 0), "play": w.get("play", "Watch"),
+                          "ratio": s["ratio"], "peak_month": s.get("peak_month"), "peak_volume": s.get("peak_volume"),
+                          "as_of": w.get("last_seen")})
+    # An actionable play beats a bigger spike we can't act on (a cooling "Watch" keyword).
+    cands.sort(key=lambda c: (scoring.PLAY_ORDER.get(c["play"], 3), -(c["ratio"] * max(c["score"] or 0, 1))))
+    seasonal = None
+    if cands:
+        c = cands[0]
+        peak = f", peaking in {c['peak_month']} ({c['peak_volume']:,} searches, OpenRush)" if c.get("peak_volume") else ""
+        seasonal = dict(c, why=(f"Last year the next 3 months ran {c['ratio']:.1f}x this month{peak}. Play: {c['play']}. "
+                                f"Launch or sign the partner now so the profile has reviews before the peak."),
+                        also=[f"{x['keyword']} ({x['ratio']:.1f}x, {x['play']})" for x in cands[1:3]])
+
+    def candidates(keep):
+        rows = []
+        for market, readings in board.items():
+            if not keep(market):
+                continue
+            for r in readings:
+                if r.get("weakness") is None:
+                    continue
+                sl = scoring.slug(r["query"])
+                matches = by_slug.get(sl, [])
+                best = max(matches, key=lambda kv: kv[1].get("score", 0), default=None)
+                if not best and sl not in focus_qs:
+                    continue  # only searches we have demand numbers for, or the standing watch
+                if not best and query_states.get(focus_qs[sl]) and states.get(market) not in query_states[focus_qs[sl]]:
+                    continue  # snow removal in Phoenix is open because nobody needs it
+                kw, w = best if best else (r["query"], {})
+                rows.append({"query": r["query"], "market": market, "country": countries.get(market, "United States"),
+                             "median": r["median"], "weakness": r["weakness"], "date": r["date"], "keyword": kw,
+                             "score": w.get("score"), "play": w.get("play"), "verify": w.get("verify")})
+        rows.sort(key=lambda c: (-c["weakness"], -(c["score"] or 60), c["date"]), reverse=False)
+        return rows
+
+    nat = candidates(lambda m: m not in home and countries.get(m, "United States") == "United States")
+    nationwide = None
+    if nat:
+        c = nat[0]
+        score = f" Watchlist score {c['score']:.0f}, play {c['play']}." if c.get("score") else " Standing-watch search (licensed trade)."
+        nationwide = dict(c, why=(f"The most open map pack outside Chicago for a search with real demand: the top 3 have a "
+                                  f"median of {c['median']:g} reviews ({c['date']}).{score} Partner & manage unless 6 Central "
+                                  f"opens a real staffed base there."),
+                          also=[f"{x['query']} in {x['market']} (median {x['median']:g})" for x in nat[1:3]])
+
+    intl = candidates(lambda m: countries.get(m, "United States") != "United States")
+    dem = {(d.get("country"), scoring.slug(d["keyword"])): d for d in demand}
+    for c in intl:
+        c["demand"] = dem.get((c["country"], scoring.slug(c["query"])))
+    intl.sort(key=lambda c: (-c["weakness"], -((c.get("demand") or {}).get("volume") or 0), c["date"]))
+    international = None
+    if intl:
+        c = intl[0]
+        d = c.get("demand") or {}
+        dtext = (f" {d['volume']:,} searches/mo in {c['country']} at ${d['cpc']:.2f} CPC (OpenRush)" if d.get("volume") else
+                 f" Demand in {c['country']} not measured yet")
+        international = dict(c, play="Partner & manage",
+                             why=(f"The most open map pack abroad: the top 3 have a median of {c['median']:g} reviews ({c['date']})."
+                                  f"{dtext}. Play abroad: Partner & manage only. The profile belongs to the local operator who does "
+                                  f"the work; 6 Central sells the back office (answering, dispatch, reviews, marketing) for a percentage."),
+                             also=[f"{x['query']} in {x['market']} (median {x['median']:g})" for x in intl[1:3]])
+    return {"seasonal": seasonal, "nationwide": nationwide, "international": international}
 
 
 # ------------------------------------------------------------------- build
@@ -319,6 +486,7 @@ def build(day, cfg):
     signals = read_json(out / "signals.json", {}) or {}
     signals = {k: [s for s in v if s.get("source")] for k, v in signals.items() if isinstance(v, list)}
     register, flags = google_watch(cfg, prev, signals.get("google", []), day)
+    countries = {m["name"]: market_country(m) for m in all_markets(cfg)}
 
     serps = {}
     for path in sorted((out / "serp").glob("*.json")):
@@ -330,18 +498,18 @@ def build(day, cfg):
         result = scoring.pack_weakness(data, cfg["own_brand_markers"],
                                        [x["name"] for x in cfg.get("own_listings", [])])
         result.update(query=data.get("query") or q.replace("-", " "), market=market,
-                      fetched_at=data.get("fetched_at"))
+                      country=countries.get(market, "United States"), fetched_at=data.get("fetched_at"))
         serps.setdefault(scoring.slug(result["query"]), []).append(result)
 
     opportunities = []
     if not plan["recap"]:
         rows = {r["keyword"]: r for r in read_json(out / "screen.json", [])}
         for kw in plan.get("deep_dives", []):
-            row = rows.get(kw)
+            raw = payload(read_json(out / "keywords" / f"{scoring.slug(kw)}.json", {}) or {})
+            row = rows.get(kw) or (openrush_row(kw, raw, cluster) if raw else None)  # Semrush-less fallback
             if not row:
                 continue
             niche = cluster["niches"][row["niche"]]
-            raw = payload(read_json(out / "keywords" / f"{scoring.slug(kw)}.json", {}) or {})
             deep = scoring.yoy(raw.get("trend")) if raw else None
             if deep is not None:
                 deep.update(volume=raw.get("monthly_volume"), cpc=raw.get("cpc_usd"))
@@ -361,7 +529,8 @@ def build(day, cfg):
                 "licensed": niche.get("licensed", False), "discovered": row.get("discovered", False),
                 "score": score, "parts": parts, "change": change, "trend_source": trend_source,
                 "label": scoring.label(change), "play": play, "why": why,
-                "semrush": {"volume": row["volume"], "cpc": row["cpc"], "kd": row["kd"], "momentum": row["momentum"]},
+                "semrush": ({"volume": None, "cpc": None, "kd": None, "momentum": None} if row.get("source") == "openrush"
+                            else {"volume": row["volume"], "cpc": row["cpc"], "kd": row["kd"], "momentum": row["momentum"]}),
                 "openrush": deep, "map_packs": checks, "new": kw not in watch})
         opportunities.sort(key=lambda o: (scoring.PLAY_ORDER[o["play"]], -o["score"]))
 
@@ -387,7 +556,8 @@ def build(day, cfg):
             if c.get("weakness") is None:
                 continue
             readings = [r for r in board.get(c["market"], []) if not (r["date"] == day and r["query"] == c["query"])]
-            readings.append({"date": day, "query": c["query"], "median": c["median_reviews"], "weakness": c["weakness"]})
+            readings.append({"date": day, "query": c["query"], "median": c["median_reviews"], "weakness": c["weakness"],
+                             "country": c.get("country", "United States")})
             board[c["market"]] = readings[-60:]
 
     top = [{"keyword": o["keyword"], "score": o["score"], "label": o["label"], "play": o["play"]}
@@ -409,9 +579,19 @@ def build(day, cfg):
         health["previous"] = next((h for h in reversed(history) if h["date"] != day), None)
         own_state[listing["name"]] = history
         own_listings.append(health)
+    states = {m["name"]: m.get("state") for m in all_markets(cfg)}
+    query_states = (cfg.get("focus") or {}).get("query_states") or {}
+
+    def sensible(r, market):  # no credit for an open "snow removal" pack in Phoenix
+        allowed = query_states.get(r["query"])
+        return allowed is None or states.get(market) in allowed
+
+    us_board = {m: [r for r in rs if sensible(r, m)] for m, rs in board.items()
+                if countries.get(m, "United States") == "United States"}
+    intl_board = {m: r for m, r in board.items() if countries.get(m, "United States") != "United States"}
     focus = cfg.get("focus") or {}
     fq = {scoring.slug(q) for q in focus.get("map_queries", [])}
-    focus_board = {m: [r for r in rows if scoring.slug(r["query"]) in fq] for m, rows in board.items()}
+    focus_board = {m: [r for r in rows if scoring.slug(r["query"]) in fq] for m, rows in us_board.items()}
     focus_view = None
     if focus:
         today_checks = [c for k in fq for c in serps.get(k, [])]
@@ -421,6 +601,18 @@ def build(day, cfg):
                       "leaderboard": scoring.leaderboard({m: r for m, r in focus_board.items() if r}),
                       "licensing": {s: focus["licensing"][s] for s in sorted(states) if s in focus.get("licensing", {})}}
     bases_view, base_state = target_bases(cfg, day, out, prev)
+    demand = international_demand(out, day)
+    intl_view = {"today": [c for checks in serps.values() for c in checks if c.get("country", "United States") != "United States"],
+                 "leaderboard": scoring.leaderboard(intl_board), "demand": demand,
+                 "markets": sorted({m["name"] for m in plan["markets"] if m.get("role") == "international"}
+                                   | {c["market"] for checks in serps.values() for c in checks
+                                      if c.get("country", "United States") != "United States"})}
+    picks = best_picks(cfg, day, opportunities, watch, board, demand)
+    notes = []
+    if plan.get("screen_source") == "openrush-fallback":
+        notes.append("No Semrush screen today (semrush.csv missing: Semrush reported no API units). Today's moves come from "
+                     "OpenRush deep dives of the cluster's best-known keywords, and the Semrush columns are blank. "
+                     "Top up API units at https://www.semrush.com/mcp-access to restore discovery of new keywords.")
     state = {"version": 1, "updated": day, "watchlist": watch, "briefs": briefs, "markets": board,
              "own_listings": own_state, "google_flags": flags, "bases": base_state}
 
@@ -430,7 +622,8 @@ def build(day, cfg):
             if "amazon.com" in (k.get("url") or "") and k.get("title")]
     tactic = cfg["playbook"][datetime.strptime(day, "%Y-%m-%d").toordinal() % len(cfg["playbook"])]
     brief = {"date": day, "weekday": plan["weekday"], "label": plan["label"], "recap": plan["recap"],
-             "markets": [m["name"] for m in plan["markets"]], "leaderboard": scoring.leaderboard(board),
+             "markets": [m["name"] for m in plan["markets"]], "leaderboard": scoring.leaderboard(us_board),
+             "international": intl_view, "picks": picks, "notes": notes,
              "opportunities": opportunities,
              "serps": serps, "signals": signals, "kits": kits, "verification": cfg["verification"], "own_sightings": own_sightings,
              "own_listings": own_listings, "focus": focus_view, "tactic": tactic, "bases": bases_view,

@@ -47,20 +47,39 @@ Apply steady pressure every day:
   holding profiles, and suspensions also hurt the real businesses involved.
 - **Research only.** Never create or edit a profile, and never contact a
   business.
-- Stay inside the daily budget in `config/gbp_scout.json` (about 61 OpenRush
-  credits and 450 Semrush units). Never re-run a call that succeeded.
+- Stay inside the daily budget in `config/gbp_scout.json` (`plan` prints the
+  ceiling, about 95 OpenRush credits with all five bases and one market
+  abroad, and 450 Semrush units). Never re-run a call that succeeded.
 - **Markets:** Chicago is checked every day. A roster of 34 large or
   fast-growing metros nationwide rotates, 3 a day (`plan` prints today's).
   Rotating metros get the top 2 map-pack searches; Chicago gets all of them.
+- **International (Terell, 2026-10-13: "start looking at the best opportunities
+  internationally").** One market abroad rotates in every day from
+  `markets.international` (Canada, UK, Australia, Ireland, New Zealand). It gets
+  the top 2 map-pack searches, spelled the local way (`plan` prints the
+  spelling, e.g. tire -> tyre), plus one country-level demand read. Those packs
+  are ranked in their own "International watch" section, never mixed into the
+  US leaderboard. The play abroad is always Partner & manage: the local operator
+  owns the profile; 6 Central exports the back office and the playbook.
+- **The three picks.** Every brief opens with "Best opportunities right now":
+  best seasonal (the watchlist keyword whose next 3 months climb most), best
+  nationwide (the most open pack outside Chicago for a search with demand
+  numbers or a standing-watch search, skipping searches that make no sense in
+  that state, like snow removal in Phoenix) and best international. `build`
+  computes them from the watchlist and the market board; they must be in
+  every morning report.
 - **Standing watch** (`focus` in config: decks & general contracting).
   `screen` adds one focus map search to every market each day, alternating
   "deck builders" / "general contractor" (about 8 credits a day).
 - **Target bases** (`bases` in config) are the places 6 Central plans its own
-  service-area listings (Portage Park, Elgin, and three rotating bases).
-  `screen` prints their checks every day under "Target-base checks"; run them
-  with inspect_serp and save to the `serp/base__...` path shown. `build` reports
-  our spot, the top 3, the median and the change since the last check. This is
-  Terell's standing request: it must be in every morning report.
+  service-area listings: Portage Park, Elgin, Midway/Southwest, the O'Hare
+  corridor and South Chicago. **All of them are checked every day** (Terell,
+  2026-10-13: "between all of those"). `screen` prints their checks under
+  "Target-base checks"; run them with inspect_serp and save to the
+  `serp/base__...` path shown. `build` reports our spot, the top 3, the median
+  and the change since the last check. This is Terell's standing request: it
+  must be in every morning report. A pack entry whose domain is google.com or
+  whose title ends in "My Ad Center" is a paid slot; the code ignores it.
 - **Our listings** (`own_listings` in config) are confirmed 6 Central
   profiles. `screen` adds each one's tracked search in its market every day
   (2 credits each). Never edit those profiles; only report on them.
@@ -109,6 +128,12 @@ is `runs/gbp/D/`.
    `["keyword","volume","cpc","competitive_density","trend","intent","keyword_difficulty"]`
    and that `phrase`. Write the returned `data` text exactly, header
    included, to `runs/gbp/D/semrush.csv`.
+   **If Semrush fails** (`no_api_units`, `no_subscription`, a connection
+   error), save nothing, carry on to step 5, and put the error and the
+   Semrush URL it returns at the top of the report so Terell can top up.
+   Without `semrush.csv`, `screen` falls back to OpenRush: it deep-dives the
+   cluster's best-known keywords directly and the Semrush columns stay blank.
+   The day's moves still get built; never skip them because Semrush is out.
 
 5. **Screen, deep dives and map packs.** `python3 scout.py screen --date D`
    lists the deep dives and map-pack checks with their file paths.
@@ -120,6 +145,11 @@ is `runs/gbp/D/`.
      "local_pack": [{"title", "domain", "rating": {"value",
      "votes_count"}}], "organic": [{"position", "domain"}]}` to the path
      shown.
+   - International demand: `mcp__OpenRush__inspect_keyword` with the
+     **country** as `location` ("Canada", "United Kingdom", "Australia"; a
+     city is rejected), for the line `screen` prints. Save
+     `{"keyword", "location", "monthly_volume", "cpc_usd", "trend"}` to the
+     `keywords/intl__...` path shown.
    Run independent calls in parallel. If a call is denied (permission
    prompt or classifier) or errors, don't retry it in a loop: skip it, save
    nothing for it, and list it under "tool that failed" in the report.
@@ -212,6 +242,9 @@ is `runs/gbp/D/`.
 10. **Report.** Your final message is the morning report Terell gets by push
     and email. Keep it short:
     - one line: the day's cluster and the dashboard link
+    - **the three picks** from `summary.md` ("Best opportunities right now"):
+      seasonal, nationwide, international, one line each with the play and
+      the fact behind it
     - the top 3 moves from `summary.md`, each with its play and the one fact
       that matters most
     - the 3 most open markets on the leaderboard, and any new market that
@@ -222,6 +255,8 @@ is `runs/gbp/D/`.
       bases today"), always, with any change in our spot or the median called out
     - the standing watch (decks & general contracting): its most open
       markets, and any new market that showed a median under 50 reviews
+    - **international:** today's market abroad, its packs and the country-level
+      demand read, and whether it moved the "best international" pick
     - any "possibly ours" map-pack sighting, as a question to confirm
     - one thing to watch that is 2–3 steps ahead (a season turning, a
       policy shift, a rising keyword moving up the watchlist)
