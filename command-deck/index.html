@@ -1,0 +1,1330 @@
+<title>6 Central Command Deck</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a pixel-art station deck on the left, a command console on the right, HUD across the top, refit toolbar under the deck. One committed dark look (a ship at night). */
+:root{
+  --void:#070a12; --hull:#0d1322; --panel:#121a2c; --panel2:#18223a; --line:#2a3757;
+  --text:#dfe7f6; --dim:#8794b3; --amber:#ffb547; --cyan:#57d3ff; --good:#62e394; --bad:#ff6170; --violet:#ae94ff;
+  --f-display:'Silkscreen','Courier New',monospace;
+  --f-term:'VT323','Courier New',monospace;
+  --f-body:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{background:var(--void);color:var(--text);font-family:var(--f-body);font-size:13px;line-height:1.5}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+#app{display:flex;flex-direction:column;min-height:100%;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px;gap:12px}
+.hud{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;border:2px solid var(--line);background:var(--hull);padding:8px 12px}
+.brand{font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.06em;color:var(--amber);display:flex;align-items:center;gap:8px}
+.brand small{font-weight:400;color:var(--dim);font-size:10px;letter-spacing:.1em}
+.chip{font-family:var(--f-display);font-size:10px;letter-spacing:.08em;padding:3px 8px;border:1px solid var(--line);background:var(--panel);color:var(--dim);white-space:nowrap}
+.chip b{color:var(--text);font-weight:700}
+.chip.live b{color:var(--good)}
+.chip.warn{border-color:var(--bad);color:var(--bad)}
+.xpbar{width:90px;height:6px;background:var(--panel2);border:1px solid var(--line);display:inline-block;vertical-align:middle;margin-left:6px}
+.xpbar i{display:block;height:100%;background:var(--amber)}
+.hud .sp{flex:1}
+.btn{font-family:var(--f-display);font-size:11px;letter-spacing:.08em;padding:6px 10px;border:2px solid var(--line);background:var(--panel2);color:var(--text)}
+.btn:hover{border-color:var(--cyan)}
+.btn.pri{background:var(--amber);color:#1b1206;border-color:var(--amber)}
+.btn.pri:hover{filter:brightness(1.1)}
+.btn.on{border-color:var(--good);color:var(--good)}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn.sm{font-size:9px;padding:3px 7px;border-width:1px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.deck{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr);gap:12px;flex:1;min-height:0}
+@media (max-width:980px){.deck{grid-template-columns:minmax(0,1fr)}}
+.stage{border:2px solid var(--line);background:var(--hull);display:flex;flex-direction:column;min-width:0}
+.stagebar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 8px;border-bottom:2px solid var(--line);font-family:var(--f-display);font-size:10px;color:var(--dim)}
+.stagebar .sp{flex:1}
+#cv{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:crosshair;touch-action:manipulation}
+#refit{border-top:2px solid var(--line);padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--panel)}
+#refit .tool{font-family:var(--f-display);font-size:10px;padding:5px 8px;border:1px solid var(--line);background:var(--panel2);color:var(--dim)}
+#refit .tool.sel{border-color:var(--amber);color:var(--amber)}
+#refit .tool kbd{color:var(--cyan);margin-right:4px;font-family:var(--f-display)}
+#refitsub{display:flex;flex-wrap:wrap;gap:6px;width:100%}
+#hint{padding:6px 10px;font-family:var(--f-term);font-size:18px;color:var(--cyan);min-height:30px;border-top:1px dashed var(--line)}
+.console{border:2px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-width:0;min-height:560px;max-height:calc(100vh - 110px)}
+@media (max-width:980px){.console{max-height:none}}
+.tabs{display:flex;flex-wrap:wrap;border-bottom:2px solid var(--line)}
+.tabs button{flex:1 1 auto;font-family:var(--f-display);font-size:10px;letter-spacing:.06em;padding:8px 6px;background:transparent;border:0;border-right:1px solid var(--line);color:var(--dim)}
+.tabs button.sel{background:var(--panel2);color:var(--amber)}
+.tabs button .dot{display:inline-block;width:6px;height:6px;background:var(--bad);margin-left:4px;vertical-align:middle}
+#panel{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:12px;min-height:0}
+h2{font-family:var(--f-display);font-size:12px;letter-spacing:.1em;color:var(--amber);margin:0;text-wrap:balance}
+h3{font-family:var(--f-display);font-size:10px;letter-spacing:.1em;color:var(--cyan);margin:0}
+.muted{color:var(--dim)}
+.small{font-size:11px}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.stack{display:flex;flex-direction:column;gap:8px}
+.card{border:1px solid var(--line);background:var(--panel2);padding:10px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card.live{border-color:var(--good)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:11px}
+.kv dt{color:var(--dim);font-family:var(--f-display);font-size:9px;letter-spacing:.08em;padding-top:2px}
+.kv dd{margin:0;font-variant-numeric:tabular-nums}
+input[type=text],input[type=number],input[type=time],select,textarea{background:var(--void);border:1px solid var(--line);padding:6px 8px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:60px}
+label.f{display:flex;flex-direction:column;gap:3px;font-family:var(--f-display);font-size:9px;letter-spacing:.08em;color:var(--dim)}
+.seg{display:flex;flex-wrap:wrap;border:1px solid var(--line)}
+.seg button{flex:1;font-family:var(--f-display);font-size:9px;padding:6px 4px;background:transparent;border:0;border-right:1px solid var(--line);color:var(--dim)}
+.seg button:last-child{border-right:0}
+.seg button.sel{background:var(--amber);color:#1b1206}
+.meter{display:grid;grid-template-columns:80px 1fr 34px;gap:6px;align-items:center;font-family:var(--f-display);font-size:8px;color:var(--dim)}
+.meter span.bar{height:5px;background:var(--void);border:1px solid var(--line)}
+.meter span.bar i{display:block;height:100%}
+/* comms */
+.agentpick{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.agentpick button{flex:0 0 auto;font-family:var(--f-display);font-size:9px;padding:4px 8px;border:1px solid var(--line);background:var(--panel2);color:var(--dim)}
+.agentpick button.sel{border-color:var(--amber);color:var(--amber)}
+.agentpick button .lit{display:inline-block;width:6px;height:6px;background:var(--good);margin-right:4px}
+#log{display:flex;flex-direction:column;gap:8px;flex:1;overflow:auto;min-height:220px}
+.msg{border-left:3px solid var(--line);padding:6px 10px;background:var(--panel2);min-width:0;overflow-wrap:anywhere}
+.msg .who{font-family:var(--f-display);font-size:9px;letter-spacing:.08em;color:var(--dim);display:flex;gap:8px;align-items:center}
+.msg.you{border-color:var(--amber);background:transparent}
+.msg.agent{border-color:var(--cyan)}
+.msg.system{border-color:var(--violet);background:transparent;color:var(--dim);font-size:12px}
+.msg.ask{border-color:var(--amber);background:#2a1f0c}
+.msg .body{white-space:pre-wrap}
+.msg .body code{background:var(--void);padding:0 3px}
+.msg .body pre{background:var(--void);padding:6px;overflow-x:auto;white-space:pre}
+.msg img{background:#fff;max-width:220px;border:1px solid var(--line)}
+.typing{font-family:var(--f-term);font-size:18px;color:var(--good)}
+.composer{display:flex;flex-direction:column;gap:6px;border-top:2px solid var(--line);padding-top:8px}
+.composer textarea{min-height:52px}
+.verdicts button{font-family:var(--f-display);font-size:10px}
+.v-up{border-color:var(--good)!important;color:var(--good)!important}
+.v-mid{border-color:var(--amber)!important;color:var(--amber)!important}
+.v-dn{border-color:var(--bad)!important;color:var(--bad)!important}
+/* quests */
+.tree{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.tree li{display:grid;grid-template-columns:110px 1fr;gap:8px;align-items:start;font-size:12px}
+.mark{font-family:var(--f-display);font-size:9px;letter-spacing:.06em;padding-top:2px}
+.mark.done{color:var(--good)} .mark.here{color:var(--amber)} .mark.run{color:var(--cyan)} .mark.next{color:var(--dim)}
+.evidence{font-size:11px;color:var(--dim);border-left:2px solid var(--good);padding-left:8px;margin-top:4px;white-space:pre-wrap}
+.belief{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:start;font-size:12px;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.belief.struck .t{text-decoration:line-through;color:var(--dim)}
+.belief .src{font-size:10px;color:var(--dim)}
+.tag{font-family:var(--f-display);font-size:8px;letter-spacing:.06em;padding:1px 5px;border:1px solid var(--line);color:var(--dim)}
+.tag.ok{border-color:var(--good);color:var(--good)} .tag.bad{border-color:var(--bad);color:var(--bad)} .tag.amb{border-color:var(--amber);color:var(--amber)}
+table.t{width:100%;border-collapse:collapse;font-size:11px;font-variant-numeric:tabular-nums}
+table.t th{font-family:var(--f-display);font-size:8px;letter-spacing:.06em;color:var(--dim);text-align:left;border-bottom:1px solid var(--line);padding:4px}
+table.t td{border-bottom:1px dashed var(--line);padding:4px;vertical-align:top}
+.tw{overflow-x:auto}
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(3,5,10,.82);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));z-index:50}
+#modal .box{background:var(--panel);border:2px solid var(--amber);max-width:760px;width:100%;max-height:100%;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.classgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.classgrid button{text-align:left;border:1px solid var(--line);background:var(--panel2);padding:8px;display:flex;flex-direction:column;gap:4px}
+.classgrid button:hover,.classgrid button.sel{border-color:var(--amber)}
+.classgrid .cn{font-family:var(--f-display);font-size:11px}
+.classgrid .cb{font-size:11px;color:var(--dim)}
+#toasts{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:6px;z-index:60;max-width:min(360px,calc(100vw - 32px))}
+.toast{background:var(--panel2);border:2px solid var(--cyan);padding:8px 10px;font-family:var(--f-term);font-size:18px;line-height:1.1}
+.toast.xp{border-color:var(--amber);color:var(--amber)}
+.toast.bad{border-color:var(--bad)}
+.banner{border:1px dashed var(--amber);color:var(--amber);padding:8px;font-size:12px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div id="app">
+  <header class="hud">
+    <div class="brand"><span aria-hidden="true">◈</span> 6C COMMAND DECK <small>6 CENTRAL ENTERPRISES</small></div>
+    <span class="chip" id="hudLevel" title="Station level rolls up every agent's XP. It unlocks and gates nothing.">STATION LV <b>1</b></span>
+    <span class="chip live" id="hudLive" title="Counts only model calls in flight right now.">LIVE RUNS <b>0</b></span>
+    <span class="chip" id="hudAuto">AUTONOMY <b>SUGGEST</b></span>
+    <span class="chip" id="hudLink">CLAUDE LINK <b>…</b></span>
+    <span class="sp"></span>
+    <button class="btn" id="btnVoice" title="Read agent answers aloud">🔈 VOICE OFF</button>
+    <button class="btn" id="btnRecruit">＋ RECRUIT</button>
+    <button class="btn pri" id="btnRefit">⚒ REFIT STATION</button>
+  </header>
+  <main class="deck">
+    <section class="stage" aria-label="Station floor">
+      <div class="stagebar"><span id="stageTitle">STATION FLOOR</span><span class="sp"></span><span id="stageLegend">LIT BELT = READY · DARK BELT = SOMETHING MISSING · LIT DESK = LIVE WORKER</span></div>
+      <canvas id="cv" width="1664" height="960"></canvas>
+      <div id="refit" hidden>
+        <div class="row" id="refittools"></div>
+        <div id="refitsub"></div>
+      </div>
+      <div id="hint">Click a desk to staff it. Click the INBOX to send work down a line.</div>
+    </section>
+    <aside class="console">
+      <nav class="tabs" id="tabs"></nav>
+      <div id="panel"></div>
+    </aside>
+  </main>
+</div>
+<div id="modal" hidden><div class="box" id="modalbox"></div></div>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   CONSTANTS
+   ============================================================ */
+const COLS=26, ROWS=15, T=32, QUARTERS=3;           // grid; first 3 columns are crew quarters
+const AWAY_MS=30*60e3, COOLDOWN_MS=45*60e3;         // autonomy timing
+const PACE={LIGHT:1,STANDARD:3,BUSY:6,MAX:12};
+const XP_PER_NAIL=25;
+const lvlFor=xp=>{let n=1;while(25*(n+1)*n<=xp)n++;return n};      // 50,150,300,500…2250
+const xpFor=n=>25*n*(n-1);
+const TIERS={quick:'SWIFT',default:'STANDARD',complex:'DEEP'};
+
+const CLASSES={
+  overseer:{label:'OVERSEER',color:'#ffb547',tier:'complex',delegate:true,loadout:['core','cab'],blurb:'Runs the station, recruits crew and delegates work. Cannot be dismissed.'},
+  allocator:{label:'ALLOCATOR',color:'#9be3c2',tier:'complex',delegate:true,loadout:['core','cab'],blurb:'Portfolio fit, priorities and keep / later / kill calls across 6C projects.'},
+  researcher:{label:'RESEARCHER',color:'#57d3ff',tier:'default',loadout:['dish','cab','core'],blurb:'Digs, compares, and flags anything it cannot verify.'},
+  builder:{label:'BUILDER',color:'#62e394',tier:'complex',loadout:['bench','cab'],blurb:'Writes and tests code at the workbench.'},
+  marketer:{label:'MARKETER',color:'#ff86cf',tier:'default',loadout:['studio','cab'],blurb:'Offers, local SEO, content and campaigns. Honest claims only.'},
+  analyst:{label:'ANALYST',color:'#ae94ff',tier:'default',loadout:['bench','cab'],blurb:'Unit economics, pricing math and validation tests.'},
+  writer:{label:'WRITER',color:'#f2e16b',tier:'quick',loadout:['cab','core'],blurb:'Emails, scripts, SOPs and page copy.'},
+  dispatcher:{label:'DISPATCHER',color:'#ff9a4f',tier:'quick',loadout:['cab','core'],blurb:'Roadside and home-service ops: intake, routing, follow-ups.'},
+  custom:{label:'CUSTOM',color:'#c9d3e6',tier:'default',loadout:['cab'],blurb:'Your own specialty. Describe it in the interview.'}
+};
+const GEAR={
+  console:{label:'CONSOLE',grants:'COMPUTE',desc:'A PC for the desk beside it. A desk with no PC next to it cannot run.'},
+  cab:{label:'INTEL CAB',grants:'FILES',desc:'Read and write files in the station workshop.'},
+  core:{label:'CORE',grants:'MEMORY',desc:'Agents remember things between jobs.'},
+  bench:{label:'WORKBENCH',grants:'TERMINAL',desc:'Runs real JavaScript in a sandbox. Asks your approval first.'},
+  studio:{label:'STUDIO',grants:'IMAGES',desc:'Makes SVG images and saves them to the workshop.'},
+  dish:{label:'DISH',grants:'WEB',desc:'Web search. Not wired in this browser build yet, so it stays dormant and agents say so.'}
+};
+const SIGNS={
+  filter:{label:'FILTER',desc:'Sorts each job by its text into CODE, RESEARCH or EVERYTHING ELSE. Free: sorting runs on the station, not the model.'},
+  splitter:{label:'SPLITTER',desc:'Deals jobs across its lanes. With a JOINER downstream it sends a copy down every lane at once.'},
+  joiner:{label:'JOINER',desc:'Waits for every branch, then sends one merged result on.'},
+  merger:{label:'MERGER',desc:'Folds several belts into one without changing the jobs.'},
+  loop:{label:'LOOP',desc:'Draft, critique, redraft. Sends work BACK until the reviewer starts with APPROVED or the pass limit hits, then out the DONE lane.'}
+};
+const DIMS=['identity','mission','goals','priorities','values','style','customers','portfolio','constraints'];
+const SKINS=[['#f1c7a3','#3a2416'],['#c98d63','#1d120b'],['#8d5a3b','#0f0a07'],['#5b3a26','#0b0806'],['#e8b98f','#a1462b'],['#d9a47c','#d7d0c4']];
+
+/* ============================================================
+   UTILS
+   ============================================================ */
+const $=s=>document.querySelector(s);
+const uid=()=>Math.random().toString(36).slice(2,9);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const ago=t=>{if(!t)return '—';const s=(Date.now()-t)/1e3;if(s<60)return Math.round(s)+'s ago';if(s<3600)return Math.round(s/60)+'m ago';if(s<86400)return Math.round(s/3600)+'h ago';return Math.round(s/86400)+'d ago'};
+const hhmm=t=>t?new Date(t).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}):'—';
+const today=()=>new Date().toISOString().slice(0,10);
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function md(s){
+  let h=esc(s);
+  h=h.replace(/```([\s\S]*?)```/g,(m,c)=>'<pre>'+c.replace(/^\w*\n/,'')+'</pre>');
+  h=h.replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>');
+  h=h.replace(/^#{1,4} (.*)$/gm,'<b>$1</b>');
+  return h;
+}
+function toast(text,cls=''){
+  const d=document.createElement('div');d.className='toast '+cls;d.textContent=text;$('#toasts').append(d);
+  setTimeout(()=>d.remove(),4200);
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+function seed(){
+  const ov={id:'a_ov',name:'CENTRAL',cls:'overseer',tier:'complex',skin:0,personality:'Calm, direct, protective of your time',interview:[],memory:[],xp:0,runs:0,clean:0,ratings:[],created:Date.now(),overseer:true};
+  const rs={id:'a_rs',name:'SCOUT',cls:'researcher',tier:'default',skin:2,personality:'Curious and skeptical',interview:[],memory:[],xp:0,runs:0,clean:0,ratings:[],created:Date.now()};
+  const wr={id:'a_wr',name:'QUILL',cls:'writer',tier:'quick',skin:4,personality:'Warm and plain-spoken',interview:[],memory:[],xp:0,runs:0,clean:0,ratings:[],created:Date.now()};
+  const it=(type,x,y,extra={})=>({id:'i_'+uid(),type,x,y,...extra});
+  const inbox=it('inbox',6,4,{hopCap:6}), b1=it('bay',10,4,{agentId:'a_rs'}), b2=it('bay',14,4,{agentId:'a_wr'}), out=it('outbox',18,4);
+  const bO=it('bay',6,10,{agentId:'a_ov'});
+  const items=[inbox,b1,b2,out,bO,
+    it('console',10,3),it('console',14,3),it('console',6,11),
+    it('cab',21,9),it('core',23,9),it('bench',21,12),it('studio',23,12),it('dish',23,2)];
+  const belts=[{id:'b_'+uid(),from:inbox.id,to:b1.id},{id:'b_'+uid(),from:b1.id,to:b2.id},{id:'b_'+uid(),from:b2.id,to:out.id}];
+  const B=(dim,text)=>({id:'k_'+uid(),dim,text,source:'Seeded from your 6C profile',status:'kept',t:Date.now()});
+  return {
+    v:1,savedAt:0,
+    agents:[ov,rs,wr],items,belts,
+    beliefs:[
+      B('identity','The Commander is Terell John, founder of 6 Central Enterprises.'),
+      B('identity','6 Central Enterprises is the parent holding company. Every brand, app or service is a portfolio project, never the parent itself.'),
+      B('mission','Mission: push the world forward through kindness and innovation.'),
+      B('goals','Long-term objective: build 6C into a durable $1B+ holding company through ethical, highly leveraged business creation.'),
+      B('priorities','Growth sequence: research → validate → build → measure → improve → document → automate → delegate → replicate → scale. Never scale an unproven process.'),
+      B('values','No fake reviews, fake locations, misleading claims or dark patterns. Trust beats speed.'),
+      B('style','Wants plain, direct answers that think two to three steps ahead, with risks and next actions.'),
+      B('portfolio','Known projects include TJ’s Nationwide Roadside, TJ’s Roadside Operating System, Roadside Rush, The Credibility Machine, tire marketplaces and home-service lead-gen projects.'),
+      B('constraints','A project is not a legal subsidiary unless the Commander confirms it.')
+    ],
+    comms:[{id:uid(),agentId:'a_ov',role:'system',text:'Station online. CENTRAL (your Overseer), SCOUT and QUILL are aboard. Talk to anyone here, or click the INBOX on the floor to send a job down the line SCOUT → QUILL. Rate finished work to earn XP.',t:Date.now()}],
+    jobs:[],goals:[],files:{'README.txt':'Station workshop. Agents with the INTEL CAB read and write here.'},
+    skills:[
+      {id:'s1',name:'Kindness Standard',src:'6C ORIGINAL',needs:[],body:'In any customer-facing text: lead with empathy, state exactly what will happen and when, never over-promise, and offer one clear next step.'},
+      {id:'s2',name:'Validate Before Scaling',src:'6C ORIGINAL',needs:[],body:'Before recommending spend: name the customer problem, the evidence of demand, the cheapest ethical test, the success threshold, and what would make you stop.'},
+      {id:'s3',name:'Portfolio Fit Check',src:'6C ORIGINAL',needs:['core'],body:'Score an idea on mission fit, real demand, owned asset created, revenue path, leverage with other 6C projects, risks, and verdict: test now / later / not a fit / distraction.'},
+      {id:'s4',name:'Partner Outreach Email',src:'6C ORIGINAL',needs:['cab'],body:'Short, specific, one observed strength, one concrete offer, no flattery, no fake urgency. Save drafts to outreach/<business>.txt.'},
+      {id:'s5',name:'Sourced Web Research',src:'6C ORIGINAL',needs:['dish'],body:'Search, open primary sources, cite each claim with URL and date.'}
+    ],
+    market:[
+      {id:'m1',name:'Roadside Intake Script',needs:[],body:'Collect location, vehicle, safety status, service needed, callback number; reassure; give an honest ETA range; never quote a price you cannot keep.'},
+      {id:'m2',name:'Review Response Pack',needs:[],body:'Reply to reviews within 24h: thank, be specific, own mistakes, move details offline. Never ask for or post fake reviews.'},
+      {id:'m3',name:'SOP Writer',needs:['cab'],body:'Write SOPs as: purpose, trigger, owner, steps (numbered, one action each), quality check, escalation. Save to sops/<name>.md.'},
+      {id:'m4',name:'Unit Economics Check',needs:['bench'],body:'Compute price, variable cost, contribution margin, CAC and payback with run_js. Show the math.'},
+      {id:'m5',name:'Competitor Teardown',needs:['dish'],body:'List top local competitors, their offers, reviews, and gaps we can fill ethically.'}
+    ],
+    recipes:[
+      {id:'r1',name:'Morning brief',prompt:'Give me a morning brief for 6 Central Enterprises: open quest steps, anything waiting on me, and the one move that matters most today.'},
+      {id:'r2',name:'Offer one-pager',prompt:'Draft a one-page offer for {{project}} aimed at {{customer}}. Save it to offers/{{project}}.md.'},
+      {id:'r3',name:'Portfolio fit check',prompt:'Run a Portfolio Fit Check on this idea: {{idea}}'}
+    ],
+    routines:[],
+    autonomy:{initiative:'SUGGEST',reach:'SANDBOX',pace:'STANDARD',focus:'',ruleOut:[],lastBeat:0,todayCount:0,day:today(),halted:false,scheduling:false,lastJob:null},
+    decisions:[],runlog:[],drafts:[],lastReport:null,awayLog:[]
+  };
+}
+let S;
+function loadLocal(){try{const r=localStorage.getItem('6c-deck');if(r)return JSON.parse(r)}catch(e){}return null}
+S=loadLocal()||seed();
+const RT={sample:null,db:null,docRef:null,workers:new Map(),resolvers:new Map(),pos:{},temps:[],boxes:[],atBay:{},
+  tab:'comms',talkTo:'a_ov',refit:false,tool:0,sub:null,beltFrom:null,moving:null,undo:[],redo:[],selItem:null,
+  lastInput:Date.now(),wasAway:false,forcedAway:false,lastGateFail:null,voice:false,hover:null,saveTimer:null,saving:false};
+
+function save(){
+  S.savedAt=Date.now();
+  clearTimeout(RT.saveTimer);
+  RT.saveTimer=setTimeout(flush,1200);
+}
+function compact(){
+  S.comms=S.comms.slice(-260);S.jobs=S.jobs.slice(-60);S.decisions=S.decisions.slice(-400);S.runlog=S.runlog.slice(-300);
+  S.agents.forEach(a=>{a.memory=a.memory.slice(-40);a.ratings=a.ratings.slice(-30)});
+}
+async function flush(){
+  compact();
+  let json=JSON.stringify(S);
+  try{localStorage.setItem('6c-deck',json)}catch(e){}
+  if(!RT.docRef||RT.saving)return;
+  while(json.length>240000&&S.comms.length>40){S.comms=S.comms.slice(-Math.floor(S.comms.length*.7));json=JSON.stringify(S)}
+  RT.saving=true;
+  try{await RT.docRef.set({json,savedAt:S.savedAt})}catch(e){console.warn('save',e)}
+  RT.saving=false;
+}
+
+/* ============================================================
+   LAYOUT HELPERS + VALIDATION ("live check")
+   ============================================================ */
+const itemAt=(x,y)=>S.items.find(i=>i.x===x&&i.y===y);
+const byId=id=>S.items.find(i=>i.id===id);
+const agentById=id=>S.agents.find(a=>a.id===id)||RT.temps.find(a=>a.id===id);
+const outs=id=>S.belts.filter(b=>b.from===id);
+const ins=id=>S.belts.filter(b=>b.to===id);
+const hasGear=t=>S.items.some(i=>i.type===t);
+const gearOn=t=>t!=='dish'&&hasGear(t);          // dish exists but is dormant in this build
+const isSign=t=>t in SIGNS, isGear=t=>t in GEAR;
+const bayOf=agentId=>S.items.find(i=>i.type==='bay'&&i.agentId===agentId);
+function hasPC(bay){return S.items.some(i=>i.type==='console'&&Math.abs(i.x-bay.x)<=1&&Math.abs(i.y-bay.y)<=1)}
+
+function validate(){
+  const st={};
+  for(const it of S.items){
+    const o=outs(it.id),n=ins(it.id);let s=null;
+    if(it.type==='bay'){
+      if(!it.agentId)s='NO AGENT — CLICK';
+      else if(!hasPC(it))s='NO COMPUTE — ADD A PC';
+      else if(!o.length&&!n.length)s=null;            // a staffed desk off the line is fine: chat works without belts
+      else if(!n.length)s='NOT FED';
+    }else if(it.type==='inbox'){if(!o.length)s='NOT CONNECTED'}
+    else if(it.type==='splitter'){if(!n.length)s='NOT FED';else if(o.length<2)s='SPLITTER NEEDS 2 OUT-LANES'}
+    else if(it.type==='joiner'){if(n.length<2)s='JOINER NEEDS 2 IN-LANES'}
+    else if(it.type==='filter'){if(!n.length)s='NOT FED';else if(!o.some(b=>b.label==='ELSE'))s='NO DEFAULT LANE — CLICK'}
+    else if(it.type==='merger'){if(!n.length)s='NOT FED'}
+    else if(it.type==='loop'){if(!n.length)s='NOT FED';else if(!o.some(b=>b.label==='BACK')||!o.some(b=>b.label==='DONE'))s='LOOP HAS NO DONE / BACK LANE'}
+    else if(it.type==='dish')s='DORMANT · NO WEB IN THIS BUILD';
+    if(s)st[it.id]=s;
+  }
+  // cycles that don't pass through a LOOP tile
+  const color={};const cyc=new Set();
+  const dfs=(id,stack)=>{color[id]=1;stack.push(id);
+    for(const b of outs(id)){const t=byId(b.to);if(!t||t.type==='loop')continue;
+      if(color[t.id]===1){const k=stack.indexOf(t.id);stack.slice(k).forEach(x=>cyc.add(x))}
+      else if(!color[t.id])dfs(t.id,stack)}
+    stack.pop();color[id]=2};
+  S.items.filter(i=>i.type!=='loop').forEach(i=>{if(!color[i.id])dfs(i.id,[])});
+  cyc.forEach(id=>{const it=byId(id);st[id]=it.type==='bay'&&[...cyc].filter(x=>byId(x).type==='bay').length>=2?'WORK LINE LOOPS — CUT ONE HANDOFF':'LOOP! — BREAK THE CIRCLE'});
+  return st;
+}
+function beltLit(b,st){
+  const a=byId(b.from),c=byId(b.to);if(!a||!c)return false;
+  const bad=x=>st[x.id]&&x.type!=='dish';
+  return !bad(a)&&!bad(c);
+}
+
+/* ============================================================
+   CANVAS
+   ============================================================ */
+const cv=$('#cv'),g=cv.getContext('2d');g.scale(2,2);g.imageSmoothingEnabled=false;
+const stars=Array.from({length:70},()=>({x:Math.random()*COLS*T,y:Math.random()*ROWS*T,p:Math.random()*6}));
+function px(x,y,w,h,c){g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),w,h)}
+function homeOf(a){
+  const bay=bayOf(a.id);
+  if(bay)return {x:bay.x*T+6,y:bay.y*T+10};
+  const idx=S.agents.filter(x=>!bayOf(x.id)).indexOf(a);const k=Math.max(0,idx);
+  return {x:(k%2)*T+T*0.9,y:(2+Math.floor(k/2)*2)*T+10};
+}
+function pos(a){
+  if(!RT.pos[a.id]){const h=homeOf(a);RT.pos[a.id]={x:a.justArrived?-20:h.x,y:a.justArrived?h.y:h.y,tx:h.x,ty:h.y,walk:0};delete a.justArrived}
+  return RT.pos[a.id];
+}
+function drawItem(it,st,t){
+  const x=it.x*T,y=it.y*T,live=RT.atBay[it.id]||(it.type==='bay'&&it.agentId&&(agentById(it.agentId)?.live>0));
+  g.save();
+  switch(it.type){
+    case 'inbox': px(x+4,y+10,24,16,'#1f4a63');px(x+6,y+12,20,12,'#57d3ff');px(x+14,y+3,4,9,'#dfe7f6');px(x+11,y+8,10,3,'#dfe7f6');break;
+    case 'outbox':px(x+4,y+10,24,16,'#1f5236');px(x+6,y+12,20,12,'#62e394');px(x+14,y+2,4,10,'#dfe7f6');px(x+11,y+3,10,3,'#dfe7f6');break;
+    case 'bay':   px(x+2,y+8,28,12,'#4a3a2c');px(x+2,y+8,28,3,'#6c5640');px(x+4,y+20,3,8,'#2a2018');px(x+25,y+20,3,8,'#2a2018');
+                  px(x+10,y+2,12,8,live?'#62e394':'#22304d');px(x+15,y+10,2,2,'#888');
+                  if(live){g.globalAlpha=.25+.15*Math.sin(t/200);px(x-2,y-2,T+4,T+4,'#62e394');g.globalAlpha=1}break;
+    case 'console':px(x+5,y+4,22,16,'#2a3757');px(x+7,y+6,18,12,'#57d3ff');px(x+13,y+20,6,4,'#2a3757');px(x+8,y+24,16,3,'#2a3757');break;
+    case 'cab':   px(x+6,y+3,20,26,'#5a6b8f');[0,1,2].forEach(k=>{px(x+8,y+5+k*8,16,6,'#3b4866');px(x+14,y+7+k*8,4,2,'#dfe7f6')});break;
+    case 'core':  {const r=8+Math.sin(t/400)*1.5;g.fillStyle='#ae94ff';g.beginPath();g.arc(x+16,y+16,r,0,7);g.fill();px(x+14,y+14,4,4,'#fff');px(x+8,y+26,16,3,'#3b4866')}break;
+    case 'bench': px(x+2,y+12,28,6,'#7a5a3a');px(x+4,y+18,3,10,'#4a3a2c');px(x+25,y+18,3,10,'#4a3a2c');px(x+6,y+6,4,6,'#c9d3e6');px(x+18,y+8,8,4,'#ffb547');break;
+    case 'studio':px(x+8,y+4,16,16,'#f2e16b');px(x+10,y+6,12,12,'#fff');px(x+12,y+9,5,5,'#ff86cf');px(x+15,y+20,2,9,'#7a5a3a');px(x+9,y+28,14,2,'#7a5a3a');break;
+    case 'dish':  g.fillStyle='#5a6b8f';g.beginPath();g.arc(x+16,y+14,11,Math.PI*.1,Math.PI*1.1);g.fill();px(x+15,y+14,2,14,'#5a6b8f');px(x+9,y+27,14,3,'#3b4866');break;
+    default: { // signposts
+      px(x+5,y+5,22,22,'#2a3757');px(x+7,y+7,18,18,'#ffb547');
+      g.fillStyle='#1b1206';g.font='bold 12px Silkscreen, monospace';g.textAlign='center';
+      g.fillText({filter:'F',splitter:'S',joiner:'J',merger:'M',loop:'↻'}[it.type]||'?',x+16,y+21);
+    }
+  }
+  // label
+  g.font='7px Silkscreen, monospace';g.textAlign='center';g.fillStyle='#8794b3';
+  let lab=(GEAR[it.type]?.label)||(SIGNS[it.type]?.label)||it.type.toUpperCase();
+  if(it.type==='bay'){const a=agentById(it.agentId);lab=a?a.name:'EMPTY DESK'}
+  if(it.type!=='console')g.fillText(lab,x+16,y+T+7);
+  g.restore();
+}
+function drawStatus(it,st){
+  const s=st[it.id];if(!s||(!RT.refit&&it.type==='dish'))return;
+  const x=it.x*T,y=it.y*T;g.font='7px Silkscreen, monospace';const w=g.measureText(s).width+8;
+  const bx=clamp(x+16-w/2,2,COLS*T-w-2);
+  px(bx,y-11,w,10,it.type==='dish'?'#2a3757':'#5c1620');g.fillStyle=it.type==='dish'?'#8794b3':'#ffb3ba';g.textAlign='left';g.fillText(s,bx+4,y-3);
+}
+function drawAgent(a,t){
+  const p=pos(a);const c=CLASSES[a.cls]||CLASSES.custom;const sk=SKINS[a.skin%SKINS.length];
+  const dx=p.tx-p.x,dy=p.ty-p.y,d=Math.hypot(dx,dy);const moving=d>1;
+  if(moving){const sp=reduced?d:Math.min(d,2.2);p.x+=dx/d*sp;p.y+=dy/d*sp;p.walk+=.25}
+  const x=Math.round(p.x),y=Math.round(p.y);
+  g.globalAlpha=a.temp?.7:1;
+  px(x-6,y+10,12,3,'rgba(0,0,0,.35)');
+  const leg=moving?Math.round(Math.sin(p.walk)*2):0;
+  px(x-4,y+4+leg,3,7,'#1b2236');px(x+1,y+4-leg,3,7,'#1b2236');
+  px(x-6,y-6,12,11,c.color);px(x-6,y-6,12,2,'rgba(255,255,255,.25)');
+  px(x-4,y-15,8,9,sk[0]);px(x-4,y-16,8,3,sk[1]);px(x-2,y-11,1,1,'#111');px(x+1,y-11,1,1,'#111');
+  if(a.overseer){px(x-1,y-20,2,3,'#ffb547')}
+  g.globalAlpha=1;
+  g.font='7px Silkscreen, monospace';g.textAlign='center';g.fillStyle=a.live>0?'#62e394':'#dfe7f6';
+  if(!bayOf(a.id)||moving)g.fillText(a.name,x,y-20);
+  if(a.live>0){g.fillStyle='#62e394';g.fillText('●',x+9,y-12)}
+}
+function drawBox(b,t){
+  const k=clamp((t-b.t0)/b.dur,0,1);const x=b.ax+(b.bx-b.ax)*k,y=b.ay+(b.by-b.ay)*k;
+  px(x-5,y-5,10,10,'#ffb547');px(x-5,y-5,10,2,'#ffe0a8');px(x-1,y-5,2,10,'#a8701e');
+}
+function draw(t){
+  const st=RT.lastSt=validate();
+  g.clearRect(0,0,COLS*T,ROWS*T);
+  px(0,0,COLS*T,ROWS*T,'#070a12');
+  for(const s of stars){g.globalAlpha=reduced?.5:.3+.3*Math.sin(t/900+s.p);px(s.x,s.y,1,1,'#fff')}g.globalAlpha=1;
+  // hull + floor
+  px(4,4,COLS*T-8,ROWS*T-8,'#0d1322');
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){
+    const q=x<QUARTERS;px(x*T+1,y*T+1,T-2,T-2,q?'#141b2e':((x+y)%2?'#111a2d':'#0f1729'))}
+  px(QUARTERS*T-1,0,2,ROWS*T,'#2a3757');
+  g.font='8px Silkscreen, monospace';g.fillStyle='#4b5878';g.textAlign='left';g.fillText('QUARTERS',6,14);
+  if(RT.refit){g.strokeStyle='rgba(87,211,255,.12)';g.lineWidth=1;for(let x=QUARTERS;x<=COLS;x++){g.beginPath();g.moveTo(x*T+.5,0);g.lineTo(x*T+.5,ROWS*T);g.stroke()}for(let y=0;y<=ROWS;y++){g.beginPath();g.moveTo(QUARTERS*T,y*T+.5);g.lineTo(COLS*T,y*T+.5);g.stroke()}}
+  // belts
+  for(const b of S.belts){
+    const a=byId(b.from),c=byId(b.to);if(!a||!c)continue;
+    const lit=beltLit(b,st);const ax=a.x*T+16,ay=a.y*T+16,cx=c.x*T+16,cy=c.y*T+16;
+    g.strokeStyle=lit?'#3a4f7a':'#1c2438';g.lineWidth=8;g.beginPath();g.moveTo(ax,ay);g.lineTo(cx,cy);g.stroke();
+    g.strokeStyle=lit?'#57d3ff':'#2a3346';g.lineWidth=2;g.setLineDash([4,6]);
+    const busy=RT.boxes.some(x=>x.belt===b.id);g.lineDashOffset=busy&&!reduced?-t/40:0;
+    g.beginPath();g.moveTo(ax,ay);g.lineTo(cx,cy);g.stroke();g.setLineDash([]);
+    // arrow head
+    const ang=Math.atan2(cy-ay,cx-ax),mx=(ax+cx)/2,my=(ay+cy)/2;
+    g.fillStyle=lit?'#57d3ff':'#3b4866';g.beginPath();g.moveTo(mx+Math.cos(ang)*6,my+Math.sin(ang)*6);g.lineTo(mx+Math.cos(ang+2.5)*6,my+Math.sin(ang+2.5)*6);g.lineTo(mx+Math.cos(ang-2.5)*6,my+Math.sin(ang-2.5)*6);g.fill();
+    if(b.label){g.font='7px Silkscreen, monospace';const w=g.measureText(b.label).width+6;px(mx-w/2,my+6,w,9,'#070a12');g.fillStyle='#ffb547';g.textAlign='center';g.fillText(b.label,mx,my+13)}
+  }
+  if(RT.beltFrom){const a=byId(RT.beltFrom);if(a&&RT.hover){g.strokeStyle='#ffb547';g.lineWidth=2;g.setLineDash([3,3]);g.beginPath();g.moveTo(a.x*T+16,a.y*T+16);g.lineTo(RT.hover.x*T+16,RT.hover.y*T+16);g.stroke();g.setLineDash([])}}
+  const crew=[...S.agents,...RT.temps].sort((a,b)=>pos(a).y-pos(b).y);
+  const seated=a=>{const p=pos(a),h=homeOf(a);return bayOf(a.id)&&Math.hypot(p.x-h.x,p.y-h.y)<2};
+  crew.filter(seated).forEach(a=>drawAgent(a,t));
+  for(const it of S.items)drawItem(it,st,t);
+  // crates waiting at desks
+  for(const id in RT.atBay){const it=byId(id);if(it){const k=reduced?0:Math.sin(t/180)*1.5;px(it.x*T+22,it.y*T+1+k,9,9,'#ffb547');px(it.x*T+22,it.y*T+1+k,9,2,'#ffe0a8')}}
+  RT.boxes=RT.boxes.filter(b=>t-b.t0<b.dur+50);
+  for(const b of RT.boxes)drawBox(b,t);
+  // agents (sorted by y for depth)
+  crew.filter(a=>!seated(a)).forEach(a=>drawAgent(a,t));
+  for(const it of S.items)drawStatus(it,st);
+  if(RT.hover&&RT.refit){px(RT.hover.x*T,RT.hover.y*T,T,2,'#ffb547');px(RT.hover.x*T,RT.hover.y*T+T-2,T,2,'#ffb547');px(RT.hover.x*T,RT.hover.y*T,2,T,'#ffb547');px(RT.hover.x*T+T-2,RT.hover.y*T,2,T,'#ffb547')}
+  if(RT.selItem){const it=byId(RT.selItem);if(it){g.strokeStyle='#ffb547';g.lineWidth=1;g.strokeRect(it.x*T+.5,it.y*T+.5,T-1,T-1)}}
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+
+// agents physically walk to the gear a real tool call uses
+async function walkTo(agent,type){
+  const gear=S.items.find(i=>i.type===type);if(!gear)return;
+  const p=pos(agent);p.tx=gear.x*T+16;p.ty=gear.y*T+T+6;
+  const t0=Date.now();while(Math.hypot(p.tx-p.x,p.ty-p.y)>2&&Date.now()-t0<2500)await sleep(60);
+}
+function goHome(agent){const p=pos(agent),h=homeOf(agent);p.tx=h.x;p.ty=h.y}
+function rehome(){[...S.agents].forEach(goHome)}
+
+/* ============================================================
+   CANVAS INPUT + REFIT
+   ============================================================ */
+const TOOLS=[['SELECT','Click a machine to open it'],['INBOX','Click the deck to place an inbox'],['DESK','Click the deck to place a desk (bay)'],['OUTBOX','Click the deck to place an outbox'],['MOVE','Click a machine, then click its new spot'],['DELETE','Click anything to delete it. Click a belt to cut it'],['GEAR','Pick gear below, then click the deck'],['BELT','Click one machine, then another, to connect them'],['SIGNPOST','Pick a signpost below, then click the deck'],['LINES','Pick a ready-made line, then click the deck where it starts']];
+const BLUEPRINTS={
+  handoff:{name:'ONE AFTER ANOTHER',desc:'Inbox → desk → desk → outbox',parts:[['inbox',0,0],['bay',3,0],['bay',6,0],['outbox',9,0]],links:[[0,1],[1,2],[2,3]],pcs:[[3,-1],[6,-1]]},
+  filter:{name:'FILTER TRIAGE',desc:'Route code, research and everything else to the right specialist',parts:[['inbox',0,1],['filter',2,1],['bay',5,0],['bay',5,2],['bay',5,4],['outbox',8,2]],links:[[0,1],[1,2,'CODE'],[1,3,'RESEARCH'],[1,4,'ELSE'],[2,5],[3,5],[4,5]],pcs:[[6,0],[6,2],[6,4]]},
+  split:{name:'SPLIT & JOIN',desc:'Two specialists work at once, a third merges',parts:[['inbox',0,1],['splitter',2,1],['bay',4,0],['bay',4,2],['joiner',6,1],['bay',8,1],['outbox',10,1]],links:[[0,1],[1,2],[1,3],[2,4],[3,4],[4,5],[5,6]],pcs:[[4,-1],[4,3],[8,0]]},
+  loop:{name:'DRAFT · CRITIQUE LOOP',desc:'Draft, critique, redraft up to 3 passes',parts:[['inbox',0,0],['bay',3,0],['bay',6,0],['loop',6,2],['outbox',9,2]],links:[[0,1],[1,2],[2,3],[3,1,'BACK'],[3,4,'DONE']],pcs:[[3,-1],[6,-1]]},
+  partner:{name:'PARTNER PIPELINE',desc:'Research a business → marketing angle → outreach draft',parts:[['inbox',0,0],['bay',3,0],['bay',6,0],['bay',9,0],['outbox',12,0]],links:[[0,1],[1,2],[2,3],[3,4]],pcs:[[3,-1],[6,-1],[9,-1]]}
+};
+function snapshot(){RT.undo.push(JSON.stringify({items:S.items,belts:S.belts}));if(RT.undo.length>60)RT.undo.shift();RT.redo=[]}
+function restore(stack,other){const s=stack.pop();if(!s)return;other.push(JSON.stringify({items:S.items,belts:S.belts}));const o=JSON.parse(s);S.items=o.items;S.belts=o.belts;rehome();save();renderAll()}
+function tileFromEvent(e){const r=cv.getBoundingClientRect();return {x:Math.floor((e.clientX-r.left)/r.width*COLS),y:Math.floor((e.clientY-r.top)/r.height*ROWS),px:(e.clientX-r.left)/r.width*COLS*T,py:(e.clientY-r.top)/r.height*ROWS*T}}
+function beltAt(px_,py_){
+  for(const b of S.belts){const a=byId(b.from),c=byId(b.to);if(!a||!c)continue;
+    const ax=a.x*T+16,ay=a.y*T+16,cx=c.x*T+16,cy=c.y*T+16,L=(cx-ax)**2+(cy-ay)**2;
+    const k=clamp(((px_-ax)*(cx-ax)+(py_-ay)*(cy-ay))/L,0,1);if(Math.hypot(ax+(cx-ax)*k-px_,ay+(cy-ay)*k-py_)<6&&k>.15&&k<.85)return b}
+  return null;
+}
+function hint(s){$('#hint').textContent=s}
+function placeable(x,y){return x>=QUARTERS&&x<COLS&&y>=0&&y<ROWS&&!itemAt(x,y)}
+function addItem(type,x,y){
+  if(!placeable(x,y)){hint(x<QUARTERS?'Quarters are for crew. Build on the deck.':'Something is already there. Pick an empty tile.');return null}
+  const it={id:'i_'+uid(),type,x,y};if(type==='inbox')it.hopCap=6;if(type==='loop')it.max=3;
+  S.items.push(it);return it;
+}
+function nextLabel(from){
+  const it=byId(from);const used=outs(from).map(b=>b.label);
+  if(it.type==='filter')return ['CODE','RESEARCH','ELSE'].find(l=>!used.includes(l))||null;
+  if(it.type==='loop')return ['BACK','DONE'].find(l=>!used.includes(l))||null;
+  return undefined;
+}
+cv.addEventListener('pointermove',e=>{const p=tileFromEvent(e);RT.hover=p.x>=0&&p.x<COLS&&p.y>=0&&p.y<ROWS?{x:p.x,y:p.y}:null});
+cv.addEventListener('pointerleave',()=>RT.hover=null);
+cv.addEventListener('click',e=>{
+  const p=tileFromEvent(e);if(p.x<0||p.x>=COLS||p.y<0||p.y>=ROWS)return;
+  const it=itemAt(p.x,p.y);
+  // clicking an agent in quarters opens their comms
+  if(!RT.refit||RT.tool===0){
+    const ag=[...S.agents].find(a=>{const q=pos(a);return Math.abs(q.x-p.px)<9&&p.py>q.y-18&&p.py<q.y+12});
+    if(ag&&!it){RT.talkTo=ag.id;RT.tab='comms';renderAll();return}
+    if(it){RT.selItem=it.id;openInspect(it);return}
+    const b=beltAt(p.px,p.py);
+    if(b&&['filter','loop'].includes(byId(b.from)?.type)){cycleLabel(b);return}
+    RT.selItem=null;renderSub();return;
+  }
+  const tool=RT.tool;
+  if(tool===1||tool===2||tool===3){snapshot();const n=addItem(['','inbox','bay','outbox'][tool],p.x,p.y);if(n){hint(n.type==='bay'?'Desk placed. Put a CONSOLE next to it and click it to assign an agent.':'Placed.');save();renderAll()}else RT.undo.pop();return}
+  if(tool===4){
+    if(!RT.moving){if(it){RT.moving=it.id;hint('Now click the new spot for '+it.type.toUpperCase()+'.')}return}
+    if(placeable(p.x,p.y)){snapshot();const m=byId(RT.moving);m.x=p.x;m.y=p.y;RT.moving=null;rehome();save();renderAll();hint('Moved.')}else hint('That spot is taken.');return}
+  if(tool===5){
+    if(it){snapshot();S.items=S.items.filter(i=>i!==it);S.belts=S.belts.filter(b=>b.from!==it.id&&b.to!==it.id);rehome();save();renderAll();hint('Deleted. Ctrl+Z to undo.');return}
+    const b=beltAt(p.px,p.py);if(b){snapshot();S.belts=S.belts.filter(x=>x!==b);save();renderAll();hint('Belt cut.')}return}
+  if(tool===6||tool===8){
+    if(!RT.sub){hint('Pick a '+(tool===6?'gear piece':'signpost')+' in the bar below first.');return}
+    if(tool===6&&hasGear(RT.sub)&&RT.sub!=='console'){hint(GEAR[RT.sub].label+' is shared gear. One covers the whole crew.');return}
+    snapshot();const n=addItem(RT.sub,p.x,p.y);if(n){const gl=GEAR[RT.sub];hint(gl?`${gl.label} placed: ${gl.grants} ${RT.sub==='dish'?'(dormant in this build)':'is on for the whole crew.'}`:SIGNS[RT.sub].label+' placed.');save();renderAll()}else RT.undo.pop();return}
+  if(tool===7){
+    if(!it){RT.beltFrom=null;hint('Click a machine to start a belt.');return}
+    if(!RT.beltFrom){if(isGear(it.type)){hint('Gear is not on the line. Belts connect inboxes, desks, signposts and outboxes.');return}RT.beltFrom=it.id;hint('Now click where the work goes next.');return}
+    if(it.id===RT.beltFrom||isGear(it.type)){RT.beltFrom=null;hint('Belt cancelled.');return}
+    const from=RT.beltFrom;RT.beltFrom=null;
+    if(S.belts.some(b=>b.from===from&&b.to===it.id)){hint('Those are already connected.');return}
+    if(byId(from).type==='outbox'){hint('Outboxes are the end of a line.');return}
+    if(it.type==='inbox'){hint('Inboxes are the front door. Nothing feeds into them.');return}
+    const lab=nextLabel(from);if(lab===null){hint('That signpost has all its lanes.');return}
+    snapshot();const b={id:'b_'+uid(),from,to:it.id};if(lab)b.label=lab;S.belts.push(b);save();renderAll();
+    hint(lab?`Lane ${lab} laid. Click the lane label later to change it.`:'Belt laid.');return}
+  if(tool===9){
+    const bp=BLUEPRINTS[RT.sub];if(!bp){hint('Pick a ready-made line below first.');return}
+    const cells=[...bp.parts.map(q=>[q[1],q[2]]),...bp.pcs];
+    if(!cells.every(([dx,dy])=>placeable(p.x+dx,p.y+dy))){hint('Not enough clear deck here. Try a roomier spot.');return}
+    snapshot();const made=bp.parts.map(([type,dx,dy])=>addItem(type,p.x+dx,p.y+dy));
+    bp.pcs.forEach(([dx,dy])=>addItem('console',p.x+dx,p.y+dy));
+    bp.links.forEach(([a,b,l])=>{const x={id:'b_'+uid(),from:made[a].id,to:made[b].id};if(l)x.label=l;S.belts.push(x)});
+    save();renderAll();hint(bp.name+' placed. Click each desk to assign an agent.');return}
+});
+function cycleLabel(b){
+  const from=byId(b.from);const opts=from.type==='filter'?['CODE','RESEARCH','ELSE']:['BACK','DONE'];
+  b.label=opts[(opts.indexOf(b.label)+1)%opts.length];save();hint('Lane set to '+b.label+'.');
+}
+function setTool(n){RT.tool=n;RT.beltFrom=null;RT.moving=null;RT.sub=null;renderRefit();hint(TOOLS[n][1]+'.')}
+function renderRefit(){
+  $('#refit').hidden=!RT.refit;$('#btnRefit').textContent=RT.refit?'✓ DONE BUILDING':'⚒ REFIT STATION';$('#btnRefit').classList.toggle('pri',!RT.refit);
+  $('#stageTitle').textContent=RT.refit?'REFIT STATION — BUILD MODE':'STATION FLOOR';
+  $('#refittools').innerHTML=TOOLS.map((t,i)=>`<button class="tool ${RT.tool===i?'sel':''}" data-tool="${i}"><kbd>${i}</kbd>${t[0]}</button>`).join('')+
+    `<button class="tool" data-act="undo" title="Ctrl+Z">UNDO</button><button class="tool" data-act="redo" title="Ctrl+Y">REDO</button>`;
+  let sub='';
+  if(RT.tool===6)sub=Object.entries(GEAR).map(([k,v])=>`<button class="tool ${RT.sub===k?'sel':''}" data-sub="${k}" title="${esc(v.desc)}">${v.label} · ${v.grants}${hasGear(k)&&k!=='console'?' ✓':''}</button>`).join('');
+  if(RT.tool===8)sub=Object.entries(SIGNS).map(([k,v])=>`<button class="tool ${RT.sub===k?'sel':''}" data-sub="${k}" title="${esc(v.desc)}">${v.label}</button>`).join('');
+  if(RT.tool===9)sub=Object.entries(BLUEPRINTS).map(([k,v])=>`<button class="tool ${RT.sub===k?'sel':''}" data-sub="${k}" title="${esc(v.desc)}">${v.name}</button>`).join('');
+  $('#refitsub').innerHTML=sub;
+}
+$('#refit').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.tool)setTool(+b.dataset.tool);
+  else if(b.dataset.sub){RT.sub=b.dataset.sub;renderRefit();const d=GEAR[RT.sub]?.desc||SIGNS[RT.sub]?.desc||BLUEPRINTS[RT.sub]?.desc;hint(d+' Click the deck to place.')}
+  else if(b.dataset.act==='undo')restore(RT.undo,RT.redo);
+  else if(b.dataset.act==='redo')restore(RT.redo,RT.undo);
+});
+$('#btnRefit').onclick=()=>{RT.refit=!RT.refit;if(RT.refit)setTool(0);renderRefit();hint(RT.refit?'Build mode. Keys 0–9 pick tools. Ctrl+Z undoes. Esc steps back.':'Click a desk to staff it. Click the INBOX to send work down a line.')};
+document.addEventListener('keydown',e=>{
+  RT.lastInput=Date.now();checkReturn();
+  const typing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName);
+  if(e.key==='Escape'){
+    if(typing){document.activeElement.blur();return}
+    if(!$('#modal').hidden){closeModal();return}
+    if(RT.refit){if(RT.beltFrom||RT.moving){RT.beltFrom=null;RT.moving=null;hint('Cancelled.');return}if(RT.tool!==0){setTool(0);return}RT.refit=false;renderRefit();return}
+    RT.selItem=null;return;
+  }
+  if(typing)return;
+  if(RT.refit&&/^[0-9]$/.test(e.key)){setTool(+e.key);return}
+  if(RT.refit&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?restore(RT.redo,RT.undo):restore(RT.undo,RT.redo);return}
+  if(RT.refit&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();restore(RT.redo,RT.undo);return}
+  if(e.key==='/'&&!$('#modal').hidden){const f=$('#classSearch');if(f){e.preventDefault();f.focus()}}
+});
+document.addEventListener('pointerdown',()=>{RT.lastInput=Date.now();checkReturn()});
+
+/* ============================================================
+   COMMS LOG
+   ============================================================ */
+function pushMsg(m){m.id=m.id||uid();m.t=Date.now();S.comms.push(m);save();if(RT.tab==='comms')renderPanel();return m}
+function findMsg(id){return S.comms.find(m=>m.id===id)}
+function liveUpdate(id,text){
+  const m=findMsg(id);if(m)m.text=text;
+  const el=document.querySelector(`[data-msg="${id}"] .body`);if(el){el.innerHTML=md(text)||'<span class="typing">…</span>';const log=$('#log');if(log&&log.scrollHeight-log.scrollTop-log.clientHeight<140)log.scrollTop=log.scrollHeight}
+}
+function waitFor(id){return new Promise(res=>RT.resolvers.set(id,res))}
+function settle(id,val){const r=RT.resolvers.get(id);if(r){RT.resolvers.delete(id);r(val)}}
+
+/* ============================================================
+   AGENT ENGINE — every run is a real Claude call through the page's sample capability
+   ============================================================ */
+const liveCount=()=>[...RT.workers.values()].filter(w=>w.status==='running').length;
+function grantedGear(){return Object.keys(GEAR).filter(k=>k!=='console'&&gearOn(k))}
+function activeSkills(){const g=new Set(grantedGear());return S.skills.filter(s=>s.needs.every(n=>g.has(n)))}
+function brief(agent,o){
+  const c=CLASSES[agent.cls]||CLASSES.custom;
+  const kept=S.beliefs.filter(b=>b.status==='kept').map(b=>`- [${b.dim}] ${b.text}`).join('\n');
+  const mem=agent.memory.slice(-12).map(m=>'- '+m.text).join('\n')||'(empty)';
+  const g=grantedGear();
+  const gearTxt=g.map(k=>`${GEAR[k].grants} (${GEAR[k].label})`).join(', ')||'none';
+  const sk=activeSkills().map(s=>`* ${s.name}: ${s.body}`).join('\n');
+  const goals=S.goals.filter(x=>!x.retired).map(x=>`- ${x.text}`).join('\n')||'(none set)';
+  const others=S.agents.filter(a=>a.id!==agent.id).map(a=>`${a.name} (${(CLASSES[a.cls]||CLASSES.custom).label}${a.customClass?': '+a.customClass:''})`).join(', ');
+  let hist='';
+  if(o.kind==='chat'){
+    const turns=S.comms.filter(m=>m.agentId===agent.id&&(m.role==='you'||m.role==='agent')&&m.text).slice(-10,-1);
+    hist=turns.map(m=>(m.role==='you'?'COMMANDER: ':agent.name+': ')+m.text.slice(0,1200)).join('\n');
+  }
+  return `You are ${agent.name}, a ${c.label}${agent.customClass?' ('+agent.customClass+')':''} agent aboard the 6C Command Deck, the AI crew station of 6 Central Enterprises.
+6 Central Enterprises is a parent holding company. Its mission: push the world forward through kindness and innovation. You serve the Commander.
+Personality: ${agent.personality||'professional'}.
+Class focus: ${c.blurb}
+${agent.interview.length?'What the Commander told you at recruitment:\n'+agent.interview.map(q=>`- ${q.q} → ${q.a}`).join('\n'):''}
+
+COMMANDER DOSSIER (confirmed beliefs):
+${kept}
+
+ACTIVE GOALS:
+${goals}
+
+YOUR MEMORY CORE:
+${mem}
+
+STATION GEAR you can use through tools: ${gearTxt}.
+${gearOn('dish')?'':'You have NO web access. Never invent facts, statistics, prices, laws or sources. Mark anything time-sensitive as unverified and say what should be checked.'}
+Other crew: ${others||'none'}.
+${sk?'SKILLS (use when they match the work):\n'+sk:''}
+
+RULES: Be honest, specific and plain-spoken. Think two to three steps ahead: name the next action and the risk. Refuse deceptive tactics (fake reviews, fake locations, misleading claims) and offer the legitimate alternative. If a task is large or ambiguous and you have not asked yet, call ask_commander ONCE with 2-4 concrete choices before writing anything. Keep replies under about 300 words unless the task asks for a full deliverable. ${o.unattended?'The Commander is AWAY. This is unattended work: produce a draft for review, do not ask questions; if something needs a decision, list it at the end under NEEDS YOU.':''}
+${hist?'\nRECENT CONVERSATION:\n'+hist:''}`;
+}
+function toolset(agent,w,o){
+  const T_=[];const A=S.autonomy;
+  const blockedWrite=()=>o.unattended&&A.reach==='OBSERVE'?'Blocked: REACH is OBSERVE, so unattended runs cannot write.':null;
+  const note=(txt)=>{w.trace.push(txt);if(RT.tab==='work')renderPanel()};
+  T_.push({name:'ask_commander',description:'Ask the Commander ONE clarifying question with 2-4 concrete choices. Use before large or ambiguous work. Write tools wait until it is answered.',
+    inputSchema:{type:'object',properties:{question:{type:'string'},choices:{type:'array',items:{type:'string'}}},required:['question','choices']},
+    async execute({question,choices}){
+      if(o.unattended)return 'The Commander is away. Pick the safest reasonable option and note the assumption under NEEDS YOU.';
+      note('ask_commander: '+question);
+      const m=pushMsg({agentId:agent.id,role:'ask',kind:'question',text:question,choices:(choices||[]).slice(0,4)});
+      notifyTab('comms');speak(agent.name+' asks: '+question);
+      const ans=await waitFor(m.id);return 'Commander chose: '+ans;}});
+  if(gearOn('cab')){
+    T_.push({name:'list_files',description:'List files in the station workshop.',inputSchema:{type:'object',properties:{}},
+      async execute(){await walkTo(agent,'cab');note('list_files');return Object.keys(S.files).join('\n')||'(empty)'}});
+    T_.push({name:'read_file',description:'Read a workshop file.',inputSchema:{type:'object',properties:{path:{type:'string'}},required:['path']},
+      async execute({path}){await walkTo(agent,'cab');note('read_file '+path);if(!(path in S.files))throw new Error('No such file: '+path);return S.files[path].slice(0,20000)}});
+    T_.push({name:'write_file',description:'Create or overwrite a workshop file (sandboxed, stays on the station).',inputSchema:{type:'object',properties:{path:{type:'string'},content:{type:'string'}},required:['path','content']},
+      async execute({path,content}){const b=blockedWrite();if(b)return b;await walkTo(agent,'cab');path=String(path).replace(/^\/+/,'').slice(0,120);S.files[path]=String(content).slice(0,60000);note('write_file '+path);w.files.push(path);save();return 'Saved '+path}});
+  }
+  if(gearOn('core')){
+    T_.push({name:'remember',description:'Save one durable note to your memory core.',inputSchema:{type:'object',properties:{note:{type:'string'}},required:['note']},
+      async execute({note:n}){const b=blockedWrite();if(b)return b;await walkTo(agent,'core');agent.memory.push({text:String(n).slice(0,400),t:Date.now(),uses:0});note('remember');save();return 'Remembered.'}});
+    T_.push({name:'recall',description:'Search your memory core.',inputSchema:{type:'object',properties:{query:{type:'string'}},required:['query']},
+      async execute({query}){await walkTo(agent,'core');note('recall '+query);const q=String(query).toLowerCase().split(/\W+/).filter(Boolean);
+        const hits=agent.memory.filter(m=>q.some(w=>m.text.toLowerCase().includes(w)));hits.forEach(m=>m.uses=(m.uses||0)+1);return hits.map(m=>m.text).join('\n')||'Nothing matching.'}});
+  }
+  if(gearOn('bench')){
+    T_.push({name:'run_js',description:'Run JavaScript in a sandboxed worker (no network, 4s limit). Use console.log for output. Needs the Commander’s approval.',inputSchema:{type:'object',properties:{code:{type:'string'},why:{type:'string'}},required:['code']},
+      async execute({code,why}){
+        if(o.unattended){logAway('declined','run_js needs approval; '+agent.name+' was unattended');return 'Declined: running code needs the Commander, who is away.'}
+        const m=pushMsg({agentId:agent.id,role:'ask',kind:'approval',text:(why||'Run code at the workbench')+'',code:String(code).slice(0,4000)});notifyTab('comms');
+        const ok=await waitFor(m.id);if(ok!=='approve')return 'The Commander denied running this code.';
+        await walkTo(agent,'bench');note('run_js');return await runWorker(code);}});
+  }
+  if(gearOn('studio')){
+    T_.push({name:'make_image',description:'Save an SVG image (full <svg> markup) to the workshop and show it to the Commander.',inputSchema:{type:'object',properties:{name:{type:'string'},svg:{type:'string'}},required:['name','svg']},
+      async execute({name,svg}){const b=blockedWrite();if(b)return b;await walkTo(agent,'studio');svg=String(svg);if(!/^\s*<svg[\s>]/i.test(svg))return 'Not SVG markup.';
+        const path='images/'+String(name).replace(/[^\w.-]/g,'_').slice(0,60)+'.svg';S.files[path]=svg.slice(0,60000);note('make_image '+path);w.files.push(path);
+        pushMsg({agentId:agent.id,role:'agent',kind:'image',text:path,svg:S.files[path]});save();return 'Saved '+path}});
+  }
+  if((CLASSES[agent.cls]||{}).delegate&&!agent.temp&&(o.depth||0)<1){
+    T_.push({name:'dispatch',description:'Assign a subtask to a crew member by name. Returns their result.',inputSchema:{type:'object',properties:{agent:{type:'string'},task:{type:'string'}},required:['agent','task']},
+      async execute({agent:nm,task}){const t=S.agents.find(a=>a.name.toLowerCase()===String(nm).toLowerCase());if(!t)return 'No crew member named '+nm+'. Crew: '+S.agents.map(a=>a.name).join(', ');
+        if(t.id===agent.id)return 'Do it yourself.';note('dispatch → '+t.name);const r=await runAgent(t,task,{kind:'dispatch',parent:w.id,job:o.job,depth:1,unattended:o.unattended});return r.slice(0,6000)}});
+    T_.push({name:'spawn',description:'Create a temporary clone of yourself to work a subtask in parallel. It is discarded afterwards.',inputSchema:{type:'object',properties:{task:{type:'string'}},required:['task']},
+      async execute({task}){const clone={...agent,id:'tmp_'+uid(),name:agent.name+'·C'+(RT.temps.length+1),temp:true,memory:[...agent.memory],live:0,justArrived:false};
+        RT.temps.push(clone);const h=pos(agent);RT.pos[clone.id]={x:h.x+10,y:h.y,tx:h.x+30,ty:h.y+8,walk:0};note('spawn '+clone.name);
+        try{return (await runAgent(clone,task,{kind:'spawn',parent:w.id,job:o.job,depth:1,unattended:o.unattended})).slice(0,6000)}
+        finally{setTimeout(()=>{RT.temps=RT.temps.filter(x=>x!==clone);delete RT.pos[clone.id]},1500)}}});
+    T_.push({name:'summon',description:'Recruit a NEW specialist onto the crew (needs the Commander’s approval). Classes: '+Object.keys(CLASSES).filter(k=>k!=='overseer').join(', '),inputSchema:{type:'object',properties:{cls:{type:'string'},name:{type:'string'},why:{type:'string'}},required:['cls','name','why']},
+      async execute({cls,name,why}){if(o.unattended)return 'Recruiting needs the Commander, who is away. Listed under NEEDS YOU.';
+        cls=CLASSES[cls]?cls:'custom';const m=pushMsg({agentId:agent.id,role:'ask',kind:'approval',text:`Recruit ${String(name).toUpperCase()} (${CLASSES[cls].label}): ${why}`});notifyTab('comms');
+        if(await waitFor(m.id)!=='approve')return 'The Commander declined.';
+        const a=makeAgent({name,cls,personality:'Focused',interview:[{q:'Summoned by '+agent.name+' because',a:why}]});note('summon '+a.name);return a.name+' joined the crew. Use dispatch to give them work.'}});
+  }
+  return T_;
+}
+function runWorker(code){
+  return new Promise(res=>{
+    const src=`const out=[];const fmt=v=>typeof v==='string'?v:JSON.stringify(v);console.log=(...a)=>out.push(a.map(fmt).join(' '));self.fetch=undefined;self.XMLHttpRequest=undefined;self.WebSocket=undefined;self.importScripts=undefined;
+onmessage=async e=>{try{const r=await (new Function('return (async()=>{'+e.data+'\\n})()'))();if(r!==undefined)out.push('=> '+fmt(r));postMessage(out.join('\\n')||'(no output)')}catch(err){postMessage(out.join('\\n')+'\\nError: '+err.message)}}`;
+    let wk;try{wk=new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})))}catch(e){res('Workbench unavailable: '+e.message);return}
+    const to=setTimeout(()=>{wk.terminate();res('Stopped: ran longer than 4 seconds.')},4000);
+    wk.onmessage=e=>{clearTimeout(to);wk.terminate();res(String(e.data).slice(0,8000))};
+    wk.postMessage(code);
+  });
+}
+async function runAgent(agent,task,o={}){
+  if(!RT.sample)throw Object.assign(new Error('Claude link is offline'),{code:'not_granted'});
+  const w={id:uid(),agentId:agent.id,agentName:agent.name,kind:o.kind||'chat',prompt:task,o,status:'running',text:'',trace:[],files:[],ctl:new AbortController(),started:Date.now(),jobId:o.job?.id,parent:o.parent||null};
+  RT.workers.set(w.id,w);agent.live=(agent.live||0)+1;renderHUD();if(RT.tab==='work')renderPanel();
+  const msg=pushMsg({agentId:agent.id,role:'agent',text:'',live:true,worker:w.id,label:o.kind!=='chat'?o.kind.toUpperCase()+(o.job?' · '+o.job.title.slice(0,40):''):''});
+  const t0=Date.now();
+  try{
+    const r=await RT.sample(brief(agent,o)+'\n\nTASK:\n'+task,{modelTier:agent.tier,tools:toolset(agent,w,o),signal:w.ctl.signal,cache:false,onText:({text})=>{w.text=text;liveUpdate(msg.id,text)}});
+    w.status='done';w.text=r.text;msg.text=r.text+(r.truncated?'\n\n[cut short]':'');msg.live=false;
+    if(!agent.temp){agent.runs++;agent.clean++}
+    S.runlog.push({t:Date.now(),agent:agent.name,tier:agent.tier,ms:Date.now()-t0,chars:r.text.length,ok:true,kind:w.kind,unattended:!!o.unattended});
+    speak(r.text);
+    return r.text;
+  }catch(e){
+    w.status=e.code==='cancelled'||e.name==='AbortError'?'interrupted':'failed';w.error=e.message||e.code;
+    msg.text=(w.text?w.text+'\n\n':'')+(w.status==='interrupted'?'[interrupted by the Commander]':'[run failed: '+(e.code||'')+' '+(e.message||'')+']');msg.live=false;
+    if(!agent.temp)agent.runs++;
+    S.runlog.push({t:Date.now(),agent:agent.name,tier:agent.tier,ms:Date.now()-t0,chars:(w.text||'').length,ok:false,kind:w.kind,unattended:!!o.unattended});
+    throw e;
+  }finally{
+    agent.live=Math.max(0,(agent.live||1)-1);goHome(agent);save();renderHUD();renderPanel();
+  }
+}
+
+/* ============================================================
+   JOBS + CONVEYOR LINES
+   ============================================================ */
+function newJob(title,input,extra={}){const j={id:'j_'+uid(),title:title.slice(0,80),input,status:'running',hops:0,created:Date.now(),contributors:[],output:'',notes:[],rating:null,...extra};S.jobs.push(j);save();return j}
+function finishJob(j,output,notes=[]){
+  j.output=output;j.notes.push(...notes);j.status=output?'delivered':'stopped';j.done=Date.now();
+  if(j.unattended){S.drafts.push({id:uid(),jobId:j.id,title:j.title,t:Date.now(),reviewed:false});logAway('fired','Draft ready: '+j.title)}
+  else if(output)pushMsg({agentId:j.contributors[0]||'a_ov',role:'system',kind:'rate',jobId:j.id,text:'Delivered: '+j.title});
+  if(j.questStep){const [gid,si]=j.questStep;const goal=S.goals.find(x=>x.id===gid);if(goal){const s=goal.steps[si];
+    if(output){s.status='done';s.evidence=output.slice(0,600)}else s.status='todo';s.jobId=null}}
+  save();renderAll();
+}
+async function sendDirect(agent,text,extra={}){
+  const j=newJob(text,text,{agentId:agent.id,...extra});j.contributors=[agent.id];
+  try{const out=await runAgent(agent,text,{kind:extra.unattended?'away':'chat',job:j,unattended:extra.unattended});finishJob(j,out)}
+  catch(e){finishJob(j,'',['Stopped: '+(e.code||e.message)])}
+  return j;
+}
+function classify(text){
+  if(/\b(code|bug|function|script|api|javascript|python|html|css|sql|deploy|app|regex|spreadsheet formula)\b/i.test(text))return 'CODE';
+  if(/\b(research|find|compare|competitor|market|analy[sz]e|study|sources?|who are|what is|demand|trends?)\b/i.test(text))return 'RESEARCH';
+  return 'ELSE';
+}
+function lineReady(inbox){
+  const st=RT.lastSt||validate();const seen=new Set();const q=[inbox.id];let outbox=false;const bad=[];
+  while(q.length){const id=q.shift();if(seen.has(id))continue;seen.add(id);const it=byId(id);if(st[id]&&it.type!=='dish')bad.push(it);if(it.type==='outbox')outbox=true;outs(id).forEach(b=>q.push(b.to))}
+  return {ok:outbox&&!bad.length,outbox,bad};
+}
+async function runLine(inbox,text,extra={}){
+  const chk=lineReady(inbox);
+  if(!chk.ok){toast(chk.bad.length?'Line blocked: '+(RT.lastSt[chk.bad[0].id]):'This line never reaches an OUTBOX.','bad');return}
+  const j=newJob(text,text,{line:inbox.id,...extra});
+  const ctx={passes:{},joins:{},rr:{},outputs:[],stopped:false};
+  pushMsg({agentId:'a_ov',role:'system',text:'Job on the line: '+j.title});
+  await flow(j,inbox,{text},ctx);
+  const out=ctx.outputs.join('\n\n---\n\n');
+  finishJob(j,out,ctx.stopped?['Stopped at the hop cap ('+(inbox.hopCap||6)+'). Finished work kept.']:[]);
+}
+async function travel(j,b,payload,ctx){
+  const a=byId(b.from),c=byId(b.to);if(!a||!c)return;
+  const dur=reduced?0:Math.max(500,Math.hypot(c.x-a.x,c.y-a.y)*140);
+  RT.boxes.push({belt:b.id,ax:a.x*T+16,ay:a.y*T+16,bx:c.x*T+16,by:c.y*T+16,t0:performance.now(),dur});
+  await sleep(dur);return flow(j,c,payload,ctx);
+}
+async function flow(j,node,payload,ctx){
+  if(j.halted||ctx.stopped)return;
+  const o=outs(node.id);
+  const fan=list=>Promise.all(list.map(b=>travel(j,b,payload,ctx)));
+  switch(node.type){
+    case 'inbox':case 'merger':return fan(o);
+    case 'outbox':ctx.outputs.push(payload.text);return;
+    case 'filter':{const lane=classify(payload.text);const b=o.find(x=>x.label===lane)||o.find(x=>x.label==='ELSE');j.notes.push('Filter sent it down '+(b?.label||'?'));return b&&travel(j,b,payload,ctx)}
+    case 'splitter':{
+      const joinerAhead=(()=>{const seen=new Set(),q=o.map(b=>b.to);while(q.length){const id=q.shift();if(seen.has(id))continue;seen.add(id);const it=byId(id);if(it?.type==='joiner')return true;outs(id).forEach(b=>q.push(b.to))}return false})();
+      if(joinerAhead)return fan(o);
+      const k=(ctx.rr[node.id]=(ctx.rr[node.id]||0)+1)-1;return travel(j,o[k%o.length],payload,ctx);}
+    case 'joiner':{const arr=ctx.joins[node.id]=ctx.joins[node.id]||[];arr.push(payload.text);if(arr.length<ins(node.id).length)return;
+      return travelAll(j,o,{text:arr.map((t,i)=>`### Branch ${i+1}\n${t}`).join('\n\n')},ctx)}
+    case 'loop':{const p=ctx.passes[node.id]=(ctx.passes[node.id]||0)+1;const ok=/^\s*\**APPROVED/i.test(payload.text);
+      const lane=ok||p>=(node.max||3)?'DONE':'BACK';const b=o.find(x=>x.label===lane);j.notes.push(`Loop pass ${p}: ${lane}`);
+      const next=lane==='DONE'?{text:payload.text.replace(/^\s*\**APPROVED\**[:.\s-]*/i,'')}:payload;return b&&travel(j,b,next,ctx)}
+    case 'bay':{
+      const cap=byId(j.line)?.hopCap||6;if(j.hops>=cap){ctx.stopped=true;ctx.outputs.push(payload.text);return}
+      const agent=agentById(node.agentId);if(!agent){ctx.stopped=true;return}
+      j.hops++;if(!j.contributors.includes(agent.id))j.contributors.push(agent.id);
+      const toLoop=o.some(b=>byId(b.to)?.type==='loop');
+      const task=`You are one desk on a conveyor line. Do YOUR part of the job and pass it on.
+ORIGINAL JOB FROM THE COMMANDER:
+${j.input}
+
+${payload.text===j.input?'You are the first desk.':'WORK HANDED TO YOU BY THE PREVIOUS DESK:\n'+payload.text}
+${toLoop?'\nYour output feeds a LOOP gate. If the work is ready to ship, begin your reply with the word APPROVED and then give the final version in full. Otherwise list specific fixes and include the current draft.':''}
+${o.length?'':'You are the last desk: return the finished deliverable.'}`;
+      RT.atBay[node.id]=j.id;
+      let text;
+      try{text=await runAgent(agent,task,{kind:'line',job:j,unattended:j.unattended})}
+      catch(e){ctx.stopped=true;ctx.outputs.push(payload.text===j.input?'':payload.text);j.notes.push(agent.name+' stopped: '+(e.code||e.message));return}
+      finally{delete RT.atBay[node.id]}
+      if(!o.length){ctx.outputs.push(text);return}
+      return fan2(j,o,{text},ctx);
+    }
+  }
+}
+function fan2(j,o,payload,ctx){return Promise.all(o.map(b=>travel(j,b,payload,ctx)))}
+function travelAll(j,o,payload,ctx){return fan2(j,o,payload,ctx)}
+
+/* ============================================================
+   CREW
+   ============================================================ */
+function makeAgent({name,cls,personality,interview=[],tier,skin,customClass}){
+  const a={id:'a_'+uid(),name:String(name||'NEW').toUpperCase().replace(/[^A-Z0-9·\- ]/g,'').slice(0,12)||'NEW',cls,customClass:customClass||'',tier:tier||(CLASSES[cls]||CLASSES.custom).tier,skin:skin??Math.floor(Math.random()*SKINS.length),personality:personality||'',interview,memory:[],xp:0,runs:0,clean:0,ratings:[],created:Date.now(),justArrived:true};
+  S.agents.push(a);save();renderAll();toast(a.name+' walked aboard.');return a;
+}
+function meters(a){
+  const r=a.ratings.slice(-8);const conf=r.length?r.reduce((s,v)=>s+(v===1?1:v===0?.5:0),0)/r.length:.5;
+  return {conf,rel:a.runs?a.clean/a.runs:0,prac:Math.min(1,a.runs/40)};
+}
+function memTrust(m){const age=(Date.now()-m.t)/864e5;return clamp((0.4+0.15*(m.uses||0))*Math.exp(-age/45),0,1)}
+
+/* ============================================================
+   RATE → XP → BELIEF PROPOSALS
+   ============================================================ */
+async function rate(jobId,v){
+  const j=S.jobs.find(x=>x.id===jobId);if(!j||j.rating!=null)return;j.rating=v;
+  const contributors=j.contributors.map(agentById).filter(a=>a&&!a.temp);
+  contributors.forEach(a=>{a.ratings.push(v);if(v===1){const before=lvlFor(a.xp);a.xp+=XP_PER_NAIL;const after=lvlFor(a.xp);toast(`+${XP_PER_NAIL} XP · ${a.name}`,'xp');if(after>before){toast(`${a.name} reached LEVEL ${after}`,'xp');if(after===3)pushMsg({agentId:a.id,role:'system',text:`${a.name} is level 3 and may now offer to take initiative. You still approve any change in AUTONOMY.`})}}});
+  save();renderAll();
+  if(v!==0.5&&RT.sample&&j.output){
+    try{
+      const struck=S.beliefs.filter(b=>b.status==='struck').map(b=>b.text);
+      const res=await RT.sample.json(`You maintain a dossier about a business owner (the Commander). They just rated a deliverable "${v===1?'NAILED IT':'MISSED'}".
+TASK: ${j.input.slice(0,1500)}
+DELIVERABLE (start): ${j.output.slice(0,2500)}
+Existing beliefs: ${S.beliefs.filter(b=>b.status!=='struck').map(b=>b.text).join(' | ').slice(0,3000)}
+Beliefs the Commander struck (never propose these again): ${struck.join(' | ').slice(0,1500)||'none'}
+Propose at most ONE new, specific belief about the Commander's preferences that this rating supports (for example "Prefers a working demo over a written spec"). If nothing new is supported, return null.
+Reply with only JSON: {"dim": one of ${JSON.stringify(DIMS)}, "text": "..."} or null`,{modelTier:'quick'});
+      if(res&&res.text&&!S.beliefs.some(b=>b.text.toLowerCase()===String(res.text).toLowerCase())){
+        const b={id:'k_'+uid(),dim:DIMS.includes(res.dim)?res.dim:'style',text:String(res.text).slice(0,240),source:'Proposed after you rated "'+j.title.slice(0,40)+'"',status:'proposed',t:Date.now()};
+        S.beliefs.push(b);pushMsg({agentId:j.contributors[0]||'a_ov',role:'system',kind:'belief',beliefId:b.id,text:b.text});notifyTab('crew');
+      }
+    }catch(e){/* proposal is optional */}
+  }
+}
+
+/* ============================================================
+   GOALS → QUESTS
+   ============================================================ */
+async function draftQuest(text){
+  if(!RT.sample){toast('Claude link is offline.','bad');return}
+  const goal={id:'g_'+uid(),text,steps:[],status:'drafting',created:Date.now()};S.goals.push(goal);
+  S.beliefs.push({id:'k_'+uid(),dim:'goals',text:'Goal: '+text,source:'You set this goal',status:'kept',t:Date.now(),goalId:goal.id});
+  renderAll();
+  try{
+    const steps=await RT.sample.json(`Break this goal for 6 Central Enterprises into 3 to 5 concrete milestones that an AI crew can actually complete as desk work (research, drafts, plans, scripts, analyses, SOPs). Each milestone must produce a deliverable. Follow research → validate → build. Goal: "${text}"
+Commander context: ${S.beliefs.filter(b=>b.status==='kept').map(b=>b.text).join(' ').slice(0,2000)}
+Reply with only a JSON array of strings, each under 110 characters.`,{modelTier:'default'});
+    goal.steps=(Array.isArray(steps)?steps:[]).slice(0,5).map(s=>({text:String(s).slice(0,160),status:'todo'}));
+    goal.status=goal.steps.length?'offered':'failed';
+    if(goal.steps.length)pushMsg({agentId:'a_ov',role:'system',kind:'tree',goalId:goal.id,text:'CENTRAL drafted a quest tree for: '+text});
+  }catch(e){goal.status='failed';toast('Could not draft the tree: '+(e.code||e.message),'bad')}
+  save();renderAll();
+}
+function acceptStep(gid,si){
+  const goal=S.goals.find(x=>x.id===gid);const s=goal?.steps[si];if(!s||s.status!=='todo')return;
+  const ov=S.agents.find(a=>a.overseer);s.status='running';save();renderAll();
+  sendDirect(ov,`QUEST STEP for the goal "${goal.text}":\n${s.text}\n\nDo this step now. Dispatch to crew where a specialist fits better. Deliver the finished result.`,{questStep:[gid,si]});
+}
+
+/* ============================================================
+   AUTONOMY (formerly night shift) — runs only while this page is open
+   ============================================================ */
+function logDecision(kind,gate,text){S.decisions.push({t:Date.now(),kind,gate,text})}
+function logAway(kind,text){S.awayLog.push({t:Date.now(),kind,text});save()}
+function isAway(){return RT.forcedAway||Date.now()-RT.lastInput>=AWAY_MS}
+function rollDay(){const A=S.autonomy;if(A.day!==today()){A.day=today();A.todayCount=0}}
+function nextStep(){
+  const A=S.autonomy;
+  for(const goal of S.goals.filter(x=>!x.retired&&x.status==='confirmed')){
+    if(A.ruleOut.some(r=>goal.text.toLowerCase().includes(r.toLowerCase())))continue;
+    if(A.focus&&!goal.text.toLowerCase().includes(A.focus.toLowerCase()))continue;
+    const i=goal.steps.findIndex(s=>s.status==='todo');if(i>=0)return [goal,i];
+  }
+  return null;
+}
+async function beat(){
+  const A=S.autonomy;rollDay();const n=Date.now();
+  const gates=[['posture',A.initiative!=='WAIT'],['away',isAway()],['leash',A.todayCount<PACE[A.pace]],['cooldown',n-(A.lastBeat||0)>=COOLDOWN_MS],['halt',!A.halted],['concurrency',liveCount()===0],['link',!!RT.sample]];
+  const fail=gates.find(x=>!x[1]);
+  if(fail){if(RT.lastGateFail!==fail[0]&&fail[0]!=='away'&&fail[0]!=='posture'){logDecision('skip',fail[0],'Beat skipped at '+fail[0].toUpperCase()+' gate');if(isAway())logAway('skipped',fail[0].toUpperCase())}RT.lastGateFail=fail[0];return}
+  RT.lastGateFail=null;A.lastBeat=n;A.todayCount++;
+  const ov=S.agents.find(a=>a.overseer);const ns=nextStep();
+  if(A.initiative==='SUGGEST'){
+    logDecision('fire','all','Drafting a suggestion');
+    const j=newJob('Suggestion: next best move','',{unattended:true,agentId:ov.id});j.contributors=[ov.id];
+    try{const out=await runAgent(ov,`Suggest the single next best job for the crew${A.focus?' (focus: '+A.focus+')':''}. ${ns?'Open quest step: '+ns[0].steps[ns[1]].text:''} Give: the job, why now, expected deliverable, and the risk. Do not do the work.`,{kind:'away',job:j,unattended:true});finishJob(j,out)}catch(e){finishJob(j,'',['Failed'])}
+  }else if(ns){
+    const [goal,i]=ns;logDecision('fire','all','Working quest step: '+goal.steps[i].text);goal.steps[i].status='running';
+    await sendDirect(ov,`UNATTENDED QUEST STEP for the goal "${goal.text}":\n${goal.steps[i].text}\nProduce a draft deliverable for review.`,{unattended:true,questStep:[goal.id,i]});
+  }else if(A.initiative==='FREE'){
+    logDecision('fire','all','Free pick toward goals');
+    await sendDirect(ov,`You have free initiative while the Commander is away${A.focus?' (focus: '+A.focus+')':''}. Off-limits: ${A.ruleOut.join(', ')||'none'}. Pick ONE small, grounded piece of desk work that advances 6C's goals and produce a draft.`,{unattended:true});
+  }else{logDecision('defer','work','BUILD found no open quest step');A.todayCount--}
+  A.lastJob=Date.now();save();renderAll();
+}
+function tickRoutines(){
+  if(!S.autonomy.scheduling||!RT.sample)return;
+  const now=new Date();
+  for(const r of S.routines.filter(x=>x.enabled)){
+    let due=false;
+    if(r.mode==='daily'){const [h,m]=(r.at||'09:00').split(':').map(Number);const at=new Date();at.setHours(h,m,0,0);due=now>=at&&(r.lastRun||0)<at.getTime()}
+    else due=Date.now()-(r.lastRun||0)>=(r.hours||24)*3600e3;
+    if(!due)continue;
+    r.lastRun=Date.now();const ag=agentById(r.agentId)||S.agents[0];const rec=S.recipes.find(x=>x.id===r.recipeId);
+    logDecision('fire','routine','Routine: '+r.name);
+    sendDirect(ag,rec?rec.prompt:r.name,{unattended:isAway(),routine:r.id});
+  }
+}
+function checkReturn(){
+  if(RT.wasAway&&!RT.forcedAway&&S.awayLog.length){
+    RT.wasAway=false;S.lastReport={t:Date.now(),items:S.awayLog.slice()};S.awayLog=[];save();openReport(S.lastReport);
+  }
+}
+setInterval(()=>{if(isAway())RT.wasAway=true;beat();tickRoutines();renderHUD();if(RT.tab==='autonomy')renderPanel()},60e3);
+
+/* ============================================================
+   VOICE — speaking uses the browser's own voice; listening is blocked inside this viewer
+   ============================================================ */
+function speak(text){
+  if(!RT.voice||!('speechSynthesis' in window))return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(text).replace(/[#*`>_]/g,'').slice(0,700));speechSynthesis.speak(u)}catch(e){}
+}
+$('#btnVoice').onclick=()=>{RT.voice=!RT.voice;$('#btnVoice').textContent=RT.voice?'🔊 VOICE ON':'🔈 VOICE OFF';$('#btnVoice').classList.toggle('on',RT.voice);if(RT.voice)speak('Voice on. I will read answers aloud.');else try{speechSynthesis.cancel()}catch(e){}};
+function listen(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('Listening is not available in this browser.','bad');return}
+  try{const r=new SR();r.lang='en-US';r.interimResults=false;
+    r.onresult=e=>{const t=e.results[0][0].transcript;const box=$('#say');if(box){box.value=t;sendFromComposer()}};
+    r.onerror=e=>toast(e.error==='not-allowed'?'This viewer blocks the microphone. Type instead, or run the deck in its own browser tab.':'Mic error: '+e.error,'bad');
+    r.start();toast('Listening…');}catch(e){toast('Microphone blocked here.','bad')}
+}
+
+/* ============================================================
+   UI
+   ============================================================ */
+const TABS=[['comms','COMMS'],['crew','CREW'],['quests','QUESTS'],['work','TASKS'],['abilities','ABILITIES'],['autonomy','AUTONOMY'],['ledger','LEDGER']];
+const dots={};
+function notifyTab(t){if(RT.tab!==t){dots[t]=1;renderTabs()}}
+function renderTabs(){$('#tabs').innerHTML=TABS.map(([k,l])=>`<button class="${RT.tab===k?'sel':''}" data-tab="${k}">${l}${dots[k]?'<span class="dot"></span>':''}</button>`).join('')}
+$('#tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;RT.tab=b.dataset.tab;delete dots[RT.tab];renderTabs();renderPanel()};
+function renderHUD(){
+  const sx=S.agents.reduce((s,a)=>s+a.xp,0);const L=lvlFor(sx);const lo=xpFor(L),hi=xpFor(L+1);
+  $('#hudLevel').innerHTML=`STATION LV <b>${L}</b> · ${sx} XP<span class="xpbar"><i style="width:${Math.round((sx-lo)/(hi-lo)*100)}%"></i></span>`;
+  $('#hudLive').innerHTML=`LIVE RUNS <b>${liveCount()}</b>`;
+  const A=S.autonomy;$('#hudAuto').innerHTML=`AUTONOMY <b>${A.halted?'HALTED':A.initiative}</b> · ${A.reach}`;$('#hudAuto').classList.toggle('warn',A.halted);
+  $('#hudLink').innerHTML=`CLAUDE LINK <b>${RT.sample?'ONLINE':RT.linkChecked?'OFFLINE':'…'}</b>`;$('#hudLink').classList.toggle('warn',RT.linkChecked&&!RT.sample);
+}
+function renderAll(){renderHUD();renderTabs();renderPanel();renderRefit()}
+function renderPanel(){
+  const p=$('#panel');const keepScroll=RT.tab==='comms'?null:p.scrollTop;
+  const draft=$('#say')?.value;
+  p.innerHTML=({comms:pComms,crew:pCrew,quests:pQuests,work:pWork,abilities:pAbilities,autonomy:pAutonomy,ledger:pLedger}[RT.tab]||pComms)();
+  if(RT.tab==='comms'){const log=$('#log');if(log)log.scrollTop=log.scrollHeight;const s=$('#say');if(s&&draft)s.value=draft}
+  else p.scrollTop=keepScroll||0;
+  renderSub();
+}
+function renderSub(){}
+
+function linkBanner(){return RT.sample?'':`<div class="banner">${RT.linkChecked?'Agents run on Claude. Open this deck inside Claude while signed in and allow it to ask Claude when prompted. Building, quests and the dossier still work offline.':'Connecting to Claude…'}</div>`}
+
+function pComms(){
+  const a=agentById(RT.talkTo)||S.agents[0];RT.talkTo=a.id;
+  const msgs=S.comms.filter(m=>m.agentId===a.id||m.role==='system'&&!m.agentId).slice(-80);
+  return `${linkBanner()}
+  <div class="agentpick">${S.agents.map(x=>`<button class="${x.id===a.id?'sel':''}" data-act="talk" data-id="${x.id}">${x.live>0?'<span class="lit"></span>':''}${esc(x.name)}</button>`).join('')}</div>
+  <div class="muted small">${esc((CLASSES[a.cls]||CLASSES.custom).label)} · LV ${lvlFor(a.xp)} · MODEL ${TIERS[a.tier]} · ${bayOf(a.id)?'AT DESK':'IN QUARTERS'}</div>
+  <div id="log">${msgs.map(msgHTML).join('')||'<div class="muted">No messages with '+esc(a.name)+' yet. Say hello, or try /help.</div>'}</div>
+  <div class="composer">
+    <textarea id="say" placeholder="Message ${esc(a.name)}…  (Enter sends · Shift+Enter new line · /help)"></textarea>
+    <div class="row"><button class="btn pri" data-act="send" ${RT.sample?'':'disabled'}>SEND</button>
+    <button class="btn danger" data-act="stop" ${a.live>0?'':'disabled'}>STOP</button>
+    <button class="btn" data-act="listen" title="Hands-free input">🎙 TALK</button>
+    <span class="muted small">Recipes: ${S.recipes.map(r=>`<button class="btn sm" data-act="prefill" data-id="${r.id}">${esc(r.name)}</button>`).join(' ')}</span></div>
+  </div>`;
+}
+function msgHTML(m){
+  const ag=agentById(m.agentId);const who=m.role==='you'?'YOU':m.role==='system'?'STATION':(ag?.name||'AGENT');
+  let body=`<div class="body">${m.live&&!m.text?'<span class="typing">working…</span>':md(m.text)}</div>`;
+  if(m.kind==='question'){body=`<div class="body"><b>${esc(m.text)}</b></div><div class="row">${m.answer!=null?`<span class="tag ok">YOU CHOSE: ${esc(m.answer)}</span>`:RT.resolvers.has(m.id)?m.choices.map((c,i)=>`<button class="btn sm" data-act="answer" data-id="${m.id}" data-i="${i}">${esc(c)}</button>`).join('')+`<input type="text" id="ans_${m.id}" placeholder="or type your own" style="max-width:220px"><button class="btn sm" data-act="answerText" data-id="${m.id}">SEND</button>`:'<span class="tag">EXPIRED</span>'}</div>`}
+  if(m.kind==='approval'){body=`<div class="body"><b>NEEDS APPROVAL:</b> ${esc(m.text)}</div>${m.code?`<pre class="body" style="background:var(--void);padding:6px;overflow-x:auto">${esc(m.code)}</pre>`:''}<div class="row">${m.decided?`<span class="tag ${m.decided==='approve'?'ok':'bad'}">${m.decided==='approve'?'APPROVED':'DENIED'}</span>`:RT.resolvers.has(m.id)?`<button class="btn sm v-up" data-act="approve" data-id="${m.id}">APPROVE</button><button class="btn sm v-dn" data-act="deny" data-id="${m.id}">DENY</button>`:'<span class="tag">EXPIRED</span>'}</div>`}
+  if(m.kind==='rate'){const j=S.jobs.find(x=>x.id===m.jobId);body=`<div class="body">${esc(m.text)}${j?.notes?.length?'<br><span class="muted small">'+esc(j.notes.join(' · '))+'</span>':''}</div>${j&&j.line?`<details><summary class="small">Open the delivery</summary><div class="body">${md(j.output)}</div></details>`:''}${rateRow(j)}`}
+  if(m.kind==='belief'){const b=S.beliefs.find(x=>x.id===m.beliefId);body=`<div class="body">Proposed belief about you: <b>${esc(m.text)}</b></div><div class="row">${!b?'':b.status==='proposed'?`<button class="btn sm v-up" data-act="keep" data-id="${b.id}">KEEP</button><button class="btn sm v-dn" data-act="strike" data-id="${b.id}">STRIKE</button>`:`<span class="tag ${b.status==='kept'?'ok':'bad'}">${b.status.toUpperCase()}</span>`}</div>`}
+  if(m.kind==='tree'){const gl=S.goals.find(x=>x.id===m.goalId);body=`<div class="body">${esc(m.text)}</div>${gl?`<ol class="small">${gl.steps.map(s=>`<li>${esc(s.text)}</li>`).join('')}</ol><div class="row">${gl.status==='offered'?`<button class="btn sm v-up" data-act="confirmTree" data-id="${gl.id}">CONFIRM TREE</button><button class="btn sm v-dn" data-act="declineTree" data-id="${gl.id}">DECLINE</button>`:`<span class="tag">${gl.status.toUpperCase()}</span>`}</div>`:''}`}
+  if(m.kind==='image'){body=`<div class="body">Saved ${esc(m.text)}</div><img alt="${esc(m.text)}" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(m.svg||'')}">`}
+  const cls=m.role==='you'?'you':m.role==='system'?'system':m.role==='ask'?'ask':'agent';
+  return `<div class="msg ${cls}" data-msg="${m.id}"><div class="who">${esc(who)}${m.label?` <span class="tag">${esc(m.label)}</span>`:''}<span>${hhmm(m.t)}</span></div>${body}</div>`;
+}
+function rateRow(j){
+  if(!j)return '';
+  if(j.rating!=null)return `<div class="row"><span class="tag ${j.rating===1?'ok':j.rating===0?'bad':'amb'}">${j.rating===1?'▲ NAILED IT':j.rating===0?'▼ MISSED':'◆ CLOSE'}</span></div>`;
+  return `<div class="row verdicts"><span class="tag amb">RATE THE WORK</span><button class="btn sm v-up" data-act="rate" data-id="${j.id}" data-v="1">▲ NAILED IT</button><button class="btn sm v-mid" data-act="rate" data-id="${j.id}" data-v="0.5">◆ CLOSE</button><button class="btn sm v-dn" data-act="rate" data-id="${j.id}" data-v="0">▼ MISSED</button></div>`;
+}
+function bar(v,c){return `<span class="bar"><i style="width:${Math.round(v*100)}%;background:${c}"></i></span>`}
+function pCrew(){
+  const byDim=DIMS.map(d=>{const bs=S.beliefs.filter(b=>b.dim===d);return bs.length?`<h3>${d.toUpperCase()}</h3>`+bs.map(b=>`<div class="belief ${b.status}"><div><div class="t">${esc(b.text)}</div><div class="src">${esc(b.source)}${b.status==='proposed'?' · <b style="color:var(--amber)">PROPOSED</b>':''}</div></div><div class="row">${b.status!=='kept'?`<button class="btn sm" data-act="keep" data-id="${b.id}">KEEP</button>`:''}<button class="btn sm" data-act="editBelief" data-id="${b.id}">EDIT</button>${b.status!=='struck'?`<button class="btn sm danger" data-act="strike" data-id="${b.id}">STRIKE</button>`:''}</div></div>`).join(''):''}).join('');
+  return `<div class="row"><h2>CREW ROSTER</h2><span class="sp" style="flex:1"></span><button class="btn pri sm" data-act="recruit">＋ RECRUIT</button></div>
+  ${S.agents.map(a=>{const c=CLASSES[a.cls]||CLASSES.custom;const L=lvlFor(a.xp);const mt=meters(a);const bay=bayOf(a.id);
+    return `<div class="card ${a.live>0?'live':''}">
+      <div class="row"><b style="font-family:var(--f-display);color:${c.color}">${esc(a.name)}</b><span class="tag">${c.label}${a.customClass?' · '+esc(a.customClass):''}</span>${a.overseer?'<span class="tag amb">OVERSEER</span>':''}${a.live>0?'<span class="tag ok">LIVE</span>':''}</div>
+      <div class="small muted">AGENT LEVEL ${L} · ${a.xp} XP · LEVEL ${L+1} AT ${xpFor(L+1)} XP</div>
+      <div class="meter">CONFIDENCE ${bar(mt.conf,'var(--amber)')}<span>${Math.round(mt.conf*100)}</span></div>
+      <div class="meter">RELIABILITY ${bar(mt.rel,'var(--good)')}<span>${a.runs?Math.round(mt.rel*100):'—'}</span></div>
+      <div class="meter">PRACTICE ${bar(mt.prac,'var(--cyan)')}<span>${a.runs}</span></div>
+      <div class="row small"><label class="f" style="flex:1">MODEL (ROSTER)<select data-act="tier" data-id="${a.id}">${Object.entries(TIERS).map(([k,v])=>`<option value="${k}" ${a.tier===k?'selected':''}>${v}</option>`).join('')}</select></label>
+      <label class="f" style="flex:1">SKIN<select data-act="skin" data-id="${a.id}">${SKINS.map((s,i)=>`<option value="${i}" ${a.skin===i?'selected':''}>Look ${i+1}</option>`).join('')}</select></label></div>
+      <div class="small muted">Desk: ${bay?`deck ${bay.x},${bay.y}${hasPC(bay)?'':' · NO COMPUTE'}`:'none (quarters)'} · Personality: ${esc(a.personality||'—')}</div>
+      <details><summary class="small">MEMORY CORE (${a.memory.length})</summary>${a.memory.length?a.memory.slice().reverse().map((m,i)=>`<div class="small row" style="justify-content:space-between"><span>${esc(m.text)}</span><span class="tag">TRUST ${Math.round(memTrust(m)*100)}</span></div>`).join(''):'<div class="small muted">Empty. Agents remember things when the CORE is on the deck.</div>'}</details>
+      <div class="row"><button class="btn sm" data-act="talk" data-id="${a.id}">TALK</button><button class="btn sm" data-act="respec" data-id="${a.id}">RE-SPEC</button>${a.overseer?'':`<button class="btn sm danger" data-act="dismiss" data-id="${a.id}">DISMISS</button>`}</div>
+    </div>`}).join('')}
+  <div class="row"><h2>COMMANDER DOSSIER</h2></div>
+  <div class="small muted">What the station believes about you. Agents read every KEPT belief. Struck beliefs stay struck.</div>
+  <div class="row"><button class="btn sm pri" data-act="interview">${S.beliefs.some(b=>b.source==='Your interview')?'REFINE WHAT THE STATION KNOWS':'LET THE STATION GET TO KNOW YOU'}</button><button class="btn sm" data-act="addBelief">＋ ADD BELIEF</button></div>
+  <div class="stack">${byDim}</div>`;
+}
+function pQuests(){
+  const goals=S.goals.filter(g=>!g.retired);
+  return `<div class="row"><h2>QUEST LOG</h2></div>
+  <div class="small muted">State a real outcome. CENTRAL breaks it into 3–5 milestones. Each step launches as a real job; finishing the job completes the step. Steps are never ticked by hand.</div>
+  <div class="card"><label class="f">▶ SET A GOAL<textarea id="goalText" placeholder="e.g. Validate demand for TJ's Nationwide Roadside in Atlanta before spending on ads"></textarea></label><div class="row"><button class="btn pri sm" data-act="setGoal" ${RT.sample?'':'disabled'}>SET A GOAL</button></div></div>
+  ${goals.map(g=>{const here=g.steps.findIndex(s=>s.status!=='done');return `<div class="card"><div class="row"><b>${esc(g.text)}</b><span class="tag ${g.status==='confirmed'?'ok':'amb'}">${g.status.toUpperCase()}</span></div>
+    ${g.status==='drafting'?'<div class="typing">CENTRAL is drafting milestones…</div>':''}
+    ${g.status==='offered'?`<div class="row"><button class="btn sm v-up" data-act="confirmTree" data-id="${g.id}">CONFIRM TREE</button><button class="btn sm v-dn" data-act="declineTree" data-id="${g.id}">DECLINE</button></div>`:''}
+    <ul class="tree">${g.steps.map((s,i)=>{const mk=s.status==='done'?'<span class="mark done">✓ DONE</span>':s.status==='running'?'<span class="mark run">RUNNING</span>':i===here?'<span class="mark here">◆ YOU ARE HERE</span>':`<span class="mark next">${i+1}</span>`;
+      return `<li>${mk}<div>${esc(s.text)}${i===here&&s.status==='todo'&&g.status==='confirmed'?`<div class="row" style="margin-top:4px"><button class="btn sm pri" data-act="accept" data-g="${g.id}" data-i="${i}" ${RT.sample?'':'disabled'}>▶ ACCEPT THIS STEP</button></div>`:''}${s.evidence?`<div class="evidence">${esc(s.evidence.slice(0,400))}${s.evidence.length>400?'…':''}</div>`:''}</div></li>`}).join('')}</ul>
+    ${g.steps.length&&g.steps.every(s=>s.status==='done')?'<div class="tag ok">GOAL REACHED · SET THE NEXT GOAL</div>':''}
+    <div class="row"><button class="btn sm danger" data-act="retire" data-id="${g.id}">FORGET GOAL</button></div></div>`}).join('')||'<div class="muted small">No goals yet.</div>'}
+  <h3>HOW XP WORKS</h3><div class="small muted">Only your RATE THE WORK verdict mints XP: ▲ NAILED IT gives +${XP_PER_NAIL} to every agent that worked the job. ◆ CLOSE and ▼ MISSED are noted with no penalty. Levels: 2 at 50, 3 at 150, 4 at 300, 5 at 500, 10 at 2,250. Levels unlock nothing; every tool and model is open from the start.</div>`;
+}
+function pWork(){
+  const ws=[...RT.workers.values()].reverse().slice(0,20);
+  const inboxes=S.items.filter(i=>i.type==='inbox');
+  return `${linkBanner()}<h2>SEND WORK</h2>
+  <div class="card"><label class="f">JOB<textarea id="jobText" placeholder="Describe the job"></textarea></label>
+  <div class="row"><label class="f" style="flex:1">ROUTE<select id="jobRoute">${inboxes.map((b,i)=>`<option value="line:${b.id}">LINE from INBOX at ${b.x},${b.y}${lineReady(b).ok?'':' (blocked)'}</option>`).join('')}${S.agents.map(a=>`<option value="agent:${a.id}">Direct to ${esc(a.name)}</option>`).join('')}</select></label></div>
+  <div class="row"><button class="btn pri sm" data-act="sendJob" ${RT.sample?'':'disabled'}>SEND</button></div></div>
+  <h2>WORKERS</h2><div class="small muted">Every live run, including dispatched specialists and temporary clones. Interrupt one going wrong; resume restarts it on the same prompt.</div>
+  ${ws.map(w=>`<div class="card ${w.status==='running'?'live':''}"><div class="row"><b>${esc(w.agentName)}</b><span class="tag">${w.kind.toUpperCase()}</span><span class="tag ${w.status==='running'?'ok':w.status==='done'?'':'bad'}">${w.status.toUpperCase()}</span><span class="muted small">${ago(w.started)}</span></div>
+    <details><summary class="small">INSPECT</summary><div class="small"><b>Prompt:</b> ${esc(w.prompt.slice(0,600))}</div><div class="small"><b>Tool calls:</b> ${esc(w.trace.join(' · ')||'none')}</div><div class="small"><b>Output so far:</b> ${esc((w.text||'').slice(0,800))}</div></details>
+    <div class="row">${w.status==='running'?`<button class="btn sm danger" data-act="interrupt" data-id="${w.id}">INTERRUPT</button>`:`<button class="btn sm" data-act="resume" data-id="${w.id}" ${RT.sample?'':'disabled'}>RESUME</button>`}</div></div>`).join('')||'<div class="muted small">No runs this session.</div>'}
+  <h2>DELIVERIES</h2>
+  ${S.jobs.slice().reverse().slice(0,25).map(j=>`<div class="card"><div class="row"><b>${esc(j.title)}</b><span class="tag ${j.status==='delivered'?'ok':j.status==='running'?'amb':'bad'}">${j.status.toUpperCase()}</span>${j.unattended?'<span class="tag">DONE WHILE AWAY</span>':''}<span class="muted small">${ago(j.created)} · ${j.hops||0} hops</span></div>
+    ${j.output?`<details><summary class="small">OPEN</summary><div class="body small" style="white-space:pre-wrap">${md(j.output)}</div></details>`:''}${j.notes.length?`<div class="small muted">${esc(j.notes.join(' · '))}</div>`:''}${j.status==='delivered'?rateRow(j):''}</div>`).join('')||'<div class="muted small">Nothing delivered yet.</div>'}`;
+}
+function pAbilities(){
+  const g=new Set(grantedGear());
+  return `<h2>STATION GEAR</h2><div class="small muted">Gear is shared: one piece covers the whole crew. Removing it revokes the ability on the next run. Each desk needs its own CONSOLE beside it.</div>
+  <table class="t"><tr><th>GEAR</th><th>GRANTS</th><th>STATUS</th></tr>${Object.entries(GEAR).map(([k,v])=>`<tr><td>${v.label}</td><td>${v.grants}</td><td>${k==='console'?S.items.filter(i=>i.type==='console').length+' placed':k==='dish'?(hasGear('dish')?'<span class="tag">DORMANT</span>':'not placed'):g.has(k)?'<span class="tag ok">ON</span>':'<span class="tag bad">MISSING</span>'}</td></tr>`).join('')}</table>
+  <h2>SKILLS</h2><div class="small muted">Procedures agents follow when the work matches. A skill that needs missing gear stays visibly dormant.</div>
+  ${S.skills.map(s=>{const dormant=!s.needs.every(n=>g.has(n));return `<div class="card"><div class="row"><b>${esc(s.name)}</b><span class="tag">${esc(s.src)}</span>${dormant?`<span class="tag bad">DORMANT · NEEDS ${s.needs.map(n=>GEAR[n].label).join(', ')}</span>`:'<span class="tag ok">ACTIVE</span>'}</div><div class="small muted">${esc(s.body)}</div><div class="row"><button class="btn sm danger" data-act="dropSkill" data-id="${s.id}">REMOVE</button></div></div>`}).join('')}
+  <details><summary><b>SKILL MARKET</b> <span class="muted small">(6C Originals)</span></summary><div class="stack">${S.market.filter(m=>!S.skills.some(s=>s.id===m.id)).map(m=>`<div class="card"><div class="row"><b>${esc(m.name)}</b>${m.needs.length?`<span class="tag">NEEDS ${m.needs.map(n=>GEAR[n].label).join(', ')}</span>`:''}</div><div class="small muted">${esc(m.body)}</div><div class="row"><button class="btn sm pri" data-act="install" data-id="${m.id}">INSTALL</button></div></div>`).join('')||'<div class="muted small">All installed.</div>'}</div></details>
+  <details><summary><b>WRITE A SKILL</b></summary><div class="stack"><input type="text" id="skName" placeholder="Skill name"><textarea id="skBody" placeholder="How to do it well, step by step"></textarea><button class="btn sm pri" data-act="addSkill">ADD SKILL</button></div></details>
+  <h2>RECIPES</h2><div class="small muted">Reusable deliverables. Use {{field}} for blanks you fill in when you run it.</div>
+  ${S.recipes.map(r=>`<div class="card"><b>${esc(r.name)}</b><div class="small muted">${esc(r.prompt)}</div><div class="row"><button class="btn sm" data-act="prefill" data-id="${r.id}">USE IN COMMS</button><button class="btn sm danger" data-act="dropRecipe" data-id="${r.id}">REMOVE</button></div></div>`).join('')}
+  <details><summary><b>SAVE A RECIPE</b></summary><div class="stack"><input type="text" id="rcName" placeholder="Recipe name"><textarea id="rcBody" placeholder="What to produce. Use {{field}} for blanks."></textarea><button class="btn sm pri" data-act="addRecipe">SAVE RECIPE</button></div></details>
+  <h2>ROUTINES</h2><div class="small muted">A recipe, an agent and a schedule. Routines fire only when SCHEDULING is on in AUTONOMY, and only while this deck is open.</div>
+  ${S.routines.map(r=>`<div class="card"><div class="row"><b>${esc(r.name)}</b><span class="tag">${r.mode==='daily'?'DAILY '+r.at:'EVERY '+r.hours+'H'}</span><span class="tag">${esc(agentById(r.agentId)?.name||'?')}</span><span class="muted small">last ${ago(r.lastRun)}</span></div><div class="row"><button class="btn sm ${r.enabled?'on':''}" data-act="togRoutine" data-id="${r.id}">${r.enabled?'ON':'PAUSED'}</button><button class="btn sm danger" data-act="dropRoutine" data-id="${r.id}">REMOVE</button></div></div>`).join('')||'<div class="muted small">No routines yet.</div>'}
+  <details><summary><b>NEW ROUTINE</b></summary><div class="stack">
+    <label class="f">RECIPE<select id="roRecipe">${S.recipes.filter(r=>!/\{\{/.test(r.prompt)).map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')}</select></label>
+    <label class="f">AGENT<select id="roAgent">${S.agents.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('')}</select></label>
+    <div class="row"><label class="f" style="flex:1">SCHEDULE<select id="roMode"><option value="daily">Daily at</option><option value="every">Every N hours</option></select></label><label class="f" style="flex:1">TIME<input type="time" id="roAt" value="08:45"></label><label class="f" style="flex:1">HOURS<input type="number" id="roHours" value="24" min="1" max="168"></label></div>
+    <button class="btn sm pri" data-act="addRoutine">ADD ROUTINE</button><div class="small muted">Recipes with blanks can't run on a timer.</div></div></details>`;
+}
+function seg(key,opts){const A=S.autonomy;return `<div class="seg">${opts.map(o=>`<button class="${A[key]===o?'sel':''}" data-act="seg" data-k="${key}" data-v="${o}">${o}</button>`).join('')}</div>`}
+function pAutonomy(){
+  const A=S.autonomy;rollDay();
+  const next=Math.max((A.lastBeat||0)+COOLDOWN_MS,Date.now());
+  return `<h2>AUTONOMY</h2><div class="small muted">You set how proactive the crew is and how far unattended work may reach. Nothing raises itself. Work runs only while this deck is open in a tab; you count as away after 30 minutes without input.</div>
+  <div class="card"><h3>INITIATIVE</h3>${seg('initiative',['WAIT','SUGGEST','BUILD','FREE'])}<div class="small muted">${{WAIT:'Nothing runs unless you ask.',SUGGEST:'Lines up suggestions for your approval.',BUILD:'Works open quest steps while you are away.',FREE:'Picks and does work toward your goals while you are away.'}[A.initiative]}</div>
+  <h3>REACH</h3>${seg('reach',['OBSERVE','SANDBOX','SEND & PUBLISH'])}<div class="small muted">${{OBSERVE:'Read and research only. Unattended runs write nothing.',SANDBOX:'Build and write in the station workshop. Nothing leaves the station.','SEND & PUBLISH':'Allowed to send or publish, but no outbound tools are wired into this deck yet, so this behaves like SANDBOX.'}[A.reach]}</div>
+  <h3>PACE</h3>${seg('pace',Object.keys(PACE))}<div class="small muted">${PACE[A.pace]} unattended job${PACE[A.pace]>1?'s':''} per day.</div></div>
+  <div class="card"><h3>FOCUS</h3><div class="row"><input type="text" id="focus" value="${esc(A.focus)}" placeholder="Steer toward a goal or project word" style="flex:1"><button class="btn sm" data-act="steer">STEER</button><button class="btn sm" data-act="clearFocus">CLEAR</button></div>
+  <h3>RULE OUT</h3><div class="row">${A.ruleOut.map((r,i)=>`<span class="tag">${esc(r)} <button class="btn sm" style="padding:0 4px" data-act="unrule" data-i="${i}">×</button></span>`).join('')||'<span class="muted small">Nothing off-limits.</span>'}</div><div class="row"><input type="text" id="ruleOut" placeholder="e.g. paid ads" style="flex:1"><button class="btn sm" data-act="rule">ADD</button></div></div>
+  <div class="card"><h3>LIVE STATE</h3><dl class="kv"><dt>STATE</dt><dd>${A.halted?'HALTED':isAway()?'AWAY · WATCHING':'YOU ARE HERE'}</dd><dt>MODE</dt><dd>${A.initiative} · ${A.reach}</dd><dt>DAILY LIMIT</dt><dd>${A.todayCount} / ${PACE[A.pace]} today</dd><dt>LAST JOB</dt><dd>${ago(A.lastJob)}</dd><dt>NEXT JOB EARLIEST</dt><dd>${A.initiative==='WAIT'?'—':hhmm(next)}</dd><dt>SCHEDULING</dt><dd>${A.scheduling?'ON':'OFF'}</dd></dl>
+  <div class="row"><button class="btn sm ${A.halted?'on':'danger'}" data-act="halt">${A.halted?'RESUME AUTOMATION':'HALT ALL'}</button><button class="btn sm ${A.scheduling?'on':''}" data-act="sched">${A.scheduling?'SCHEDULING ON':'SCHEDULING OFF'}</button><button class="btn sm" data-act="stepAway">${RT.forcedAway?"I'M BACK":'STEP AWAY NOW'}</button><button class="btn sm" data-act="lastReport" ${S.lastReport?'':'disabled'}>LAST REPORT</button></div>
+  <div class="small muted">STEP AWAY NOW marks you away immediately so you can see autonomy work without waiting 30 minutes. Gates checked in order each minute: posture, away, leash, cooldown (45 min), halt, concurrency.</div></div>
+  ${S.drafts.filter(d=>!d.reviewed).length?`<div class="card"><h3>DRAFTS WAITING FOR REVIEW</h3>${S.drafts.filter(d=>!d.reviewed).map(d=>{const j=S.jobs.find(x=>x.id===d.jobId);return `<div class="stack"><div class="row"><b>${esc(d.title)}</b><span class="muted small">${ago(d.t)}</span><button class="btn sm" data-act="reviewed" data-id="${d.id}">MARK REVIEWED</button></div>${j?`<details><summary class="small">show me</summary><div class="small" style="white-space:pre-wrap">${md(j.output)}</div>${rateRow(j)}</details>`:''}</div>`}).join('')}</div>`:''}
+  <h3>RECENT DECISIONS</h3><div class="small muted">Append-only. Every fire, skip and defer, with the gate that decided it.</div>
+  <div class="tw"><table class="t"><tr><th>TIME</th><th>KIND</th><th>GATE</th><th>WHAT</th></tr>${S.decisions.slice(-30).reverse().map(d=>`<tr><td>${hhmm(d.t)}</td><td>${d.kind.toUpperCase()}</td><td>${esc(d.gate)}</td><td>${esc(d.text)}</td></tr>`).join('')||'<tr><td colspan="4" class="muted">No decisions yet.</td></tr>'}</table></div>`;
+}
+function pLedger(){
+  const ok=S.runlog.filter(r=>r.ok).length;
+  return `<h2>RUN LEDGER</h2><div class="small muted">Every model call the crew made, as it happened. Runs bill to the viewer's own Claude plan, so the deck counts calls, time and output size instead of guessing dollars.</div>
+  <dl class="kv"><dt>RUNS</dt><dd>${S.runlog.length} (${ok} clean)</dd><dt>UNATTENDED</dt><dd>${S.runlog.filter(r=>r.unattended).length}</dd><dt>TOTAL TIME</dt><dd>${Math.round(S.runlog.reduce((s,r)=>s+r.ms,0)/1000)} s</dd></dl>
+  <div class="tw"><table class="t"><tr><th>TIME</th><th>AGENT</th><th>MODEL</th><th>KIND</th><th>SECS</th><th>CHARS</th><th>OK</th></tr>${S.runlog.slice(-60).reverse().map(r=>`<tr><td>${hhmm(r.t)}</td><td>${esc(r.agent)}</td><td>${TIERS[r.tier]||r.tier}</td><td>${esc(r.kind)}${r.unattended?' · away':''}</td><td>${(r.ms/1000).toFixed(1)}</td><td>${r.chars}</td><td>${r.ok?'✓':'✗'}</td></tr>`).join('')||'<tr><td colspan="7" class="muted">No runs yet.</td></tr>'}</table></div>
+  <h2>WORKSHOP FILES</h2><div class="small muted">What agents wrote with the INTEL CAB and STUDIO.</div>
+  ${Object.keys(S.files).map(f=>`<details class="card"><summary class="small"><b>${esc(f)}</b> · ${S.files[f].length} chars</summary>${f.endsWith('.svg')?`<img alt="${esc(f)}" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(S.files[f])}">`:`<pre class="small" style="white-space:pre-wrap;margin:0">${esc(S.files[f].slice(0,6000))}</pre>`}<div class="row"><button class="btn sm" data-act="copyFile" data-id="${esc(f)}">COPY</button><button class="btn sm danger" data-act="dropFile" data-id="${esc(f)}">DELETE</button></div></details>`).join('')}
+  <h2>RESET</h2><div class="row"><button class="btn sm danger" data-act="resetAsk">RESET STATION</button><span id="resetConfirm"></span></div>`;
+}
+
+/* ============================================================
+   INSPECT (clicking machines on the floor)
+   ============================================================ */
+function openInspect(it){
+  const st=RT.lastSt||validate();const s=st[it.id];
+  let h=`<h2>${esc((GEAR[it.type]?.label)||(SIGNS[it.type]?.label)||(it.type==='bay'?'DESK (BAY)':it.type.toUpperCase()))}</h2>${s?`<div class="tag bad">${esc(s)}</div>`:''}`;
+  if(it.type==='bay'){
+    const taken=new Set(S.items.filter(i=>i.type==='bay'&&i.id!==it.id&&i.agentId).map(i=>i.agentId));
+    h+=`<div class="small muted">One agent per desk, one desk per agent. A desk needs a CONSOLE on a neighbouring tile.</div>
+    <label class="f">AGENT AT THIS DESK<select id="bayAgent">${'<option value="">— empty —</option>'+S.agents.map(a=>`<option value="${a.id}" ${it.agentId===a.id?'selected':''} ${taken.has(a.id)?'disabled':''}>${esc(a.name)}${taken.has(a.id)?' (at another desk)':''}</option>`).join('')}</select></label>
+    <div class="row"><button class="btn pri" data-act="assign" data-id="${it.id}">ASSIGN</button>${it.agentId?`<button class="btn" data-act="talk" data-id="${it.agentId}">TALK</button>`:''}</div>`;
+  }else if(it.type==='inbox'){
+    const r=lineReady(it);
+    h+=`<div class="small muted">The front door of a line. Work you send here rides the belts desk to desk.</div>
+    <label class="f">HOP CAP (max desk runs per job)<input type="number" id="hopCap" min="1" max="20" value="${it.hopCap||6}"></label>
+    <label class="f">SEND A JOB<textarea id="inboxText" placeholder="What should this line produce?"></textarea></label>
+    <div class="row"><button class="btn pri" data-act="sendLine" data-id="${it.id}" ${RT.sample&&r.ok?'':'disabled'}>SEND DOWN THE LINE</button></div>
+    ${r.ok?'<div class="tag ok">LINE READY</div>':`<div class="tag bad">${r.outbox?'BLOCKED: '+esc(RT.lastSt[r.bad[0]?.id]||''):'NO OUTBOX DOWNSTREAM'}</div>`}${RT.sample?'':linkBanner()}`;
+  }else if(it.type==='outbox'){
+    const js=S.jobs.filter(j=>j.line&&j.status!=='running').slice(-5).reverse();
+    h+=`<div class="small muted">Finished work lands here. Collect it and rate it.</div>${js.map(j=>`<div class="card"><b>${esc(j.title)}</b><details><summary class="small">OPEN</summary><div class="small" style="white-space:pre-wrap">${md(j.output||'(nothing delivered)')}</div></details>${j.status==='delivered'?rateRow(j):''}</div>`).join('')||'<div class="muted small">Empty.</div>'}`;
+  }else if(it.type==='loop'){
+    h+=`<div class="small muted">${SIGNS.loop.desc}</div><label class="f">PASS LIMIT (1–5)<input type="number" id="loopMax" min="1" max="5" value="${it.max||3}"></label><button class="btn pri" data-act="setLoop" data-id="${it.id}">SAVE</button><div class="small muted">Click a lane label on the floor to switch it between BACK and DONE.</div>`;
+  }else if(it.type==='filter'){
+    h+=`<div class="small muted">${SIGNS.filter.desc} If a job reads as both code and research, CODE wins. It never drops work. Click a lane label on the floor to change which category it carries.</div>`;
+  }else if(isSign(it.type))h+=`<div class="small muted">${SIGNS[it.type].desc}</div>`;
+  else if(isGear(it.type))h+=`<div class="small muted">${GEAR[it.type].desc}</div><div class="tag ${it.type==='dish'?'':'ok'}">GRANTS ${GEAR[it.type].grants}${it.type==='dish'?' · DORMANT':''}</div>`;
+  h+=`<div class="row"><button class="btn" data-act="closeModal">CLOSE</button></div>`;
+  openModal(h);
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+function openModal(h){$('#modalbox').innerHTML=h;$('#modal').hidden=false;const f=$('#modalbox').querySelector('input,textarea,select');if(f&&f.id!=='hopCap')f.focus()}
+function closeModal(){$('#modal').hidden=true;RT.recruit=null}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+function openRecruit(step=1,respec=null){
+  RT.recruit=RT.recruit||{cls:null,respec};
+  if(step===1){
+    openModal(`<h2>RECRUITMENT BAY</h2><div class="small muted">Every class is open from the start. Classes are a starting point; re-spec any agent later.</div>
+    <input type="text" id="classSearch" placeholder="Search classes  ( / )">
+    <div class="classgrid" id="classGrid">${classCards('')}</div><div class="row"><button class="btn" data-act="closeModal">CANCEL</button></div>`);
+    $('#classSearch').oninput=e=>{$('#classGrid').innerHTML=classCards(e.target.value)};
+  }else{
+    const c=CLASSES[RT.recruit.cls];const a=RT.recruit.respec?agentById(RT.recruit.respec):null;
+    openModal(`<h2>${a?'RE-SPEC '+esc(a.name):'NEW '+c.label}</h2><div class="small muted">A short interview. The answers go into this agent's dossier and shape every run.</div>
+    <label class="f">CALLSIGN<input type="text" id="rName" maxlength="12" value="${esc(a?.name||'')}" placeholder="e.g. ROUTER"></label>
+    ${RT.recruit.cls==='custom'?`<label class="f">SPECIALTY<input type="text" id="rCustom" value="${esc(a?.customClass||'')}" placeholder="e.g. Tire marketplace ops"></label>`:''}
+    <label class="f">PERSONALITY<input type="text" id="rPers" value="${esc(a?.personality||'')}" placeholder="Calm · Blunt · Warm · Witty…"></label>
+    <label class="f">WHAT SHOULD THIS AGENT KNOW ABOUT YOUR GOALS?<textarea id="rQ1"></textarea></label>
+    <label class="f">WHAT DOES GREAT WORK LOOK LIKE TO YOU?<textarea id="rQ2"></textarea></label>
+    <label class="f">MODEL (ROSTER PROPERTY)<select id="rTier">${Object.entries(TIERS).map(([k,v])=>`<option value="${k}" ${(a?.tier||c.tier)===k?'selected':''}>${v}${k==='complex'?' — heavy reasoning':k==='quick'?' — fast and light':''}</option>`).join('')}</select></label>
+    <div class="small muted">Loadout: ${c.loadout.map(k=>GEAR[k].label+(gearOn(k)?' ✓':k==='dish'?' (dormant)':' (not placed)')).join(' · ')}</div>
+    <div class="row"><button class="btn pri" data-act="recruitGo">${a?'SAVE RE-SPEC':'BRING ABOARD'}</button><button class="btn" data-act="recruitBack">BACK</button></div>`);
+  }
+}
+function classCards(q){q=q.toLowerCase();return Object.entries(CLASSES).filter(([k,c])=>k!=='overseer'&&(c.label+c.blurb).toLowerCase().includes(q)).map(([k,c])=>`<button data-act="pickClass" data-id="${k}"><span class="cn" style="color:${c.color}">${c.label}</span><span class="cb">${c.blurb}</span><span class="tag">${TIERS[c.tier]}</span></button>`).join('')}
+function openInterview(){
+  openModal(`<h2>LET THE STATION GET TO KNOW YOU</h2><div class="small muted">Answer what you like. Each answer becomes a belief you can keep, edit or strike.</div>
+  ${[['goals','What outcome matters most to you in the next 90 days?'],['priorities','Which portfolio project gets your time first right now, and why?'],['customers','Who do you most want to help, and what do they struggle with?'],['style','How do you like work delivered? (e.g. working demo over a written spec)'],['constraints','What are your limits right now? (budget, hours, tools)']].map(([d,q],i)=>`<label class="f">${q}<textarea id="iv${i}" data-dim="${d}"></textarea></label>`).join('')}
+  <div class="row"><button class="btn pri" data-act="interviewGo">SAVE TO DOSSIER</button><button class="btn" data-act="closeModal">CANCEL</button></div>`);
+}
+function openReport(rep){
+  const groups={};rep.items.forEach(i=>{(groups[i.kind]=groups[i.kind]||[]).push(i)});
+  const drafts=S.drafts.filter(d=>!d.reviewed);
+  openModal(`<h2>MORNING REPORT</h2><div class="small muted">What the crew did while nobody watched. ${S.autonomy.focus?'Priority focus: <b>'+esc(S.autonomy.focus)+'</b>':''}</div>
+  <dl class="kv"><dt>FIRED</dt><dd>${(groups.fired||[]).length}</dd><dt>SKIPPED</dt><dd>${(groups.skipped||[]).length}</dd><dt>DECLINED</dt><dd>${(groups.declined||[]).length}</dd><dt>DRAFTS</dt><dd>${drafts.length} waiting</dd></dl>
+  ${(groups.fired||[]).map(i=>`<div class="small">✓ ${esc(i.text)} <span class="muted">${hhmm(i.t)}</span></div>`).join('')}
+  ${groups.skipped?'<h3>SKIPPED BEATS BY REASON</h3>'+Object.entries(groups.skipped.reduce((m,i)=>(m[i.text]=(m[i.text]||0)+1,m),{})).map(([k,v])=>`<div class="small">${esc(k)} × ${v}</div>`).join(''):''}
+  ${(groups.declined||[]).map(i=>`<div class="small">⊘ ${esc(i.text)}</div>`).join('')}
+  <div class="row"><button class="btn pri" data-act="openDrafts">SHOW ME</button><button class="btn" data-act="closeModal">CLOSE</button></div>`);
+}
+
+/* ============================================================
+   EVENTS (one delegated handler)
+   ============================================================ */
+function sendFromComposer(){
+  const box=$('#say');if(!box)return;const text=box.value.trim();if(!text)return;box.value='';
+  const a=agentById(RT.talkTo);
+  if(text.startsWith('/')){
+    const [cmd,...rest]=text.slice(1).split(' ');const arg=rest.join(' ').trim();
+    if(cmd==='help'){pushMsg({agentId:a.id,role:'system',text:'/goal <outcome> set a goal · /recruit open the Recruitment Bay · /line <job> send down the first ready line · /remember <note> add to this agent\'s memory · /stop interrupt this agent · /away step away now'});return}
+    if(cmd==='goal'&&arg){draftQuest(arg);RT.tab='quests';renderAll();return}
+    if(cmd==='recruit'){RT.recruit=null;openRecruit(1);return}
+    if(cmd==='remember'&&arg){a.memory.push({text:arg,t:Date.now(),uses:0});save();toast('Saved to '+a.name+'’s memory core.');return}
+    if(cmd==='stop'){stopAgent(a);return}
+    if(cmd==='away'){RT.forcedAway=true;RT.wasAway=true;toast('Marked away.');return}
+    if(cmd==='line'&&arg){const ib=S.items.find(i=>i.type==='inbox'&&lineReady(i).ok);if(!ib){toast('No ready line. Open REFIT to build one.','bad');return}runLine(ib,arg);return}
+    pushMsg({agentId:a.id,role:'system',text:'Unknown command. Try /help.'});return;
+  }
+  pushMsg({agentId:a.id,role:'you',text});
+  sendDirect(a,text);
+}
+function stopAgent(a){[...RT.workers.values()].filter(w=>w.agentId===a.id&&w.status==='running').forEach(w=>w.ctl.abort());S.jobs.filter(j=>j.status==='running'&&j.contributors.includes(a.id)).forEach(j=>j.halted=true)}
+document.addEventListener('keydown',e=>{if(e.target.id==='say'&&e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendFromComposer()}});
+document.addEventListener('change',e=>{
+  const t=e.target;const a=agentById(t.dataset?.id);
+  if(t.dataset.act==='tier'&&a){a.tier=t.value;save();toast(a.name+' now runs on '+TIERS[a.tier]+'.')}
+  if(t.dataset.act==='skin'&&a){a.skin=+t.value;save()}
+});
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-act]');if(!b||b.tagName==='SELECT')return;
+  const act=b.dataset.act,id=b.dataset.id;const A=S.autonomy;
+  switch(act){
+    case 'talk':RT.talkTo=id;RT.tab='comms';closeModal();renderAll();break;
+    case 'send':sendFromComposer();break;
+    case 'stop':stopAgent(agentById(RT.talkTo));break;
+    case 'listen':listen();break;
+    case 'prefill':{const r=S.recipes.find(x=>x.id===id);RT.tab='comms';renderAll();const s=$('#say');if(s){s.value=r.prompt;s.focus();const m=r.prompt.indexOf('{{');if(m>=0)s.setSelectionRange(m,r.prompt.indexOf('}}',m)+2)}break}
+    case 'answer':{const m=findMsg(id);m.answer=m.choices[+b.dataset.i];settle(id,m.answer);save();renderPanel();break}
+    case 'answerText':{const v=$('#ans_'+id)?.value.trim();if(!v)break;const m=findMsg(id);m.answer=v;settle(id,v);save();renderPanel();break}
+    case 'approve':case 'deny':{const m=findMsg(id);m.decided=act;settle(id,act);save();renderPanel();break}
+    case 'rate':rate(id,+b.dataset.v);break;
+    case 'keep':{const x=S.beliefs.find(q=>q.id===id);x.status='kept';save();renderPanel();break}
+    case 'strike':{const x=S.beliefs.find(q=>q.id===id);x.status='struck';save();renderPanel();break}
+    case 'editBelief':{const x=S.beliefs.find(q=>q.id===id);openModal(`<h2>EDIT BELIEF</h2><label class="f">DIMENSION<select id="bDim">${DIMS.map(d=>`<option ${x.dim===d?'selected':''}>${d}</option>`).join('')}</select></label><label class="f">BELIEF<textarea id="bText">${esc(x.text)}</textarea></label><div class="row"><button class="btn pri" data-act="saveBelief" data-id="${x.id}">SAVE</button><button class="btn" data-act="closeModal">CANCEL</button></div>`);break}
+    case 'addBelief':openModal(`<h2>ADD BELIEF</h2><label class="f">DIMENSION<select id="bDim">${DIMS.map(d=>`<option>${d}</option>`).join('')}</select></label><label class="f">BELIEF<textarea id="bText"></textarea></label><div class="row"><button class="btn pri" data-act="saveBelief">SAVE</button><button class="btn" data-act="closeModal">CANCEL</button></div>`);break;
+    case 'saveBelief':{const txt=$('#bText').value.trim();if(!txt)break;let x=S.beliefs.find(q=>q.id===id);
+      if(x){x.text=txt;x.dim=$('#bDim').value;x.source='Edited by you';const gl=x.goalId&&S.goals.find(g=>g.id===x.goalId);if(gl&&!gl.retired){gl.retired=true;closeModal();draftQuest(txt.replace(/^Goal:\s*/,''));save();renderAll();break}}
+      else S.beliefs.push({id:'k_'+uid(),dim:$('#bDim').value,text:txt,source:'Added by you',status:'kept',t:Date.now()});
+      closeModal();save();renderPanel();break}
+    case 'interview':openInterview();break;
+    case 'interviewGo':{document.querySelectorAll('[id^=iv]').forEach(t=>{const v=t.value.trim();if(v)S.beliefs.push({id:'k_'+uid(),dim:t.dataset.dim,text:v,source:'Your interview',status:'kept',t:Date.now()})});closeModal();save();renderPanel();toast('Dossier updated.');break}
+    case 'recruit':RT.recruit=null;openRecruit(1);break;
+    case 'pickClass':RT.recruit.cls=id;openRecruit(2);break;
+    case 'recruitBack':openRecruit(1);break;
+    case 'respec':{const a=agentById(id);RT.recruit={cls:a.cls==='overseer'?'overseer':a.cls,respec:id};if(a.overseer){openRecruit(2)}else openRecruit(1);break}
+    case 'recruitGo':{const r=RT.recruit;const name=$('#rName').value.trim()||'NEW';const iv=[];const q1=$('#rQ1').value.trim(),q2=$('#rQ2').value.trim();
+      if(q1)iv.push({q:'Your goals',a:q1});if(q2)iv.push({q:'Great work looks like',a:q2});
+      if(r.respec){const a=agentById(r.respec);a.cls=r.cls;a.name=name.toUpperCase().slice(0,12);a.personality=$('#rPers').value.trim();a.tier=$('#rTier').value;a.customClass=$('#rCustom')?.value.trim()||'';a.interview.push(...iv);save();toast(a.name+' re-specced.')}
+      else makeAgent({name,cls:r.cls,personality:$('#rPers').value.trim(),interview:iv,tier:$('#rTier').value,customClass:$('#rCustom')?.value.trim()});
+      closeModal();renderAll();break}
+    case 'dismiss':{const a=agentById(id);if(a.overseer)break;if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='CONFIRM DISMISS';break}
+      S.items.forEach(i=>{if(i.agentId===id)i.agentId=null});S.agents=S.agents.filter(x=>x.id!==id);if(RT.talkTo===id)RT.talkTo=S.agents[0].id;save();renderAll();break}
+    case 'assign':{const it=byId(id);const v=$('#bayAgent').value||null;if(v&&S.items.some(i=>i.type==='bay'&&i.id!==id&&i.agentId===v)){toast('That agent already staffs a desk.','bad');break}snapshot();it.agentId=v;rehome();save();closeModal();renderAll();break}
+    case 'sendLine':{const it=byId(id);const n=+$('#hopCap').value;if(n)it.hopCap=clamp(n,1,20);const txt=$('#inboxText').value.trim();if(!txt)break;closeModal();runLine(it,txt);break}
+    case 'setLoop':{const it=byId(id);it.max=clamp(+$('#loopMax').value||3,1,5);save();closeModal();break}
+    case 'closeModal':closeModal();break;
+    case 'setGoal':{const t=$('#goalText').value.trim();if(t)draftQuest(t);break}
+    case 'confirmTree':{const gl=S.goals.find(x=>x.id===id);if(gl.status==='offered'){S.goals.filter(x=>x.status==='offered'&&x!==gl).forEach(x=>x.status='declined');gl.status='confirmed'}save();renderAll();break}
+    case 'declineTree':{const gl=S.goals.find(x=>x.id===id);gl.status='declined';gl.retired=true;save();renderAll();break}
+    case 'accept':acceptStep(b.dataset.g,+b.dataset.i);break;
+    case 'retire':{const gl=S.goals.find(x=>x.id===id);gl.retired=true;S.beliefs.filter(x=>x.goalId===id).forEach(x=>x.status='struck');save();renderAll();break}
+    case 'sendJob':{const t=$('#jobText').value.trim();if(!t)break;const [k,v]=$('#jobRoute').value.split(':');if(k==='line')runLine(byId(v),t);else{pushMsg({agentId:v,role:'you',text:t});sendDirect(agentById(v),t)}$('#jobText').value='';break}
+    case 'interrupt':{const w=RT.workers.get(id);w?.ctl.abort();if(w?.jobId){const j=S.jobs.find(x=>x.id===w.jobId);if(j)j.halted=true}break}
+    case 'resume':{const w=RT.workers.get(id);const a=agentById(w.agentId);if(!a){toast('That worker was a temporary clone and is gone.','bad');break}
+      const j=w.jobId&&S.jobs.find(x=>x.id===w.jobId);if(j){j.halted=false;j.status='running'}
+      runAgent(a,w.prompt+(w.text?'\n\n(You were interrupted. Your partial work so far:)\n'+w.text.slice(0,3000)+'\nContinue from there.':''),{...w.o,kind:w.kind}).then(out=>{if(j)finishJob(j,out)}).catch(()=>{if(j)finishJob(j,'',['Resume stopped'])});break}
+    case 'install':{const m=S.market.find(x=>x.id===id);S.skills.push({...m,src:'SKILL MARKET'});save();renderPanel();toast(m.name+' installed for the whole crew.');break}
+    case 'dropSkill':S.skills=S.skills.filter(x=>x.id!==id);save();renderPanel();break;
+    case 'addSkill':{const n=$('#skName').value.trim(),bd=$('#skBody').value.trim();if(n&&bd){S.skills.push({id:'s_'+uid(),name:n,body:bd,needs:[],src:'YOURS'});save();renderPanel()}break}
+    case 'addRecipe':{const n=$('#rcName').value.trim(),bd=$('#rcBody').value.trim();if(n&&bd){S.recipes.push({id:'r_'+uid(),name:n,prompt:bd});save();renderPanel()}break}
+    case 'dropRecipe':S.recipes=S.recipes.filter(x=>x.id!==id);save();renderPanel();break;
+    case 'addRoutine':{const rid=$('#roRecipe').value;if(!rid){toast('Save a recipe without blanks first.','bad');break}const rec=S.recipes.find(x=>x.id===rid);
+      S.routines.push({id:'ro_'+uid(),name:rec.name,recipeId:rid,agentId:$('#roAgent').value,mode:$('#roMode').value==='daily'?'daily':'every',at:$('#roAt').value||'08:45',hours:clamp(+$('#roHours').value||24,1,168),enabled:true,lastRun:Date.now()});save();renderPanel();toast(A.scheduling?'Routine added.':'Routine added. Turn SCHEDULING on in AUTONOMY for it to fire.');break}
+    case 'togRoutine':{const r=S.routines.find(x=>x.id===id);r.enabled=!r.enabled;save();renderPanel();break}
+    case 'dropRoutine':S.routines=S.routines.filter(x=>x.id!==id);save();renderPanel();break;
+    case 'seg':{A[b.dataset.k]=b.dataset.v;logDecision('setting',b.dataset.k,b.dataset.k.toUpperCase()+' set to '+b.dataset.v+' by you');save();renderAll();break}
+    case 'steer':A.focus=$('#focus').value.trim();save();renderPanel();break;
+    case 'clearFocus':A.focus='';save();renderPanel();break;
+    case 'rule':{const v=$('#ruleOut').value.trim();if(v){A.ruleOut.push(v);save();renderPanel()}break}
+    case 'unrule':A.ruleOut.splice(+b.dataset.i,1);save();renderPanel();break;
+    case 'halt':A.halted=!A.halted;if(A.halted)[...RT.workers.values()].filter(w=>w.o?.unattended&&w.status==='running').forEach(w=>w.ctl.abort());logDecision('setting','halt',A.halted?'Halted by you':'Automation resumed by you');save();renderAll();break;
+    case 'sched':A.scheduling=!A.scheduling;logDecision('setting','scheduling','Scheduling '+(A.scheduling?'on':'off'));save();renderAll();break;
+    case 'stepAway':RT.forcedAway=!RT.forcedAway;if(RT.forcedAway){RT.wasAway=true;toast('Marked away. Autonomy checks each minute.');setTimeout(beat,1500)}else checkReturn();renderAll();break;
+    case 'lastReport':openReport(S.lastReport);break;
+    case 'openDrafts':closeModal();RT.tab='autonomy';renderAll();break;
+    case 'reviewed':{const d=S.drafts.find(x=>x.id===id);d.reviewed=true;save();renderPanel();break}
+    case 'copyFile':{const t=S.files[id];try{await navigator.clipboard.writeText(t);toast('Copied.')}catch(err){toast('Copy blocked here. Open the file and select the text.','bad')}break}
+    case 'dropFile':delete S.files[id];save();renderPanel();break;
+    case 'resetAsk':$('#resetConfirm').innerHTML='<button class="btn sm danger" data-act="resetGo">YES, ERASE EVERYTHING</button>';break;
+    case 'resetGo':S=seed();RT.pos={};save();flush();renderAll();toast('Station reset.');break;
+  }
+});
+$('#btnRecruit').onclick=()=>{RT.recruit=null;openRecruit(1)};
+
+/* ============================================================
+   BOOT — light up Claude + storage when the viewer answers
+   ============================================================ */
+renderAll();renderRefit();
+(async()=>{
+  const C=window.claude;
+  if(!C||!C.use){RT.linkChecked=true;renderAll();return}
+  const [sample,db,user]=await Promise.all([C.use('sample').catch(()=>null),C.use('db').catch(()=>null),C.use('user').catch(()=>null)]);
+  RT.sample=sample;RT.linkChecked=true;
+  if(db&&user){
+    try{const id=await user.id();if(id){RT.docRef=db.doc('data/users/'+id+'/deck');
+      const snap=await RT.docRef.get();
+      if(snap.exists){const d=snap.data();if(d&&d.json&&(d.savedAt||0)>(S.savedAt||0)){S=JSON.parse(d.json);RT.pos={}}}
+      else flush();}}catch(e){console.warn('db',e)}
+  }
+  S.jobs.filter(j=>j.status==='running').forEach(j=>{j.status='stopped';j.notes.push('The deck was closed mid-run.')});
+  S.goals.forEach(g=>g.steps.forEach(s=>{if(s.status==='running')s.status='todo'}));
+  renderAll();
+})();
+setTimeout(()=>{if(!RT.linkChecked){RT.linkChecked=true;renderAll()}},11000);
+</script>
