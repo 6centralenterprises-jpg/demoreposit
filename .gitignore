@@ -14,3 +14,13 @@ __pycache__/
 
 # Real sender details stay local; config/sender.example.json is the template.
 config/sender.json
+
+# Agent ecosystem: the live queue, logs and anything an agent learns or
+# produces stay on the machine that runs it.
+node_modules/
+ecosystem/tasks/queue.db*
+ecosystem/logs/*
+!ecosystem/logs/.gitkeep
+ecosystem/agents/*/MEMORY.md
+ecosystem/agents/*/data/
+ecosystem/agents/*/reports/

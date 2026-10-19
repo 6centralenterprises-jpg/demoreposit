@@ -1,0 +1,14 @@
+[Unit]
+Description=Mission Control API (task queue, port 3001)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/ecosystem/mission-control-api
+ExecStart=/usr/bin/env node server.js
+Restart=always
+RestartSec=3
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

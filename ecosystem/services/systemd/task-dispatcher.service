@@ -1,0 +1,15 @@
+[Unit]
+Description=Task dispatcher (fires OpenClaw agents for queued tasks)
+After=network.target mission-control-api.service
+
+[Service]
+Type=simple
+WorkingDirectory=/root/ecosystem
+ExecStart=/usr/bin/env python3 -u scripts/task-dispatcher.py
+Restart=always
+RestartSec=3
+# systemd has a minimal PATH; include the usual places npm puts openclaw.
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.npm-global/bin:/root/.local/bin
+
+[Install]
+WantedBy=multi-user.target

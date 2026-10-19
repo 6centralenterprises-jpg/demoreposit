@@ -1,0 +1,13 @@
+{
+  "name": "mission-control-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "6 Central Enterprises task queue API",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": {
+    "better-sqlite3": "^12.4.1",
+    "express": "^5.1.0"
+  },
+  "allowScripts": { "better-sqlite3": true }
+}
