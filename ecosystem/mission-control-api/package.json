@@ -1,0 +1,17 @@
+{
+  "name": "mission-control-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Task queue API for the 6 Central Enterprises agent ecosystem",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "better-sqlite3": "12.11.1",
+    "express": "5.3.0"
+  }
+}

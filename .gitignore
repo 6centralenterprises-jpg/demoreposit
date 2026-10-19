@@ -14,3 +14,10 @@ __pycache__/
 
 # Real sender details stay local; config/sender.example.json is the template.
 config/sender.json
+
+# Agent ecosystem runtime state: the live queue and agent output stay on the server.
+node_modules/
+*.db
+*.db-wal
+*.db-shm
+ecosystem/agents/*/
