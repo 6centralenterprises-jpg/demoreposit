@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ search.service }} in {{ search.city }}{% endblock %}
+{% block content %}
+<p><a href="/competitors">&larr; Competitors</a></p>
+<h1>{{ search.service }} in {{ search.city }}</h1>
+<p class="lead">Run {{ search.created_at[:10] }} · {{ table | length }} businesses, in Google's order</p>
+
+{% if expired %}
+<p class="banner warn">Google's terms only let us keep this data for 30 days, so some details have been cleared. Run the search again for fresh data.</p>
+{% endif %}
+
+{% if summary %}
+<section class="stats">
+  <div><span class="num">{{ summary.top3_reviews or "—" }}</span><span class="muted">median reviews, top 3</span></div>
+  <div><span class="num">{{ summary.top3_rating or "—" }}</span><span class="muted">median rating, top 3</span></div>
+  <div><span class="num">{{ summary.all_reviews or "—" }}</span><span class="muted">median reviews, all {{ summary.count }}</span></div>
+  <div><span class="num">{{ summary.with_website }}/{{ summary.count }}</span><span class="muted">have a website</span></div>
+  <div><span class="num">{% if summary.ours %}#{{ summary.ours | join(", #") }}{% else %}Not listed{% endif %}</span><span class="muted">where we show up</span></div>
+</section>
+{% if summary.top_types %}
+<p class="muted">Most common primary types: {% for t, n in summary.top_types %}{{ t }} ({{ n }}){% if not loop.last %}, {% endif %}{% endfor %}</p>
+{% endif %}
+{% endif %}
+
+<div class="actions">
+  <a class="button secondary" href="/competitors/{{ search.id }}/csv">Download CSV</a>
+  <form method="post" action="/competitors">
+    <input type="hidden" name="service" value="{{ search.service }}"><input type="hidden" name="city" value="{{ search.city }}">
+    <button class="secondary" {% if not places_ready %}disabled{% endif %}>Run again</button>
+  </form>
+</div>
+
+<table>
+  <thead><tr><th>#</th><th>Business</th><th>Primary type</th><th>Rating</th><th>Reviews</th><th>Website</th><th>Phone</th></tr></thead>
+  <tbody>
+  {% for r in table %}
+  <tr {% if r.ours %}class="ours"{% endif %}>
+    <td>{{ r.rank }}</td>
+    {% if r.expired %}
+    <td colspan="6" class="muted">Details cleared after 30 days</td>
+    {% else %}
+    <td>{% if r.maps_url %}<a href="{{ r.maps_url }}" rel="noopener" target="_blank">{{ r.name }}</a>{% else %}{{ r.name }}{% endif %}
+        {% if r.ours %}<span class="tag">Ours</span>{% endif %}
+        {% if r.status and r.status != "OPERATIONAL" %}<span class="tag warn">{{ r.status | replace("_", " ") | lower }}</span>{% endif %}</td>
+    <td>{{ r.primary_type }}</td>
+    <td>{{ r.rating or "—" }}</td>
+    <td>{{ r.reviews }}</td>
+    <td>{% if r.website %}<a href="{{ r.website }}" rel="noopener" target="_blank">{{ r.domain }}</a>{% else %}<span class="muted">None</span>{% endif %}</td>
+    <td>{{ r.phone }}</td>
+    {% endif %}
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Our assets{% endblock %}
+{% block content %}
+<h1>Our assets</h1>
+<p class="lead">Every website and Google Business Profile across the portfolio, by project.</p>
+
+<form class="filter" method="get" action="/assets">
+  <select name="project" onchange="this.form.submit()">
+    <option value="">All projects</option>
+    {% for p in projects %}<option {% if p == project %}selected{% endif %}>{{ p }}</option>{% endfor %}
+  </select>
+</form>
+
+{% if assets %}
+<table>
+  <thead><tr><th>Name</th><th>Project</th><th>City</th><th>Website</th><th>Google profile</th></tr></thead>
+  <tbody>
+  {% for a in assets %}
+  <tr>
+    <td><a href="/assets/{{ a.id }}">{{ a.name or "(unnamed)" }}</a></td>
+    <td>{{ a.project }}</td>
+    <td>{{ a.city }}</td>
+    <td>{% if a.website %}<a href="{{ a.website }}" rel="noopener" target="_blank">{{ a.website.split("://")[1] }}</a>{% endif %}</td>
+    <td>{% if a.place_id %}<span class="ok">Matched</span>{% else %}<span class="muted">Not matched</span>{% endif %}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">No assets yet. Add one below or upload a list.</p>
+{% endif %}
+
+<div class="cols">
+<section class="card">
+  <h2>Add one</h2>
+  <form method="post" action="/assets">
+    <label>Business name <input name="name" placeholder="TJ's Concrete"></label>
+    <label>Project <select name="project">{% for p in projects %}<option>{{ p }}</option>{% endfor %}</select></label>
+    <label>City <input name="city" placeholder="Chicago, IL"></label>
+    <label>Website <input name="website" placeholder="example.com"></label>
+    <label>Google Maps link <input name="maps_url" placeholder="https://maps.google.com/..."></label>
+    <label>Notes <input name="notes"></label>
+    <button>Add asset</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Upload a list</h2>
+  <p class="muted">Paste one URL per line, or a CSV with headers such as <code>name, project, city, website, maps_url</code>.</p>
+  <form method="post" action="/assets/upload" enctype="multipart/form-data">
+    <label>Paste <textarea name="text" rows="6" placeholder="example.com&#10;https://maps.google.com/?cid=..."></textarea></label>
+    <label>Or a CSV file <input type="file" name="file" accept=".csv,.txt"></label>
+    <label>Project (when the list doesn't say) <select name="project">{% for p in projects %}<option>{{ p }}</option>{% endfor %}</select></label>
+    <label>City (when the list doesn't say) <input name="city"></label>
+    <button>Upload</button>
+  </form>
+</section>
+</div>
+{% endblock %}

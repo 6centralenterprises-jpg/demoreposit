@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Local Intel{% endblock %} · 6 Central</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <a class="brand" href="/assets">6 Central Local Intel</a>
+  <nav>
+    <a href="/assets">Our assets</a>
+    <a href="/competitors">Competitors</a>
+    <a href="/keywords">Keywords</a>
+  </nav>
+</header>
+<main>
+  {% if not places_ready %}
+  <p class="banner warn">Google Places is not connected. Set <code>GOOGLE_MAPS_API_KEY</code> in <code>.env</code> to match assets to their Google profiles.</p>
+  {% endif %}
+  {% if msg %}<p class="banner">{{ msg }}</p>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>
