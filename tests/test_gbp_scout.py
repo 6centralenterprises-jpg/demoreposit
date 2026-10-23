@@ -366,22 +366,27 @@ def test_google_watch_reads_both_keys_records_the_check_and_reconfirms():
     a = {"summary": "Google is testing government-ID verification.", "source": "https://x.example/id", "level": "medium", "niches": ["all niches"]}
     b = {"summary": "Review appeals are backed up.", "source": "https://x.example/appeals/"}  # no level, no niches
     signals = {"google": [a], "policy": [dict(a), b], "google_checked": {"date": "2026-10-23", "searches": ["q1", "q2", "q3"]}}
-    register, flags, st = scout.google_watch(cfg, {}, signals, "2026-10-23")
+    register, flags, st, additions = scout.google_watch(cfg, {}, signals, "2026-10-23")
+    assert additions == {} and st["promoted_today"] == []  # a brand-new item is not promoted on day one
     assert len(flags) == 2 and st["checked"] and st["new"] == 2 and st["reconfirmed"] == 0 and len(st["searches"]) == 3
     kept = flags["src:https://x.example/appeals"]
     assert kept["level"] == "low" and kept["niches"] == ["all niches"]  # kept with defaults, not dropped
     assert st["register_as_of"] and st["register_entries"] == len(register)  # the register's date travels with the status
     prev = {"google_flags": flags, "google_watch": st}
-    _, flags2, st2 = scout.google_watch(cfg, prev, {"google": [dict(a, level="high")]}, "2026-10-24")
+    _, flags2, st2, adds2 = scout.google_watch(cfg, prev, {"google": [dict(a, level="high")]}, "2026-10-24")
+    assert list(adds2) == ["src:https://x.example/id"] and adds2["src:https://x.example/id"]["level"] == "high"  # re-confirmed medium/high -> register
+    assert st2["promoted_today"] and st2["register_pending"] and st2["register_as_of"] == "2026-10-24"
+    prev = {"google_flags": flags2, "google_watch": st2, "register_additions": adds2}
     assert st2["reconfirmed"] == 1 and st2["new"] == 0
     assert flags2["src:https://x.example/id"]["first_seen"] == "2026-10-23" and flags2["src:https://x.example/id"]["last_seen"] == "2026-10-24"
-    _, flags3, st3 = scout.google_watch(cfg, {"google_flags": flags2, "google_watch": st2}, {}, "2026-10-25")
+    reg3, flags3, st3, adds3 = scout.google_watch(cfg, prev, {}, "2026-10-25")
+    assert adds3 == adds2 and any(e.get("promoted") for e in reg3)  # the promoted item stays in the register
     assert not st3["checked"] and st3["last_checked"] == "2026-10-24" and len(flags3) == 2  # a skipped day is visible
-    _, _, st4 = scout.google_watch(cfg, {"google_flags": flags2, "google_watch": st2}, {}, "2026-11-05")
-    assert st4["register_pending"] and "government-ID" in st4["register_pending"][0]  # medium item a week old, not in the register
+    _, _, st4, adds4 = scout.google_watch(cfg, {"google_flags": flags, "google_watch": st}, {}, "2026-11-05")
+    assert "government-ID" in st4["promoted_today"][0] and len(adds4) == 1  # a medium item a week old is promoted on its own
     old = {"google_flags": {"sum:old-key": {"summary": "Old style key", "source": "https://x.example/old", "level": "low",
                                            "first_seen": "2026-10-05", "last_seen": "2026-10-05"}}}
-    _, flags5, _ = scout.google_watch(cfg, old, {"google": [{"summary": "Old style key", "source": "https://x.example/old"}]}, "2026-10-23")
+    _, flags5, _, _ = scout.google_watch(cfg, old, {"google": [{"summary": "Old style key", "source": "https://x.example/old"}]}, "2026-10-23")
     assert list(flags5) == ["src:https://x.example/old"] and flags5["src:https://x.example/old"]["first_seen"] == "2026-10-05"
     g = {"register": register[:1], "flags": flags2, "status": st2, "as_of": st2["register_as_of"]}
     page = render_html({"google": g, "picks": {}, "opportunities": [], "state": {"watchlist": {}, "briefs": []}, "recap": False,

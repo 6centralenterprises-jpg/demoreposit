@@ -31,6 +31,15 @@ Apply steady pressure every day:
 
 **Dashboard (private):** https://claude.ai/artifact/SwKAbUtzBKvM9vzpoQFYUp
 
+## Everything, every day (Terell, 2026-10-23)
+
+Every section of the brief refreshes every run, with no step that waits on a person: the three picks,
+keyword research (OpenRush fallback when Semrush is out), map packs, all five target bases, our listings,
+the market abroad, the Google watch, the Google register (the watch promotes settled medium and high
+items into it by itself), timing signals and verification kits. `build` prints an "Updated today" strip
+at the top of the page and in `summary.md`; a section marked "NOT updated" is a failed run, so go back
+and do that step before publishing. Never skip a step because yesterday's data looks the same.
+
 ## Hard rules
 
 - **Never invent a number.** Every volume, CPC, trend and review count comes
@@ -195,10 +204,12 @@ is `runs/gbp/D/`.
    watch was checked today and how many items were new or re-confirmed.
    - A high-risk niche becomes **Avoid**.
    - A medium-risk niche shows a caution.
-   - **The register is a repo file** (`research/google/risk_register.json`); the morning run never
-     commits, so it only changes when a session with write access edits it. When `build` prints
-     "Register needs an update" (a medium or high item older than a week that the register lacks), put
-     that line near the top of the report so Terell can have it added. Sunday's owner memo lists them too.
+   - **The register updates itself.** A medium or high item that is re-confirmed on a later day, or is a
+     week old, is promoted into the register by `build` and carried in the page state, so the register's
+     "as of" date moves without a commit. Give medium and high items a `plan` field so the promoted entry
+     carries one. The repo copy (`research/google/risk_register.json`) is refreshed by
+     `python3 scout.py register-sync --date D` from a session with write access; the morning run never
+     commits. Put "register updated today with ..." in the report when `summary.md` says so.
 
 7. **Timing signals.** Write `runs/gbp/D/signals.json`. Every item needs a
    real `source` URL; the code drops items without one. Use WebSearch:
@@ -252,6 +263,8 @@ is `runs/gbp/D/`.
 10. **Report.** Your final message is the morning report Terell gets by push
     and email. Keep it short:
     - one line: the day's cluster and the dashboard link
+    - the "Updated today" line from `summary.md`; if any section is NOT updated, fix it before
+      publishing, and if it truly cannot be fixed (tool down), say which one and why
     - **the three picks** from `summary.md` ("Best opportunities right now"):
       seasonal, nationwide, international, one line each with the play and
       the fact behind it

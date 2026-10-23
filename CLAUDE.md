@@ -76,8 +76,10 @@ work. That is lead generation, and it's the Premium Home Service pattern.
 
 ## Google rules we design around (register as of 2026-10-23; see `research/google/`)
 
-- The register (`research/google/risk_register.json`) only changes when a session with repo access edits it; the
-  morning run never commits. When the brief says "Register needs an update", add the items here and bump `as_of`.
+- The register updates itself every day: the daily watch promotes settled medium and high items into the register
+  carried in the dashboard state. The repo copy (`research/google/risk_register.json`) is refreshed with
+  `python3 scout.py register-sync --date D` from a session with write access (the morning run never commits).
+- Terell's rule (2026-10-23): every section of the brief refreshes every day; the page shows an "Updated today" strip.
 
 - **Every profile is the company whose own staff does the work.**
   - Google bars lead-generation businesses from holding profiles.

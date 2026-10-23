@@ -6,6 +6,7 @@
     python3 scout.py screen --date D              # after Semrush: what to deep-dive and map-check
     python3 scout.py build  --date D              # after deep dives + signals: brief.html, summary.md
     python3 scout.py restore --date D --html F    # read the watchlist back out of yesterday's published brief
+    python3 scout.py register-sync --date D       # copy watch items the run promoted into research/google/risk_register.json
 
 The `gbp-daily-scout` skill runs these steps and saves each tool result into
 runs/gbp/<date>/. Volume data refreshes monthly, so each weekday covers a
@@ -486,7 +487,7 @@ def build(day, cfg):
     raw_signals = read_json(out / "signals.json", {}) or {}
     signals = {k: [s for s in v if isinstance(s, dict) and s.get("source")]
                for k, v in raw_signals.items() if isinstance(v, list)}
-    register, flags, gw_status = google_watch(cfg, prev, signals | {"google_checked": raw_signals.get("google_checked")}, day)
+    register, flags, gw_status, additions = google_watch(cfg, prev, signals | {"google_checked": raw_signals.get("google_checked")}, day)
     signals = {k: v for k, v in signals.items() if k not in ("google", "policy")}  # those two feed the Google watch
     countries = {m["name"]: market_country(m) for m in all_markets(cfg)}
 
@@ -610,13 +611,39 @@ def build(day, cfg):
                                    | {c["market"] for checks in serps.values() for c in checks
                                       if c.get("country", "United States") != "United States"})}
     picks = best_picks(cfg, day, opportunities, watch, board, demand)
+    base_today = sum(1 for v in bases_view if v.get("today"))
+    kits_today = [k for k in read_json(out / "kits.json", []) or [] if "amazon.com" in (k.get("url") or "") and k.get("title")]
+    market_checks_today = sum(len(c) for c in serps.values())
+    freshness = [
+        {"section": "Best opportunities (3 picks)", "ok": True, "detail": "recomputed today"},
+        {"section": "Keyword research", "ok": bool(opportunities) or plan["recap"],
+         "detail": (f"{len(opportunities)} keywords scored" if opportunities else "recap day" if plan["recap"]
+                    else "no keywords scored: Semrush out and no OpenRush deep dives saved")},
+        {"section": "Map packs", "ok": market_checks_today > 0, "detail": f"{market_checks_today} checks today"},
+        {"section": "Target bases", "ok": base_today == len(bases_view) and base_today > 0,
+         "detail": f"{base_today} of {len(bases_view)} checked today"},
+        {"section": "Our listings", "ok": all(o.get("checked") for o in own_listings) and bool(own_listings),
+         "detail": ", ".join(f"{o['name'][:24]}: {'checked' if o.get('checked') else 'NOT checked'}" for o in own_listings) or "none configured"},
+        {"section": "International", "ok": bool(intl_view["today"]), "detail": f"{len(intl_view['today'])} checks today"},
+        {"section": "Google watch", "ok": bool(gw_status.get("checked")),
+         "detail": (f"checked today, {gw_status.get('new', 0)} new" if gw_status.get("checked") else f"NOT checked (last {gw_status.get('last_checked') or 'never'})")},
+        {"section": "Google register", "ok": True,
+         "detail": f"as of {gw_status.get('register_as_of')}; {len(gw_status.get('promoted_today') or [])} promoted today, {len(gw_status.get('register_pending') or [])} awaiting repo sync"},
+        {"section": "Timing signals", "ok": any(signals.get(k) for k in ("weather", "news", "season")),
+         "detail": ", ".join(f"{k} {len(v)}" for k, v in signals.items() if v) or "none saved"},
+        {"section": "Verification kits", "ok": bool(kits_today), "detail": f"{len(kits_today)} listings" if kits_today else "none saved"},
+    ]
     notes = []
+    stale = [f["section"] for f in freshness if not f["ok"]]
+    if stale:
+        notes.append("Not updated today: " + ", ".join(stale) + ". Every section must refresh every day (Terell, 2026-10-23).")
     if plan.get("screen_source") == "openrush-fallback":
         notes.append("No Semrush screen today (semrush.csv missing: Semrush reported no API units). Today's moves come from "
                      "OpenRush deep dives of the cluster's best-known keywords, and the Semrush columns are blank. "
                      "Top up API units at https://www.semrush.com/mcp-access to restore discovery of new keywords.")
     state = {"version": 1, "updated": day, "watchlist": watch, "briefs": briefs, "markets": board,
-             "own_listings": own_state, "google_flags": flags, "google_watch": gw_status, "bases": base_state}
+             "own_listings": own_state, "google_flags": flags, "google_watch": gw_status, "register_additions": additions,
+             "bases": base_state}
 
     own_sightings = [dict(p, query=c["query"], market=c["market"])
                      for checks in serps.values() for c in checks for p in c["pack"] if p["possibly_ours"]]
@@ -625,7 +652,7 @@ def build(day, cfg):
     tactic = cfg["playbook"][datetime.strptime(day, "%Y-%m-%d").toordinal() % len(cfg["playbook"])]
     brief = {"date": day, "weekday": plan["weekday"], "label": plan["label"], "recap": plan["recap"],
              "markets": [m["name"] for m in plan["markets"]], "leaderboard": scoring.leaderboard(us_board),
-             "international": intl_view, "picks": picks, "notes": notes,
+             "international": intl_view, "picks": picks, "notes": notes, "freshness": freshness,
              "opportunities": opportunities,
              "serps": serps, "signals": signals, "kits": kits, "verification": cfg["verification"], "own_sightings": own_sightings,
              "own_listings": own_listings, "focus": focus_view, "tactic": tactic, "bases": bases_view,
@@ -673,13 +700,17 @@ def google_watch(cfg, prev, signals, day):
     """The dated Google risk register plus the rolling daily watch, and whether the watch was checked today.
 
     Daily items come from signals.json under "google" (the watch) and "policy" (the Google timing signal), each
-    {"summary", "source", "niches": [...], "keywords": [...], "level": high|medium|low}. A missing level counts as
-    low and missing niches as "all niches" rather than dropping the item. Items carry over between runs, a
-    re-report refreshes last_seen, and items expire after `flag_days` without being seen again.
+    {"summary", "source", "niches": [...], "keywords": [...], "level": high|medium|low, "plan"?}. A missing level
+    counts as low and missing niches as "all niches" rather than dropping the item. Items carry over between runs,
+    a re-report refreshes last_seen, and items expire after `flag_days` without being seen again.
+
+    The register updates itself every day: a medium or high item that is re-confirmed, or a week old, is promoted
+    into the register (kept in the page state), so nothing waits on a repo commit. `scout.py register-sync`
+    copies the promoted items into research/google/risk_register.json when someone with repo access runs it.
     """
     path = cfg.get("google_risk_register")
     reg = (read_json(ROOT / path, {}) or {}) if path else {}
-    register = reg.get("entries", [])
+    repo_entries = reg.get("entries", [])
     keep_days = (cfg.get("google_watch") or {}).get("flag_days", 60)
     today = datetime.strptime(day, "%Y-%m-%d")
     flags = {}
@@ -706,17 +737,34 @@ def google_watch(cfg, prev, signals, day):
         flags[key] = dict(item, level=level, niches=niches, first_seen=first, last_seen=day)
     checked = signals.get("google_checked") if isinstance(signals.get("google_checked"), dict) else {}
     ran = bool(todays) or bool(checked) or isinstance(signals.get("google"), list)
-    reg_sources = {s["url"].strip().lower().rstrip("/") for e in register for s in e.get("sources", []) if s.get("url")}
-    pending = [f for f in flags.values() if f.get("level") in ("high", "medium")
-               and (f.get("source") or "").strip().lower().rstrip("/") not in reg_sources
-               and (today - datetime.strptime(f["first_seen"], "%Y-%m-%d")).days >= 7]
+
+    def norm(url):
+        return (url or "").strip().lower().rstrip("/")
+    repo_sources = {norm(src["url"]) for e in repo_entries for src in e.get("sources", []) if src.get("url")}
+    additions = dict(prev.get("register_additions") or {})
+    promoted_today = []
+    for key, f in flags.items():
+        age = (today - datetime.strptime(f["first_seen"], "%Y-%m-%d")).days
+        settled = f.get("last_seen") != f.get("first_seen") or age >= 7
+        if f.get("level") in ("high", "medium") and settled and key not in additions and norm(f.get("source")) not in repo_sources:
+            additions[key] = {"id": "watch-" + scoring.slug(f.get("summary", ""))[:48], "niches": f.get("niches") or ["all niches"],
+                              "keywords": f.get("keywords") or [], "level": f["level"], "what": f.get("summary", ""),
+                              "since": f["first_seen"][:7], "plan": f.get("plan") or "Prepare before launching; see the source.",
+                              "sources": [{"url": f.get("source"), "date": f["first_seen"]}],
+                              "scope": "general" if (f.get("niches") or ["all niches"]) == ["all niches"] else "niche",
+                              "promoted": day}
+            promoted_today.append(additions[key]["what"][:100])
+    register = repo_entries + [a for a in additions.values() if norm(a["sources"][0]["url"]) not in repo_sources]
+    unsynced = [a for a in additions.values() if norm(a["sources"][0]["url"]) not in repo_sources]
+    as_of = max([reg.get("as_of") or ""] + [a.get("promoted", "") for a in additions.values()]) or None
     last = (prev.get("google_watch") or {}).get("last_checked")
     status = {"checked": ran, "last_checked": day if ran else last, "searches": list(checked.get("searches") or []),
               "new": new, "reconfirmed": reconfirmed, "active": len(flags),
               "last_new": max((f["first_seen"] for f in flags.values()), default=None),
-              "register_as_of": reg.get("as_of"), "register_entries": len(register),
-              "register_pending": [f.get("summary", "")[:100] for f in pending]}
-    return register, flags, status
+              "register_as_of": as_of, "register_repo_as_of": reg.get("as_of"), "register_entries": len(register),
+              "promoted_today": promoted_today,
+              "register_pending": [a["what"][:100] for a in unsynced]}
+    return register, flags, status, additions
 
 
 def spend_for(out, cfg):
@@ -760,9 +808,37 @@ def cmd_restore(args):
           f"{len(state.get('briefs', []))} past briefs (last update {state.get('updated')}).")
 
 
+def cmd_register_sync(args):
+    """Copy the register entries the daily watch promoted (kept in the page state) into the repo file."""
+    cfg = load_config()
+    out = run_path(args.date)
+    state = read_json(out / "state.json", None) or read_json(out / "prev_state.json", {}) or {}
+    additions = state.get("register_additions") or {}
+    path = ROOT / cfg["google_risk_register"]
+    reg = read_json(path, {"entries": []})
+    have = {(src.get("url") or "").strip().lower().rstrip("/") for e in reg["entries"] for src in e.get("sources", [])}
+    added = []
+    for a in additions.values():
+        url = (a["sources"][0].get("url") or "").strip().lower().rstrip("/")
+        if url and url not in have:
+            entry = {k: v for k, v in a.items() if k != "promoted"}
+            entry["id"] = entry["id"] if entry["id"] not in {e["id"] for e in reg["entries"]} else entry["id"] + "-" + a["promoted"]
+            reg["entries"].append(entry)
+            have.add(url)
+            added.append(entry["id"])
+    if added:
+        reg["as_of"] = args.date
+        reg.setdefault("changelog", []).append({"date": args.date, "change": "register-sync added " + ", ".join(added) + " (promoted by the daily watch)."})
+        path.write_text(json.dumps(reg, indent=2, ensure_ascii=False) + "\n")
+    print(f"Synced {len(added)} promoted item(s) into {path.relative_to(ROOT)}: {', '.join(added) or 'nothing new'}")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="cmd", required=True)
+    p = sub.add_parser("register-sync")
+    p.add_argument("--date", required=True)
+    p.set_defaults(func=cmd_register_sync)
     p = sub.add_parser("plan")
     p.add_argument("--date")
     p.set_defaults(func=cmd_plan)

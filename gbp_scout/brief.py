@@ -240,7 +240,8 @@ def google_section(g):
 <span class="muted">{seen}</span> {link(f['source'], 'source') if f.get('source') else ''}</li>""")
     for e in sorted(g.get("register") or [], key=lambda e: -{"high": 3, "medium": 2, "low": 1}.get(e.get("level"), 0)):
         src = (e.get("sources") or [{}])[0]
-        items.append(f"""<li><span class="pill {RISK_PILL.get(e.get('level'), 'flat')}">{escape(e.get('level', ''))}</span>
+        tag = f' <span class="pill flat">added by the watch {escape(e["promoted"])}</span>' if e.get("promoted") else ""
+        items.append(f"""<li><span class="pill {RISK_PILL.get(e.get('level'), 'flat')}">{escape(e.get('level', ''))}</span>{tag}
 <strong>{escape(', '.join(e.get('niches', [])))}</strong>: {escape(e.get('what', ''))} <span class="muted">Plan: {escape(e.get('plan', ''))}</span>
 {link(src['url'], 'source') if src.get('url') else ''}</li>""")
     if st.get("checked"):
@@ -250,12 +251,14 @@ def google_section(g):
     else:
         line = (f'<span class="pill down">Not checked today</span> last checked {escape(st.get("last_checked") or "never")}. '
                 f'The run skipped the Google watch step.')
+    if st.get("promoted_today"):
+        line += (f' <span class="pill up">Register updated today</span> {len(st["promoted_today"])} item(s) promoted from the watch: '
+                 f'{escape("; ".join(st["promoted_today"]))}.')
     pending = st.get("register_pending") or []
     if pending:
-        line += (f' <span class="pill validate">Register needs an update</span> {len(pending)} medium or high item(s) '
-                 f'older than a week are not in the register yet: {escape("; ".join(pending))}.')
-    as_of = (f" Register as of {escape(g['as_of'])} ({st.get('register_entries', 0)} rules; it changes only when the "
-             f"repo file is updated).") if g.get("as_of") else ""
+        line += (f' <span class="muted">{len(pending)} promoted item(s) live on this page but not yet copied into the repo file '
+                 f'(run scout.py register-sync).</span>')
+    as_of = (f" Register as of {escape(g['as_of'])} ({st.get('register_entries', 0)} rules, updated by the watch every day).") if g.get("as_of") else ""
     return f"""<section><h2>Google watch</h2><p class="muted" style="margin-bottom:10px">What Google is flagging right now.
 High-risk niches are marked Avoid until the wave settles; medium means prepare before you launch. Newest daily items first,
 then the standing register.{as_of}</p>
@@ -288,6 +291,18 @@ def pick_card(title, p, empty):
     return f"""<article class="move"><div class="row"><span class="pill flat">{escape(title)}</span>{''.join(pills)}</div>
 <h3>{escape(head + where)}</h3><p>{escape(p['why'])}</p>{also}
 <p class="muted">As of {escape(p.get('as_of') or p.get('date') or '')}</p></article>"""
+
+
+def freshness_section(items):
+    if not items:
+        return ""
+    pills = "".join(f'<span class="pill {"up" if f["ok"] else "down"}" title="{escape(f["detail"], quote=True)}">'
+                    f'{escape(f["section"])}: {escape(f["detail"])}</span>' for f in items)
+    stale = [f["section"] for f in items if not f["ok"]]
+    head = ("Every section refreshed today." if not stale else
+            f"Not refreshed today: {', '.join(stale)}. Each section must update every day.")
+    return f"""<section><div class="row" style="margin-bottom:8px"><span class="eyebrow">Updated today</span>
+<span class="{'muted' if not stale else ''}">{escape(head)}</span></div><div class="row">{pills}</div></section>"""
 
 
 def picks_section(p):
@@ -448,6 +463,7 @@ Google's video verification and suspension checks look for exactly this.</p></se
   national (US); map packs checked in {escape(', '.join(b['markets']))}.</p>
 </header>
 
+{freshness_section(b.get("freshness"))}
 {picks_section(b.get("picks"))}
 {''.join(f'<section class="note"><h3>Run note</h3><p>{escape(n)}</p></section>' for n in b.get("notes") or [])}
 <section><h2>Today's moves</h2><div class="moves">{moves}</div></section>
@@ -506,6 +522,10 @@ def render_summary(b):
         lines += ["", "Weekly recap. Top of the watchlist:"]
         for kw, w in sorted(b["state"]["watchlist"].items(), key=lambda kv: -kv[1].get("score", 0))[:5]:
             lines.append(f"- {kw}: {w.get('play')}, score {w.get('score', 0):.0f}, {w.get('label')}")
+    fresh = b.get("freshness") or []
+    if fresh:
+        stale = [f["section"] for f in fresh if not f["ok"]]
+        lines += ["", "Updated today: " + ("every section." if not stale else f"{len(fresh) - len(stale)} of {len(fresh)} sections; NOT updated: {', '.join(stale)}.")]
     for n in b.get("notes") or []:
         lines += ["", f"Note: {n}"]
     p = b.get("picks") or {}
@@ -542,8 +562,10 @@ def render_summary(b):
                          f"{st.get('reconfirmed', 0)} re-confirmed, {st.get('active', 0)} active; register as of {st.get('register_as_of')}")
         else:
             lines.append(f"Google watch: NOT checked today (last checked {st.get('last_checked') or 'never'}); register as of {st.get('register_as_of')}")
+        if st.get("promoted_today"):
+            lines.append("Google watch: register updated today with " + "; ".join(st["promoted_today"]))
         if st.get("register_pending"):
-            lines.append("Google watch: register needs an update: " + "; ".join(st["register_pending"]))
+            lines.append(f"Google watch: {len(st['register_pending'])} promoted item(s) not yet in the repo file (scout.py register-sync)")
     today = st.get("last_checked") if st.get("checked") else None
     for fl in sorted((g.get("flags") or {}).values(), key=lambda f: f.get("last_seen", ""), reverse=True)[:3]:
         tag = "new today" if today and fl.get("first_seen") == today else f"since {fl.get('first_seen')}"
