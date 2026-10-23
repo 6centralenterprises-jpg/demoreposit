@@ -168,27 +168,37 @@ is `runs/gbp/D/`.
      system, an AI agent, a partner network, or an acquisition of a small operator with a real,
      verified profile.
 
-6b. **Google watch (every day, including Sunday).**
+6b. **Google watch (every day, including Sunday). Never skip it; `build` shows "Not checked today" if you do.**
    1. Read `research/google/landscape-*.md` (newest) and `research/google/risk_register.json`.
-   2. Search the last 7 days with WebSearch (`google_watch.searches` in config), looking for:
+   2. Run every search in `google_watch.searches` (config) with WebSearch for the last 7 days, looking for:
       - GBP suspension or re-verification waves and the categories they hit
       - verification changes
       - policy edits
       - spam or core updates
       - Local Services Ads changes
       - AI Overviews and local-results changes
-   3. Write each new item to `signals.json` under `"google"` as
-      `{"summary", "source", "niches": [...], "keywords": [...], "level": "high"|"medium"|"low"}`.
-      - Use the niche names the config uses.
+   3. Write the result to `signals.json`, **always**, even when nothing is new:
+      ```json
+      {"google_checked": {"date": "D", "searches": ["...the queries you ran..."]},
+       "google": [{"summary", "source", "niches": [...], "keywords": [...], "level": "high"|"medium"|"low"}]}
+      ```
+      - `google` may be `[]`. Include an item again when it is still true this week: a re-report keeps its
+        first-seen date and refreshes last-seen, so Terell can see the watch is alive. New items get "New today".
+      - Use the niche names the config uses, or `["all niches"]` for a rule that applies to everyone.
       - Only cite sources dated in the last 30 days.
-      - **high:** an active suspension wave or a new hard requirement.
-      - **medium:** elevated scrutiny.
+      - **high:** an active suspension wave or a new hard requirement. **medium:** elevated scrutiny.
+        **low:** worth knowing. A missing level counts as low; the code never drops a sourced item.
+      - Items you put under the `policy` timing signal (step 7) feed the watch too, so one story needs
+        writing only once.
 
-   `build` remembers these for 60 days.
+   `build` remembers items for 60 days, shows first-seen and last-seen dates, and prints whether the
+   watch was checked today and how many items were new or re-confirmed.
    - A high-risk niche becomes **Avoid**.
    - A medium-risk niche shows a caution.
-   - If an item is big enough to change the register (a new category being flagged), say so in the report.
-     The register is updated in the repo, not by the run.
+   - **The register is a repo file** (`research/google/risk_register.json`); the morning run never
+     commits, so it only changes when a session with write access edits it. When `build` prints
+     "Register needs an update" (a medium or high item older than a week that the register lacks), put
+     that line near the top of the report so Terell can have it added. Sunday's owner memo lists them too.
 
 7. **Timing signals.** Write `runs/gbp/D/signals.json`. Every item needs a
    real `source` URL; the code drops items without one. Use WebSearch:
@@ -260,7 +270,9 @@ is `runs/gbp/D/`.
     - any "possibly ours" map-pack sighting, as a question to confirm
     - one thing to watch that is 2–3 steps ahead (a season turning, a
       policy shift, a rising keyword moving up the watchlist)
-    - Google watch: any high-risk item, and anything new
+    - Google watch: one line with "checked today (N searches), X new, Y re-confirmed" (or "NOT checked",
+      which must never happen), every item marked new today, any high-risk item, and "register needs an
+      update" when `build` says so
     - "Get ahead of the season": the top 1-2 keywords whose next 3 months
       run 1.3x or more above this month (from last year's data)
     - the single next move for growing the portfolio this week

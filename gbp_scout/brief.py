@@ -227,19 +227,39 @@ def opportunity_rows(opps):
 def google_section(g):
     if not g or not (g.get("register") or g.get("flags")):
         return ""
+    st = g.get("status") or {}
+    today = st.get("last_checked") if st.get("checked") else None
     items = []
+    flags = sorted((g.get("flags") or {}).values(), key=lambda f: (f.get("last_seen", ""), f.get("first_seen", "")), reverse=True)
+    for f in flags:
+        fresh = ' <span class="pill up">New today</span>' if today and f.get("first_seen") == today else ""
+        seen = (f"first seen {escape(f.get('first_seen', ''))}"
+                + (f" · last seen {escape(f.get('last_seen', ''))}" if f.get("last_seen") != f.get("first_seen") else ""))
+        items.append(f"""<li><span class="pill {RISK_PILL.get(f.get('level'), 'flat')}">{escape(f.get('level', ''))}</span>{fresh}
+<strong>{escape(', '.join(f.get('niches') or f.get('keywords') or []))}</strong>: {escape(f.get('summary', ''))}
+<span class="muted">{seen}</span> {link(f['source'], 'source') if f.get('source') else ''}</li>""")
     for e in sorted(g.get("register") or [], key=lambda e: -{"high": 3, "medium": 2, "low": 1}.get(e.get("level"), 0)):
         src = (e.get("sources") or [{}])[0]
         items.append(f"""<li><span class="pill {RISK_PILL.get(e.get('level'), 'flat')}">{escape(e.get('level', ''))}</span>
 <strong>{escape(', '.join(e.get('niches', [])))}</strong>: {escape(e.get('what', ''))} <span class="muted">Plan: {escape(e.get('plan', ''))}</span>
 {link(src['url'], 'source') if src.get('url') else ''}</li>""")
-    for f in (g.get("flags") or {}).values():
-        items.append(f"""<li><span class="pill {RISK_PILL.get(f.get('level'), 'flat')}">{escape(f.get('level', ''))}</span>
-<strong>{escape(', '.join(f.get('niches') or f.get('keywords') or []))}</strong>: {escape(f.get('summary', ''))}
-<span class="muted">first seen {escape(f.get('first_seen', ''))}</span> {link(f['source'], 'source') if f.get('source') else ''}</li>""")
-    as_of = f" Register as of {escape(g['as_of'])}." if g.get("as_of") else ""
+    if st.get("checked"):
+        n = len(st.get("searches") or [])
+        line = (f'<span class="pill up">Checked today</span> {f"{n} searches, " if n else ""}{st.get("new", 0)} new, '
+                f'{st.get("reconfirmed", 0)} re-confirmed, {st.get("active", 0)} items active from the last 60 days.')
+    else:
+        line = (f'<span class="pill down">Not checked today</span> last checked {escape(st.get("last_checked") or "never")}. '
+                f'The run skipped the Google watch step.')
+    pending = st.get("register_pending") or []
+    if pending:
+        line += (f' <span class="pill validate">Register needs an update</span> {len(pending)} medium or high item(s) '
+                 f'older than a week are not in the register yet: {escape("; ".join(pending))}.')
+    as_of = (f" Register as of {escape(g['as_of'])} ({st.get('register_entries', 0)} rules; it changes only when the "
+             f"repo file is updated).") if g.get("as_of") else ""
     return f"""<section><h2>Google watch</h2><p class="muted" style="margin-bottom:10px">What Google is flagging right now.
-High-risk niches are marked Avoid until the wave settles; medium means prepare before you launch.{as_of}</p>
+High-risk niches are marked Avoid until the wave settles; medium means prepare before you launch. Newest daily items first,
+then the standing register.{as_of}</p>
+<p style="margin-bottom:10px">{line}</p>
 <div class="panel"><ul>{''.join(items)}</ul></div></section>"""
 
 
@@ -513,10 +533,23 @@ def render_summary(b):
             f"{r['market']} ({r['openness']:.2f}, best: '{r['best_query']}' median {r['best_median']:g})" for r in board[:3])]
     for o in (b.get("season_ahead") or [])[:3]:
         lines.append(f"Season ahead: {o['keyword']} (next 3 months ran {o['season']['ratio']:.1f}x last year, peak {o['season']['peak_month']})")
-    for e in [e for e in ((b.get("google") or {}).get("register") or []) if e.get("level") == "high"][:3]:
+    g = b.get("google") or {}
+    st = g.get("status") or {}
+    if st:
+        if st.get("checked"):
+            n = len(st.get("searches") or [])
+            lines.append(f"Google watch: checked today{f' ({n} searches)' if n else ''}, {st.get('new', 0)} new, "
+                         f"{st.get('reconfirmed', 0)} re-confirmed, {st.get('active', 0)} active; register as of {st.get('register_as_of')}")
+        else:
+            lines.append(f"Google watch: NOT checked today (last checked {st.get('last_checked') or 'never'}); register as of {st.get('register_as_of')}")
+        if st.get("register_pending"):
+            lines.append("Google watch: register needs an update: " + "; ".join(st["register_pending"]))
+    today = st.get("last_checked") if st.get("checked") else None
+    for fl in sorted((g.get("flags") or {}).values(), key=lambda f: f.get("last_seen", ""), reverse=True)[:3]:
+        tag = "new today" if today and fl.get("first_seen") == today else f"since {fl.get('first_seen')}"
+        lines.append(f"Google watch ({tag}, {fl.get('level')}): {fl.get('summary')}")
+    for e in [e for e in (g.get("register") or []) if e.get("level") == "high"][:3]:
         lines.append(f"Google watch (high): {', '.join(e.get('niches', []))}: {e.get('what')}")
-    for fl in list(((b.get("google") or {}).get("flags") or {}).values())[:3]:
-        lines.append(f"Google watch (new, {fl.get('level')}): {fl.get('summary')}")
     f = b.get("focus")
     if f and f["leaderboard"]:
         lines += ["", f"{f['label']}, most open markets: " + "; ".join(
@@ -529,7 +562,7 @@ def render_summary(b):
     if b["own_sightings"]:
         lines += ["", "Possibly ours in the map pack (confirm): "
                   + "; ".join(f"{s['name']} ({s['query']})" for s in b["own_sightings"])]
-    for key in ("weather", "news", "policy"):
+    for key in ("weather", "news"):
         for s in (b["signals"].get(key) or [])[:2]:
             lines.append(f"- {key.title()}: {s.get('summary') or s.get('headline')}")
     lines += ["", f"Tactic: {b['tactic']}"]

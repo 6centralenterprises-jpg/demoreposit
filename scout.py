@@ -483,9 +483,11 @@ def build(day, cfg):
     cluster = cfg["clusters"][plan["cluster"]]
     prev = read_json(out / "prev_state.json", {}) or {}
     watch = prev.get("watchlist", {})
-    signals = read_json(out / "signals.json", {}) or {}
-    signals = {k: [s for s in v if s.get("source")] for k, v in signals.items() if isinstance(v, list)}
-    register, flags = google_watch(cfg, prev, signals.get("google", []), day)
+    raw_signals = read_json(out / "signals.json", {}) or {}
+    signals = {k: [s for s in v if isinstance(s, dict) and s.get("source")]
+               for k, v in raw_signals.items() if isinstance(v, list)}
+    register, flags, gw_status = google_watch(cfg, prev, signals | {"google_checked": raw_signals.get("google_checked")}, day)
+    signals = {k: v for k, v in signals.items() if k not in ("google", "policy")}  # those two feed the Google watch
     countries = {m["name"]: market_country(m) for m in all_markets(cfg)}
 
     serps = {}
@@ -614,7 +616,7 @@ def build(day, cfg):
                      "OpenRush deep dives of the cluster's best-known keywords, and the Semrush columns are blank. "
                      "Top up API units at https://www.semrush.com/mcp-access to restore discovery of new keywords.")
     state = {"version": 1, "updated": day, "watchlist": watch, "briefs": briefs, "markets": board,
-             "own_listings": own_state, "google_flags": flags, "bases": base_state}
+             "own_listings": own_state, "google_flags": flags, "google_watch": gw_status, "bases": base_state}
 
     own_sightings = [dict(p, query=c["query"], market=c["market"])
                      for checks in serps.values() for c in checks for p in c["pack"] if p["possibly_ours"]]
@@ -628,8 +630,7 @@ def build(day, cfg):
              "serps": serps, "signals": signals, "kits": kits, "verification": cfg["verification"], "own_sightings": own_sightings,
              "own_listings": own_listings, "focus": focus_view, "tactic": tactic, "bases": bases_view,
              "google": {"register": [e for e in register if e.get("level") in ("high", "medium")],
-                        "flags": flags, "as_of": (read_json(ROOT / cfg.get("google_risk_register", ""), {}) or {}).get("as_of")
-                        if cfg.get("google_risk_register") else None},
+                        "flags": flags, "status": gw_status, "as_of": gw_status.get("register_as_of")},
              "season_ahead": sorted([o for o in opportunities if (o["season"] or {}).get("ratio", 0) >= 1.3],
                                     key=lambda o: -o["season"]["ratio"]),
              "spend": spend_for(out, cfg), "state": state}
@@ -662,27 +663,60 @@ def target_bases(cfg, day, out, prev):
     return view, base_state
 
 
-def google_watch(cfg, prev, todays, day):
-    """The dated Google risk register plus the rolling daily watch.
+def flag_key(item):
+    """One key per story: the source URL when there is one, else the summary. Lets a re-report count as a re-confirmation."""
+    src = (item.get("source") or "").strip().lower().rstrip("/")
+    return "src:" + src if src else "sum:" + scoring.slug(item.get("summary", ""))[:60]
 
-    Each daily item is {"summary", "source", "niches": [...], "keywords": [...], "level": high|medium|low}.
-    Items carry over between runs and expire after `flag_days` without being seen again.
+
+def google_watch(cfg, prev, signals, day):
+    """The dated Google risk register plus the rolling daily watch, and whether the watch was checked today.
+
+    Daily items come from signals.json under "google" (the watch) and "policy" (the Google timing signal), each
+    {"summary", "source", "niches": [...], "keywords": [...], "level": high|medium|low}. A missing level counts as
+    low and missing niches as "all niches" rather than dropping the item. Items carry over between runs, a
+    re-report refreshes last_seen, and items expire after `flag_days` without being seen again.
     """
     path = cfg.get("google_risk_register")
-    register = ((read_json(ROOT / path, {}) or {}).get("entries", []) if path else [])
+    reg = (read_json(ROOT / path, {}) or {}) if path else {}
+    register = reg.get("entries", [])
     keep_days = (cfg.get("google_watch") or {}).get("flag_days", 60)
     today = datetime.strptime(day, "%Y-%m-%d")
     flags = {}
     for key, f in (prev.get("google_flags") or {}).items():
         if (today - datetime.strptime(f["last_seen"], "%Y-%m-%d")).days <= keep_days:
-            flags[key] = f
-    for item in todays:
-        if item.get("level") not in scoring.RISK_RANK or not (item.get("niches") or item.get("keywords")):
+            flags[flag_key(f) if (f.get("source") or f.get("summary")) else key] = f
+    todays, seen = [], set()
+    for item in (signals.get("google") or []) + (signals.get("policy") or []):
+        if not isinstance(item, dict) or not item.get("source") or not item.get("summary"):
             continue
-        key = scoring.slug(item.get("summary", ""))[:60]
-        first = flags.get(key, {}).get("first_seen", day)
-        flags[key] = dict(item, first_seen=first, last_seen=day)
-    return register, flags
+        key = flag_key(item)
+        if key in seen:
+            continue  # the same story written under both keys
+        seen.add(key)
+        todays.append((key, item))
+    new = reconfirmed = 0
+    for key, item in todays:
+        level = item.get("level") if item.get("level") in scoring.RISK_RANK else "low"
+        niches = item.get("niches") or item.get("keywords") or ["all niches"]
+        prior = flags.get(key)
+        first = prior["first_seen"] if prior else day
+        reconfirmed += bool(prior)
+        new += not prior
+        flags[key] = dict(item, level=level, niches=niches, first_seen=first, last_seen=day)
+    checked = signals.get("google_checked") if isinstance(signals.get("google_checked"), dict) else {}
+    ran = bool(todays) or bool(checked) or isinstance(signals.get("google"), list)
+    reg_sources = {s["url"].strip().lower().rstrip("/") for e in register for s in e.get("sources", []) if s.get("url")}
+    pending = [f for f in flags.values() if f.get("level") in ("high", "medium")
+               and (f.get("source") or "").strip().lower().rstrip("/") not in reg_sources
+               and (today - datetime.strptime(f["first_seen"], "%Y-%m-%d")).days >= 7]
+    last = (prev.get("google_watch") or {}).get("last_checked")
+    status = {"checked": ran, "last_checked": day if ran else last, "searches": list(checked.get("searches") or []),
+              "new": new, "reconfirmed": reconfirmed, "active": len(flags),
+              "last_new": max((f["first_seen"] for f in flags.values()), default=None),
+              "register_as_of": reg.get("as_of"), "register_entries": len(register),
+              "register_pending": [f.get("summary", "")[:100] for f in pending]}
+    return register, flags, status
 
 
 def spend_for(out, cfg):

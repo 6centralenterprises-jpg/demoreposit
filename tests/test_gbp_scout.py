@@ -359,3 +359,37 @@ def test_semrush_fallback_builds_rows_from_openrush(tmp_path, monkeypatch):
     o = brief["opportunities"][0]
     assert o["keyword"] == kw and o["semrush"]["volume"] is None and o["openrush"]["volume"] == 12100  # vendors never mixed
     assert "12,100" in render_summary(brief) and "Semrush" not in render_summary(brief).split("Today's moves")[1].split("\n")[1]
+
+
+def test_google_watch_reads_both_keys_records_the_check_and_reconfirms():
+    cfg = scout.load_config()
+    a = {"summary": "Google is testing government-ID verification.", "source": "https://x.example/id", "level": "medium", "niches": ["all niches"]}
+    b = {"summary": "Review appeals are backed up.", "source": "https://x.example/appeals/"}  # no level, no niches
+    signals = {"google": [a], "policy": [dict(a), b], "google_checked": {"date": "2026-10-23", "searches": ["q1", "q2", "q3"]}}
+    register, flags, st = scout.google_watch(cfg, {}, signals, "2026-10-23")
+    assert len(flags) == 2 and st["checked"] and st["new"] == 2 and st["reconfirmed"] == 0 and len(st["searches"]) == 3
+    kept = flags["src:https://x.example/appeals"]
+    assert kept["level"] == "low" and kept["niches"] == ["all niches"]  # kept with defaults, not dropped
+    assert st["register_as_of"] and st["register_entries"] == len(register)  # the register's date travels with the status
+    prev = {"google_flags": flags, "google_watch": st}
+    _, flags2, st2 = scout.google_watch(cfg, prev, {"google": [dict(a, level="high")]}, "2026-10-24")
+    assert st2["reconfirmed"] == 1 and st2["new"] == 0
+    assert flags2["src:https://x.example/id"]["first_seen"] == "2026-10-23" and flags2["src:https://x.example/id"]["last_seen"] == "2026-10-24"
+    _, flags3, st3 = scout.google_watch(cfg, {"google_flags": flags2, "google_watch": st2}, {}, "2026-10-25")
+    assert not st3["checked"] and st3["last_checked"] == "2026-10-24" and len(flags3) == 2  # a skipped day is visible
+    _, _, st4 = scout.google_watch(cfg, {"google_flags": flags2, "google_watch": st2}, {}, "2026-11-05")
+    assert st4["register_pending"] and "government-ID" in st4["register_pending"][0]  # medium item a week old, not in the register
+    old = {"google_flags": {"sum:old-key": {"summary": "Old style key", "source": "https://x.example/old", "level": "low",
+                                           "first_seen": "2026-10-05", "last_seen": "2026-10-05"}}}
+    _, flags5, _ = scout.google_watch(cfg, old, {"google": [{"summary": "Old style key", "source": "https://x.example/old"}]}, "2026-10-23")
+    assert list(flags5) == ["src:https://x.example/old"] and flags5["src:https://x.example/old"]["first_seen"] == "2026-10-05"
+    g = {"register": register[:1], "flags": flags2, "status": st2, "as_of": st2["register_as_of"]}
+    page = render_html({"google": g, "picks": {}, "opportunities": [], "state": {"watchlist": {}, "briefs": []}, "recap": False,
+                        "own_sightings": [], "serps": {}, "signals": {}, "kits": [], "verification": {"proofs": {}, "source": ""},
+                        "weekday": "Sat", "date": "2026-10-24", "label": "x", "markets": [], "tactic": "t", "leaderboard": []})
+    assert "Checked today" in page and "last seen 2026-10-24" in page
+    g["status"] = st3
+    page = render_html({"google": g, "picks": {}, "opportunities": [], "state": {"watchlist": {}, "briefs": []}, "recap": False,
+                        "own_sightings": [], "serps": {}, "signals": {}, "kits": [], "verification": {"proofs": {}, "source": ""},
+                        "weekday": "Sun", "date": "2026-10-25", "label": "x", "markets": [], "tactic": "t", "leaderboard": []})
+    assert "Not checked today" in page

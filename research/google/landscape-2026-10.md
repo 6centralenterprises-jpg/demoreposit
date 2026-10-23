@@ -171,3 +171,24 @@ For 6 Central Enterprises (Chicago). [S#] cites the sources listed at the end. "
 - S52 https://www.seroundtable.com/google-lsa-missed-subsequent-calls-41940.html 2026-08-25
 - S53 https://pr.davisjournal.com/article/Lead-Smart-Inc-Google-Lead-Costs-Rose-Up-to-69percent-in-a-Year-What-the-Same-Calls-Pay-Publishers/6a9d61185e47130002855182 2026-09-06 (Tier C)
 - S54 https://www.seroundtable.com/google-maps-phone-number-in-photo-scam-42056.html 2026-09-10
+
+## Update 2026-10-23 (from the daily watch)
+
+Four items from Oct 20-23 added to `risk_register.json` (register as of 2026-10-23):
+
+- **Government-ID verification test (medium, all niches).** Google is testing a profile verification option that asks
+  for a photo of a government ID; not yet on the help page, which lists phone/text, email, live video call and mail.
+  Keep ID and business documents ready for every new profile.
+  [SER, 2026-10-20](https://www.seroundtable.com/google-business-profiles-verification-government-id-42329.html)
+- **Review appeals backlog (low).** Google said on Oct 17 that review-related appeals are taking longer because of high
+  volume. [SER recap, 2026-10-20](https://www.seroundtable.com/recap-10-20-2026-42334.html)
+- **LSA dropped "featured professionals" (low).** Headshots are now optional; photos and reviews still show.
+  [SER](https://seroundtable.com/google-ads-featured-professionals-headshots-42325.html)
+- **Revamped Business Profile performance report in test (low).** Engagement, reviews, search trends, audience,
+  recommendations. [SER, 2026-10-23](https://www.seroundtable.com/google-business-profiles-new-performance-reports-42367.html)
+
+**Why the watch looked frozen Oct 6-22.** The register only changes when a session with repo access edits this file
+(the morning run is told not to commit), and the rolling daily flags only came from `signals.json["google"]`, which the
+morning runs skipped on those days (Google news went into the "policy" timing signal instead). From 2026-10-23 the
+scout reads both keys, records whether the watch was checked each day, shows first-seen and last-seen dates, and
+calls out register items that need adding.

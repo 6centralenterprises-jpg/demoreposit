@@ -74,7 +74,10 @@ a percentage. Build every plan on one of these two legitimate structures:
 **Never:** a Google profile, or a Local Services Ads account, for a business whose own people don't do the
 work. That is lead generation, and it's the Premium Home Service pattern.
 
-## Google rules we design around (as of 2026-10-04; see `research/google/`)
+## Google rules we design around (register as of 2026-10-23; see `research/google/`)
+
+- The register (`research/google/risk_register.json`) only changes when a session with repo access edits it; the
+  morning run never commits. When the brief says "Register needs an update", add the items here and bump `as_of`.
 
 - **Every profile is the company whose own staff does the work.**
   - Google bars lead-generation businesses from holding profiles.
