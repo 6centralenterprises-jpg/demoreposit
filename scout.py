@@ -610,9 +610,13 @@ def build(day, cfg):
                       "leaderboard": scoring.leaderboard({m: r for m, r in focus_board.items() if r}),
                       "licensing": {s: focus["licensing"][s] for s in sorted(states) if s in focus.get("licensing", {})}}
     bases_view, base_state = target_bases(cfg, day, out, prev)
-    demand = international_demand(out, day)
+    demand_today = international_demand(out, day)
+    demand_state = dict(prev.get("intl_demand") or {})  # country-level reads are kept, so a pick remembers its demand
+    for d in demand_today:
+        demand_state[f"{d.get('country')}|{scoring.slug(d['keyword'])}"] = dict(d, date=day)
+    demand = list(demand_state.values())
     intl_view = {"today": [c for checks in serps.values() for c in checks if c.get("country", "United States") != "United States"],
-                 "leaderboard": scoring.leaderboard(intl_board), "demand": demand,
+                 "leaderboard": scoring.leaderboard(intl_board), "demand": demand_today,
                  "markets": sorted({m["name"] for m in plan["markets"] if m.get("role") == "international"}
                                    | {c["market"] for checks in serps.values() for c in checks
                                       if c.get("country", "United States") != "United States"})}
@@ -649,7 +653,7 @@ def build(day, cfg):
                      "Top up API units at https://www.semrush.com/mcp-access to restore discovery of new keywords.")
     state = {"version": 1, "updated": day, "watchlist": watch, "briefs": briefs, "markets": board,
              "own_listings": own_state, "google_flags": flags, "google_watch": gw_status, "register_additions": additions,
-             "bases": base_state}
+             "intl_demand": demand_state, "bases": base_state}
 
     own_sightings = [dict(p, query=c["query"], market=c["market"])
                      for checks in serps.values() for c in checks for p in c["pack"] if p["possibly_ours"]]
