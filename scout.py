@@ -389,6 +389,19 @@ def international_demand(out, day):
     return reads
 
 
+def latest_readings(board):
+    """One reading per market and search: the newest. A stale opening never outranks today's reading."""
+    out = {}
+    for market, readings in board.items():
+        latest = {}
+        for r in readings:
+            key = scoring.slug(r["query"])
+            if key not in latest or r["date"] > latest[key]["date"]:
+                latest[key] = r
+        out[market] = list(latest.values())
+    return out
+
+
 def best_picks(cfg, day, opportunities, watch, board, demand, register=(), flags=None):
     """The three picks Terell asked for (2026-10-13): best seasonal, best nationwide, best international.
 
@@ -430,7 +443,7 @@ def best_picks(cfg, day, opportunities, watch, board, demand, register=(), flags
 
     def candidates(keep):
         rows = []
-        for market, readings in board.items():
+        for market, readings in latest_readings(board).items():
             if not keep(market):
                 continue
             for r in readings:
@@ -450,8 +463,8 @@ def best_picks(cfg, day, opportunities, watch, board, demand, register=(), flags
                 rows.append({"query": r["query"], "market": market, "country": countries.get(market, "United States"),
                              "median": r["median"], "weakness": r["weakness"], "date": r["date"], "keyword": kw,
                              "score": w.get("score"), "play": w.get("play"), "verify": w.get("verify")})
-        rows.sort(key=lambda c: (-c["weakness"], -(c["score"] or 60), c["date"]), reverse=False)
-        return rows
+        rows.sort(key=lambda c: (-c["weakness"], -(c["score"] or 60), -datetime.strptime(c["date"], "%Y-%m-%d").toordinal()))
+        return rows  # most open first, then the better-scored search, then the freshest reading
 
     nat = candidates(lambda m: m not in home and countries.get(m, "United States") == "United States")
     nationwide = None
@@ -595,9 +608,10 @@ def build(day, cfg):
         allowed = query_states.get(r["query"])
         return allowed is None or states.get(market) in allowed
 
-    us_board = {m: [r for r in rs if sensible(r, m)] for m, rs in board.items()
+    current = latest_readings(board)  # rankings use the newest reading of each search, never an old opening
+    us_board = {m: [r for r in rs if sensible(r, m)] for m, rs in current.items()
                 if countries.get(m, "United States") == "United States"}
-    intl_board = {m: r for m, r in board.items() if countries.get(m, "United States") != "United States"}
+    intl_board = {m: r for m, r in current.items() if countries.get(m, "United States") != "United States"}
     focus = cfg.get("focus") or {}
     fq = {scoring.slug(q) for q in focus.get("map_queries", [])}
     focus_board = {m: [r for r in rows if scoring.slug(r["query"]) in fq] for m, rows in us_board.items()}

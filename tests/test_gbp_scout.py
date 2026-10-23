@@ -317,12 +317,15 @@ def test_best_picks_seasonal_nationwide_international():
              "water damage restoration": {"score": 86, "play": "Partner & manage", "niche": "water", "last_seen": "2026-10-05",
                                           "season": {"ratio": 1.2, "peak_month": "Dec", "peak_volume": 1}},
              "fence company near me": {"score": 67, "play": "Watch", "niche": "fences", "last_seen": "2026-10-07",
-                                       "season": {"ratio": 2.9, "peak_month": "Jan", "peak_volume": 823000}}}
+                                       "season": {"ratio": 2.9, "peak_month": "Jan", "peak_volume": 823000}},
+             "gutter repair near me": {"score": 72, "play": "Own it", "niche": "gutter cleaning", "last_seen": "2026-10-07"}}
     board = {"Chicago, IL": [{"date": "2026-10-13", "query": "mobile tire repair", "median": 10, "weakness": 1.0}],
              "Phoenix, AZ": [{"date": "2026-10-09", "query": "snow removal", "median": 12, "weakness": 1.0}],
              "Nashville, TN": [{"date": "2026-10-10", "query": "deck builders", "median": 6, "weakness": 1.0}],
              "Houston, TX": [{"date": "2026-10-07", "query": "mobile tire repair", "median": 40, "weakness": 0.75},
-                             {"date": "2026-10-07", "query": "something unscored", "median": 1, "weakness": 1.0}],
+                             {"date": "2026-10-07", "query": "something unscored", "median": 1, "weakness": 1.0},
+                             {"date": "2026-10-07", "query": "gutter repair", "median": 15, "weakness": 1.0},
+                             {"date": "2026-10-23", "query": "gutter repair", "median": 129, "weakness": 0.5}],
              "London, UK": [{"date": "2026-10-13", "query": "mobile tyre fitting", "median": 34, "weakness": 0.75},
                             {"date": "2026-10-14", "query": "garage door repair", "median": 3, "weakness": 1.0}],
              "Toronto, ON": [{"date": "2026-10-13", "query": "snow removal", "median": 25, "weakness": 0.85}]}
@@ -333,6 +336,8 @@ def test_best_picks_seasonal_nationwide_international():
     assert picks["seasonal"]["also"][0].startswith("fence company near me")
     assert picks["nationwide"]["market"] == "Nashville, TN"  # Chicago is home, Phoenix snow is excluded, unscored searches skipped
     assert "mobile tire repair in Houston, TX" in picks["nationwide"]["also"][0]
+    assert not any("(median 15)" in x for x in picks["nationwide"]["also"])  # the stale 15 lost to today's 129
+    assert scout.latest_readings(board)["Houston, TX"][2]["median"] == 129
     assert picks["international"]["market"] == "Toronto, ON" and picks["international"]["play"] == "Partner & manage"
     assert all("garage door" not in x for x in picks["international"]["also"])  # high Google risk never becomes a pick
     assert "9,900 searches/mo in Canada" in picks["international"]["why"]

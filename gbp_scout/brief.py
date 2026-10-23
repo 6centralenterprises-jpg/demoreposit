@@ -478,8 +478,8 @@ Google's video verification and suspension checks look for exactly this.</p></se
 
 <section><h2>Map pack check</h2><div class="grid2">{serp_panels(b['serps'])}</div></section>
 
-{f'''<section><h2>Best markets so far</h2><p class="muted" style="margin-bottom:10px">Ranked by map-pack openness across every check (1.00 = top 3 have under 20 reviews; 0.10 = hundreds). Chicago is checked daily; 34 national metros rotate, 3 a day; markets abroad are ranked in the International watch. Early rankings compare different searches, so they firm up after a few weeks once every market has been checked across all business groups.</p><div class="table"><table>
-<thead><tr><th>#</th><th>Market</th><th>Openness</th><th>Checks</th><th>Most open search</th><th>Last checked</th></tr></thead>
+{f'''<section><h2>Best markets so far</h2><p class="muted" style="margin-bottom:10px">Ranked by map-pack openness across the newest reading of every search checked there (1.00 = top 3 have under 20 reviews; 0.10 = hundreds); an old opening never outranks today's reading. Chicago is checked daily; 34 national metros rotate, 3 a day; markets abroad are ranked in the International watch. Early rankings compare different searches, so they firm up after a few weeks once every market has been checked across all business groups.</p><div class="table"><table>
+<thead><tr><th>#</th><th>Market</th><th>Openness</th><th>Searches</th><th>Most open search</th><th>Last checked</th></tr></thead>
 <tbody>{leaderboard_rows(b.get("leaderboard", []))}</tbody></table></div></section>''' if b.get("leaderboard") else ''}
 
 <section><h2>Timing signals</h2><div class="grid2">{signal_list(b['signals'])}</div></section>
