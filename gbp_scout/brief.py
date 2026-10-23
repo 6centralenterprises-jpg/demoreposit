@@ -280,7 +280,7 @@ def pick_card(title, p, empty):
     if not p:
         return (f'<article class="move"><div class="row"><span class="pill flat">{escape(title)}</span></div>'
                 f'<p class="muted">{escape(empty)}</p></article>')
-    head = p.get("keyword") or p.get("query") or ""
+    head = p.get("query") or p.get("keyword") or ""
     where = f" · {p['market']}" if p.get("market") else ""
     pills = [pill(p["play"])] if p.get("play") else []
     if p.get("ratio"):
@@ -535,7 +535,7 @@ def render_summary(b):
             x = p.get(key)
             if x:
                 where = f" in {x['market']}" if x.get("market") else ""
-                lines.append(f"- {title}: {x.get('keyword') or x.get('query')}{where}. {x['why']}")
+                lines.append(f"- {title}: {x.get('query') or x.get('keyword')}{where}. {x['why']}")
             else:
                 lines.append(f"- {title}: nothing qualifies yet.")
     intl = b.get("international") or {}

@@ -389,8 +389,11 @@ def international_demand(out, day):
     return reads
 
 
-def best_picks(cfg, day, opportunities, watch, board, demand):
-    """The three picks Terell asked for (2026-10-13): best seasonal, best nationwide, best international."""
+def best_picks(cfg, day, opportunities, watch, board, demand, register=(), flags=None):
+    """The three picks Terell asked for (2026-10-13): best seasonal, best nationwide, best international.
+
+    A search whose niche Google is actively flagging (high risk, play Avoid) never becomes a pick.
+    """
     countries = {m["name"]: market_country(m) for m in all_markets(cfg)}
     states = {m["name"]: m.get("state") for m in all_markets(cfg)}
     home = {m["name"] for m in cfg["markets"]["home"]}
@@ -441,6 +444,9 @@ def best_picks(cfg, day, opportunities, watch, board, demand):
                 if not best and query_states.get(focus_qs[sl]) and states.get(market) not in query_states[focus_qs[sl]]:
                     continue  # snow removal in Phoenix is open because nobody needs it
                 kw, w = best if best else (r["query"], {})
+                risk = scoring.google_risk(r["query"], {"keywords": [r["query"], kw]}, register, flags or {})
+                if (risk or {}).get("level") == "high" or w.get("play") == "Avoid":
+                    continue  # under an active suspension wave: never a pick
                 rows.append({"query": r["query"], "market": market, "country": countries.get(market, "United States"),
                              "median": r["median"], "weakness": r["weakness"], "date": r["date"], "keyword": kw,
                              "score": w.get("score"), "play": w.get("play"), "verify": w.get("verify")})
@@ -610,7 +616,7 @@ def build(day, cfg):
                  "markets": sorted({m["name"] for m in plan["markets"] if m.get("role") == "international"}
                                    | {c["market"] for checks in serps.values() for c in checks
                                       if c.get("country", "United States") != "United States"})}
-    picks = best_picks(cfg, day, opportunities, watch, board, demand)
+    picks = best_picks(cfg, day, opportunities, watch, board, demand, register, flags)
     base_today = sum(1 for v in bases_view if v.get("today"))
     kits_today = [k for k in read_json(out / "kits.json", []) or [] if "amazon.com" in (k.get("url") or "") and k.get("title")]
     market_checks_today = sum(len(c) for c in serps.values())

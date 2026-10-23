@@ -323,15 +323,18 @@ def test_best_picks_seasonal_nationwide_international():
              "Nashville, TN": [{"date": "2026-10-10", "query": "deck builders", "median": 6, "weakness": 1.0}],
              "Houston, TX": [{"date": "2026-10-07", "query": "mobile tire repair", "median": 40, "weakness": 0.75},
                              {"date": "2026-10-07", "query": "something unscored", "median": 1, "weakness": 1.0}],
-             "London, UK": [{"date": "2026-10-13", "query": "mobile tyre fitting", "median": 34, "weakness": 0.75}],
+             "London, UK": [{"date": "2026-10-13", "query": "mobile tyre fitting", "median": 34, "weakness": 0.75},
+                            {"date": "2026-10-14", "query": "garage door repair", "median": 3, "weakness": 1.0}],
              "Toronto, ON": [{"date": "2026-10-13", "query": "snow removal", "median": 25, "weakness": 0.85}]}
     demand = [{"keyword": "snow removal", "country": "Canada", "volume": 9900, "cpc": 3.56, "yoy": -0.1, "latest_month": "2026-08", "season": None}]
-    picks = scout.best_picks(cfg, "2026-10-13", [], watch, board, demand)
+    register = (scout.read_json(scout.ROOT / cfg["google_risk_register"], {}) or {}).get("entries", [])
+    picks = scout.best_picks(cfg, "2026-10-13", [], watch, board, demand, register, {})
     assert picks["seasonal"]["keyword"] == "mobile tire repair near me" and "1.5x" in picks["seasonal"]["why"]  # Own it beats a cooling Watch
     assert picks["seasonal"]["also"][0].startswith("fence company near me")
     assert picks["nationwide"]["market"] == "Nashville, TN"  # Chicago is home, Phoenix snow is excluded, unscored searches skipped
     assert "mobile tire repair in Houston, TX" in picks["nationwide"]["also"][0]
     assert picks["international"]["market"] == "Toronto, ON" and picks["international"]["play"] == "Partner & manage"
+    assert all("garage door" not in x for x in picks["international"]["also"])  # high Google risk never becomes a pick
     assert "9,900 searches/mo in Canada" in picks["international"]["why"]
     html = render_html({"picks": picks, "opportunities": [], "state": {"watchlist": {}, "briefs": []}, "recap": False,
                         "own_sightings": [], "serps": {}, "signals": {}, "kits": [], "verification": {"proofs": {}, "source": ""},
