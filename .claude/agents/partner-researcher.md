@@ -73,6 +73,10 @@ on.
   complaints and `"<name>" lawsuit <city>`. List every URL you checked in
   `complaints.checked_sources`, even when you found nothing. "None found"
   only counts when at least 2 sources were checked.
+- **Niche:** use the batch's `niche_guess` name when it fits (for example
+  `plumbing`, `roofing`, `pest control`, `house cleaning`), not your own
+  wording like "plumber" or "roof repair". Matching names keep the license
+  check and the market research lined up.
 - **Website claims:** insured, bonded, background-checked staff,
   certifications, guarantees, years in business, service area and team size.
 - **Registration and licensing:** a BBB profile, an "LLC" or "Inc." in the

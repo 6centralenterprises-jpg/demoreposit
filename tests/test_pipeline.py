@@ -125,3 +125,33 @@ def test_bare_domain_in_bio_becomes_website():
     lead = normalize(rows, MARKET)[0]
     assert lead["website"] == "https://shinyhomes.example.com"
     assert lead["email"] == "hi@shinyhomes.example.com"
+
+
+@pytest.mark.parametrize("niche", ["exterminator", "termite control", "plumber", "drain cleaning & sewer",
+                                   "roof repair", "roofer"])
+def test_license_gate_matches_how_researchers_name_the_niche(leads, niche):
+    # Regression: the gate matched only the exact names "pest control"/"plumbing"/"roofing",
+    # so evidence niche "roof repair" or "exterminator" scored MESSAGE with no license.
+    ev = evidence("L0001")
+    ev["niche"] = {"value": niche, "source": "https://g.example/x"}
+    ev["license"] = {"required": True, "number": None, "status": "not_found", "source": "https://lic.example/x"}
+    assert score(leads["L0001"], ev, MARKET)["verdict"] == "DO NOT CONTACT"
+    ev["license"] = {"required": True, "number": "055-000", "status": "active", "source": "https://lic.example/x"}
+    assert score(leads["L0001"], ev, MARKET)["verdict"] == "MESSAGE"
+
+
+def test_license_gate_uses_lead_guess_and_researcher_flag(leads):
+    ev = evidence("L0001")
+    ev["niche"] = {"value": None, "source": None}
+    lead = dict(leads["L0001"], niche_guess="roofing")
+    assert score(lead, ev, MARKET)["verdict"] == "DO NOT CONTACT"
+    ev["license"] = {"required": True, "number": None, "status": None, "source": None}
+    assert score(leads["L0001"], ev, MARKET)["verdict"] == "DO NOT CONTACT"
+
+
+def test_unsourced_trust_signal_is_not_confirmed_and_warned(leads):
+    ev = evidence("L0001")
+    ev["other_trust"] = {"checked": True, "signals": [{"signal": "bonded", "quote": "bonded", "source": ""}]}
+    trust = next(b for b in score(leads["L0001"], ev, MARKET)["breakdown"] if b["key"] == "other_trust")
+    assert trust["status"] == "unknown" and trust["points"] == 0
+    assert any("other_trust signals" in w for w in qualify.validate(ev, "L0001"))

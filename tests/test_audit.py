@@ -56,7 +56,7 @@ def test_bad_email_needs_rewrite():
     assert result["status"] == "Needs rewrite"
     failed = " ".join(result["failed"])
     for problem in ("Says who we are", "Price agreed up front", "Exactly one question",
-                    "Uses a true, sourced fact", "No risky claims", "Short subject line"):
+                    "Uses a true, sourced fact", "No risky claims", "Subject 6 words or fewer"):
         assert problem in failed
     for claim in ("guarantee", "exclusivity", "income promise", "job-volume promise", "fake urgency"):
         assert claim in failed
@@ -115,3 +115,11 @@ def test_partner_without_matching_market_is_not_compared_to_another_niche():
     markets = {"house cleaning": load("market/house-cleaning.json")}
     assert market_for("house cleaning", markets) is markets["house cleaning"]
     assert market_for("car detailing", markets) is None
+
+
+def test_subject_over_six_words_needs_rewrite():
+    # partner-auditor.md says "Subject: 6 words or fewer"; a short-but-wordy subject used to pass.
+    email = dict(load("audits/L0001.json")["email"], subject="Paid jobs for your great cleaning team now")
+    result = check_email(email, SENDER)
+    assert "Subject 6 words or fewer" in result["failed"]
+    assert result["status"] == "Needs rewrite"

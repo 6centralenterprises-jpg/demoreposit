@@ -134,8 +134,10 @@ def validate(ev, lead_id):
             item.get(k) not in (None, "", [], "not_found") for k in ("value", "status", "number", "text", "year_started"))
         if asserts and not has_source(item):
             problems.append(f"{key} has no source (scored as not confirmed)")
-    for key in ("reviews", "red_flags"):
-        unsourced = [i for i in ev.get(key) or [] if not has_source(i)]
+    lists = {"reviews": ev.get("reviews"), "red_flags": ev.get("red_flags"),
+             "other_trust signals": (ev.get("other_trust") or {}).get("signals")}
+    for key, items in lists.items():
+        unsourced = [i for i in items or [] if not has_source(i)]
         if unsourced:
             problems.append(f"{len(unsourced)} {key} entr{'y' if len(unsourced) == 1 else 'ies'} without source")
     return problems

@@ -55,7 +55,7 @@ customers. The audit book ranks partners by fit:
    
    Emails that fail a rule check are marked **Needs rewrite**. Reasons
    include over 120 words, no price up front, more than one question, an
-   unsourced fact or a risky claim. Send those back to a `partner-auditor`
+   unsourced fact, a risky claim or a subject over 6 words. Send those back to a `partner-auditor`
    to rewrite, then re-run the report.
 
 5. **Deliver.** Send both files with SendUserFile, then summarize:

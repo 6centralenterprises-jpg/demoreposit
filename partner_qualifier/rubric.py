@@ -18,6 +18,13 @@ LICENSE_REQUIRED = {
     "plumbing": "Illinois Dept. of Public Health plumbing license",
     "roofing": "Illinois Dept. of Financial & Professional Regulation roofing license",
 }
+# Researchers write the niche in their own words ("plumber", "roof repair",
+# "exterminator"), so match on word stems, not the exact niche name.
+LICENSE_STEMS = {
+    "pest control": ("pest", "exterminat", "termite", "rodent", "bed bug", "bedbug"),
+    "plumbing": ("plumb", "drain cleaning", "sewer", "water heater"),
+    "roofing": ("roof",),
+}
 
 # (key, area, max points, label, short name used in "to verify" lists)
 CRITERIA = [
@@ -151,9 +158,12 @@ def _insured(ev, _today):
 
 def _other_trust(ev, _today):
     t = ev.get("other_trust") or {}
-    signals = [s for s in t.get("signals") or [] if has_source(s)]
+    listed = t.get("signals") or []
+    signals = [s for s in listed if has_source(s)]
     if signals:
         return 1, "met", ", ".join(s.get("signal") or "" for s in signals), signals[0]["source"]
+    if listed:  # signals were claimed but none has a source: not confirmed, not "none found"
+        return 0, "unknown", "Trust signals not confirmed (no source)", ""
     if t.get("checked") is True:
         return 0, "not_met", "None found", ""
     return 0, "unknown", "Not checked", ""
@@ -182,7 +192,8 @@ CHECKS = {
 
 def required_license(niche):
     niche = (niche or "").lower()
-    return next((text for key, text in LICENSE_REQUIRED.items() if key in niche), "")
+    return next((LICENSE_REQUIRED[key] for key, stems in LICENSE_STEMS.items()
+                 if any(stem in niche for stem in stems)), "")
 
 
 def score(lead, ev, market):
@@ -205,8 +216,10 @@ def score(lead, ev, market):
     niche = (ev.get("niche") or {}).get("value") or lead.get("niche_guess") or ""
     flags = [f for f in ev.get("red_flags") or [] if has_source(f)]
     serious = [f for f in flags if str(f.get("severity", "")).lower() in ("high", "medium")]
-    license_text = required_license(niche)
     lic = ev.get("license") or {}
+    license_text = required_license(niche) or required_license(lead.get("niche_guess"))
+    if not license_text and lic.get("required") is True:
+        license_text = "State license (researcher marked it as required)"
     license_ok = has_source(lic) and str(lic.get("status", "")).lower() == "active" and lic.get("number")
     unknowns = [b["short"] for b in breakdown if b["status"] == "unknown"]
     target = ev.get("serves_target") or {}

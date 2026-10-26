@@ -15,6 +15,7 @@ from .normalize import domain_of
 OPT_OUT = "If you'd rather not hear from me, just reply 'no thanks' and I won't email again."
 MAX_EMAIL_WORDS = 120  # whole email, signature and opt-out included
 MAX_READING_GRADE = 8.5
+MAX_SUBJECT_WORDS = 6  # partner-auditor.md: "Subject: 6 words or fewer"
 
 # Claims the outreach rules forbid: promised volume or income, exclusivity,
 # size we don't have, and fake urgency.
@@ -240,7 +241,7 @@ def check_email(email, sender):
         "Exactly one question": body.count("?") == 1,
         "Uses a true, sourced fact": bool(facts) and all(has_ref(f) for f in facts),
         "No risky claims" + (f" ({', '.join(risky)})" if risky else ""): not risky,
-        "Short subject line": 0 < len(subject) <= 60,
+        f"Subject {MAX_SUBJECT_WORDS} words or fewer": 0 < len(subject.split()) <= MAX_SUBJECT_WORDS,
     }
     grade = reading_grade(body)
     failed = [name for name, ok in checks.items() if not ok]

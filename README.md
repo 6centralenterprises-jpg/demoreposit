@@ -87,6 +87,7 @@ for the same customers, so the report labels them clearly.
 - says who we are
 - paid jobs, with price agreed up front
 - exactly one question
+- subject of 6 words or fewer
 - uses a true, sourced fact
 - no promises of volume, income or exclusivity, no size claims, no
   urgency, no jargon
