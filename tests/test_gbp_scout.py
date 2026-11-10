@@ -369,8 +369,12 @@ def test_semrush_fallback_builds_rows_from_openrush(tmp_path, monkeypatch):
     assert "12,100" in render_summary(brief) and "Semrush" not in render_summary(brief).split("Today's moves")[1].split("\n")[1]
 
 
-def test_google_watch_reads_both_keys_records_the_check_and_reconfirms():
+def test_google_watch_reads_both_keys_records_the_check_and_reconfirms(tmp_path):
     cfg = scout.load_config()
+    reg = json.loads((scout.ROOT / cfg["google_risk_register"]).read_text())  # a copy dated before the test's days,
+    reg["as_of"] = "2026-10-23"  # so the real file's date (register-sync moves it) can't change the outcome
+    (tmp_path / "register.json").write_text(json.dumps(reg))
+    cfg = dict(cfg, google_risk_register=str(tmp_path / "register.json"))
     a = {"summary": "Google is testing government-ID verification.", "source": "https://x.example/id", "level": "medium", "niches": ["all niches"]}
     b = {"summary": "Review appeals are backed up.", "source": "https://x.example/appeals/"}  # no level, no niches
     signals = {"google": [a], "policy": [dict(a), b], "google_checked": {"date": "2026-10-23", "searches": ["q1", "q2", "q3"]}}
