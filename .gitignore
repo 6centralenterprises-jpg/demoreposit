@@ -14,3 +14,5 @@ __pycache__/
 
 # Real sender details stay local; config/sender.example.json is the template.
 config/sender.json
+# Local secrets written by `elevenlabs onboard`
+/.env
