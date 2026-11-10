@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-10-23",
+  "as_of": "2026-11-10",
   "entries": [
     {
       "id": "garage-door-crackdown",
@@ -874,6 +874,78 @@
         }
       ],
       "scope": "general"
+    },
+    {
+      "id": "watch-lsa-bills-missed-calls-over-20-seconds-from-oct-",
+      "niches": [
+        "plumbing",
+        "hvac",
+        "electrical",
+        "roofing",
+        "pest control",
+        "house cleaning",
+        "moving"
+      ],
+      "keywords": [],
+      "level": "medium",
+      "what": "LSA bills missed calls over 20 seconds from Oct 1, 2026 and is migrating into Google Ads campaigns in phases.",
+      "since": "2026-10",
+      "plan": "Staff phones or a live answering service for every listed hour before turning LSA on, and set hours that match real availability.",
+      "sources": [
+        {
+          "url": "https://ppc.land/google-charges-local-services-advertisers-for-missed-calls-over-20-seconds/",
+          "date": "2026-10-05"
+        }
+      ],
+      "scope": "niche"
+    },
+    {
+      "id": "watch-lsa-is-moving-into-google-ads-as-performance-max",
+      "niches": [
+        "plumbing",
+        "hvac",
+        "electrical",
+        "roofing",
+        "pest control",
+        "house cleaning",
+        "moving"
+      ],
+      "keywords": [],
+      "level": "medium",
+      "what": "LSA is moving into Google Ads as Performance Max pay-per-lead campaigns, in phases through 2027; the separate LSA dashboard goes away after migration.",
+      "since": "2026-10",
+      "plan": "Staff phones or a live answering service for every listed hour before turning LSA on, and set hours that match real availability.",
+      "sources": [
+        {
+          "url": "https://www.searchenginejournal.com/google-is-bringing-local-service-ads-into-google-ads/582816/",
+          "date": "2026-10-25"
+        }
+      ],
+      "scope": "niche"
+    },
+    {
+      "id": "watch-lsa-is-moving-into-google-ads-as-performance-max-2026-10-30",
+      "niches": [
+        "plumbing",
+        "hvac",
+        "electrical",
+        "roofing",
+        "pest control",
+        "house cleaning",
+        "moving"
+      ],
+      "keywords": [],
+      "level": "medium",
+      "what": "LSA is moving into Google Ads as Performance Max pay-per-lead campaigns, in phases through 2027; the separate LSA dashboard goes away after migration.",
+      "since": "2026-10",
+      "plan": "Staff phones or a live answering service for every listed hour before turning LSA on, and set hours that match real availability.",
+      "sources": [
+        {
+          "url": "https://www.searchenginejournal.com/google-is-bringing-local-services-ads-into-google-ads/582816/",
+          "date": "2026-10-28"
+        }
+      ],
+      "scope": "niche"
     }
   ],
   "scopes": {
@@ -884,6 +956,10 @@
     {
       "date": "2026-10-23",
       "change": "Added gov-id-verification-test, review-appeals-backlog-oct-2026, lsa-featured-professionals-removed, gbp-performance-report-test from the daily watch (Oct 20-23 items). Register is updated in the repo by a session with write access; the morning run only flags."
+    },
+    {
+      "date": "2026-11-10",
+      "change": "register-sync added watch-lsa-bills-missed-calls-over-20-seconds-from-oct-, watch-lsa-is-moving-into-google-ads-as-performance-max, watch-lsa-is-moving-into-google-ads-as-performance-max-2026-10-30 (promoted by the daily watch)."
     }
   ]
 }

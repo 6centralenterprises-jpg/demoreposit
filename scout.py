@@ -16,6 +16,7 @@ creates a Business Profile or contacts anyone.
 import argparse
 import json
 import re
+from html import escape as html_escape
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -832,6 +833,90 @@ def cmd_restore(args):
           f"{len(state.get('briefs', []))} past briefs (last update {state.get('updated')}).")
 
 
+STATE_RE = re.compile(r'<script type="application/json" id="scout-state">(.*?)</script>', re.S)
+RECHECK_PILL_RE = re.compile(r'<span class="pill up" id="recheck-pill"[^>]*>.*?</span>', re.S)
+
+
+def recheck(day, cfg, html, when=""):
+    """Fold map-pack re-checks made later in the day into the published page's memory, without a rebuild.
+
+    The morning run keeps its keyword, signal and kit files in its own container, so a session that re-checks
+    packs later cannot rebuild the page (a build from a partial run folder would blank those sections). This
+    reads every serp/*.json saved in the run folder, replaces that day's reading of each market+search (the
+    board) and base+search in the page state, refreshes the watchlist's last_pack, writes the state back into
+    the page and adds a "Re-checked later today" pill to the "Updated today" strip. The visible tables keep the
+    morning's numbers; the next morning run ranks on the re-checked readings (the newest reading wins).
+    Returns the new page and the list of (market or base, query, median) folded in."""
+    match = STATE_RE.search(html)
+    if not match:
+        raise SystemExit("No saved state in that page; nothing to fold the re-checks into.")
+    state = json.loads(match.group(1).replace("<\\/", "</"))
+    out = run_path(day)
+    own_names = [x["name"] for x in cfg.get("own_listings", [])]
+    markers = cfg.get("own_brand_markers", [])
+    countries = {m["name"]: market_country(m) for m in all_markets(cfg)}
+    markets = {scoring.slug(m["name"]): m["name"] for m in all_markets(cfg)}
+    bases = {scoring.slug(b["name"]): b["name"] for b in (cfg.get("bases") or {}).get("list") or []}
+    board, base_state, watch = state.setdefault("markets", {}), state.setdefault("bases", {}), state.setdefault("watchlist", {})
+    done = []
+    for path in sorted((out / "serp").glob("*.json")):
+        data = payload(read_json(path, {}) or {})
+        pw = scoring.pack_weakness(data, markers, own_names)
+        if pw["weakness"] is None:
+            continue
+        if path.name.startswith("base__"):
+            _, bslug, qslug = path.stem.split("__", 2)
+            name = bases.get(bslug)
+            if not name:
+                continue
+            query = data.get("query") or qslug.replace("-", " ")
+            key = f"{name} | {query}"
+            ours = next((i for i, p in enumerate(pw["pack"], 1) if p.get("ours")), None)
+            reading = {"date": day, "median": pw["median_reviews"], "weakness": pw["weakness"], "our_position": ours,
+                       "top3": [{"name": p["name"], "reviews": p["reviews"]} for p in pw["pack"][:3]]}
+            base_state[key] = ([h for h in base_state.get(key, []) if h.get("date") != day] + [reading])[-MAX_HISTORY:]
+            done.append((name, query, pw["median_reviews"]))
+            continue
+        mslug, _, qslug = path.stem.partition("__")
+        market = markets.get(mslug)
+        if not market:
+            continue
+        query = data.get("query") or qslug.replace("-", " ")
+        readings = [r for r in board.get(market, []) if not (r["date"] == day and r["query"] == query)]
+        readings.append({"date": day, "query": query, "median": pw["median_reviews"], "weakness": pw["weakness"],
+                         "country": countries.get(market, "United States")})
+        board[market] = readings[-60:]
+        for kw, entry in watch.items():
+            if scoring.slug(scoring.local_query(kw)) == scoring.slug(query):
+                entry["last_pack"] = {"date": day, "median_reviews": pw["median_reviews"], "weakness": pw["weakness"]}
+        done.append((market, query, pw["median_reviews"]))
+    state["rechecks"] = {"date": day, "when": when, "count": len(done),
+                         "items": [{"where": w, "query": q, "median": m} for w, q, m in done]}
+    page = html[:match.start(1)] + json.dumps(state).replace("</", "<\\/") + html[match.end(1):]
+    page = RECHECK_PILL_RE.sub("", page)
+    strip = page.find('<span class="eyebrow">Updated today</span>')
+    close = page.find("</div></section>", strip) if strip >= 0 else -1
+    if close >= 0:
+        detail = "; ".join(f"{w.split(',')[0]} {q} {m}" for w, q, m in done)
+        pill = (f'<span class="pill up" id="recheck-pill" title="{html_escape(detail, quote=True)}">Re-checked later today'
+                f'{" at " + html_escape(when) if when else ""}: {len(done)} map packs; tomorrow\'s rankings use them</span>')
+        page = page[:close] + pill + page[close:]
+    return page, done
+
+
+def cmd_recheck(args):
+    """Fold the day's saved serp/*.json re-checks into the published page and write runs/gbp/D/brief.html."""
+    cfg = load_config()
+    page, done = recheck(args.date, cfg, Path(args.html).read_text(), args.when or "")
+    out = run_path(args.date)
+    (out / "brief.html").write_text(page)
+    (out / "state.json").write_text(json.dumps(json.loads(STATE_RE.search(page).group(1).replace("<\\/", "</")), indent=2))
+    for where, query, median in done:
+        print(f"  {where}: '{query}' median {median}")
+    print(f"Folded {len(done)} re-check(s) into {out / 'brief.html'}. Publish it to the dashboard URL; "
+          f"the visible tables keep the morning's numbers and tomorrow's run ranks on these readings.")
+
+
 def cmd_register_sync(args):
     """Copy the register entries the daily watch promoted (kept in the page state) into the repo file."""
     cfg = load_config()
@@ -870,6 +955,11 @@ def main():
     p.add_argument("--date", required=True)
     p.add_argument("--html", required=True)
     p.set_defaults(func=cmd_restore)
+    p = sub.add_parser("recheck", help="fold later-in-the-day serp re-checks into the published page's memory")
+    p.add_argument("--date", required=True)
+    p.add_argument("--html", required=True, help="the published page, as read with the Artifact tool")
+    p.add_argument("--when", default="", help='label for the strip, e.g. "10:00 CT"')
+    p.set_defaults(func=cmd_recheck)
     for name, func in (("batch", cmd_batch), ("screen", cmd_screen), ("build", cmd_build)):
         p = sub.add_parser(name)
         p.add_argument("--date", required=True)

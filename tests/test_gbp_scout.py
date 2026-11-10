@@ -406,3 +406,47 @@ def test_google_watch_reads_both_keys_records_the_check_and_reconfirms():
                         "own_sightings": [], "serps": {}, "signals": {}, "kits": [], "verification": {"proofs": {}, "source": ""},
                         "weekday": "Sun", "date": "2026-10-25", "label": "x", "markets": [], "tactic": "t", "leaderboard": []})
     assert "Not checked today" in page
+
+
+def test_recheck_folds_late_readings_into_the_page_state(tmp_path, monkeypatch):
+    monkeypatch.setattr(scout, "RUNS", tmp_path)
+    cfg = scout.load_config()
+    day = "2026-11-10"
+    state = {"version": 1, "updated": day,
+             "watchlist": {"water damage restoration near me": {"score": 85, "last_pack": {"date": "2026-11-02", "median_reviews": 464}}},
+             "briefs": [], "bases": {}, "markets": {"Milwaukee, WI": [
+                 {"date": day, "query": "snow removal", "median": 8, "weakness": 1.0, "country": "United States"},
+                 {"date": "2026-10-23", "query": "water damage restoration", "median": 39, "weakness": 0.75, "country": "United States"}]}}
+    page = tmp_path / "page.html"
+    page.write_text('<!doctype html><body><section><div class="row"><span class="eyebrow">Updated today</span>'
+                    '<span class="muted">Every section refreshed today.</span></div><div class="row">'
+                    '<span class="pill up">Map packs: 16 checks today</span></div></section>'
+                    f'<script type="application/json" id="scout-state">{json.dumps(state)}</script></body>')
+    (tmp_path / day / "serp").mkdir(parents=True)
+    (tmp_path / day / "serp" / "milwaukee-wi__water-damage-restoration.json").write_text(json.dumps({
+        "query": "water damage restoration", "local_pack": [
+            {"title": "Emergency Restoration Specialists", "rating": {"value": 4.9, "votes_count": 174}},
+            {"title": "SteamDry Restore", "rating": {"value": 4.9, "votes_count": 825}},
+            {"title": "SERVPRO of Milwaukee East", "rating": {"value": 5, "votes_count": 18}}]}))
+    (tmp_path / day / "serp" / "base__elgin__snow-removal.json").write_text(json.dumps({
+        "query": "snow removal", "local_pack": [
+            {"title": "Arctic Fox Snow Services", "rating": {"value": 5, "votes_count": 8}},
+            {"title": "Mike's Plowing", "rating": {"value": 4.8, "votes_count": 26}},
+            {"title": "Great Lakes Snow Systems", "rating": {"value": 5, "votes_count": 16}}]}))
+    for _ in range(2):  # running it twice replaces, never duplicates
+        scout.cmd_recheck(Namespace(date=day, html=str(page), when="10:00 CT"))
+        page = tmp_path / day / "brief.html"
+    html = page.read_text()
+    assert html.count('id="recheck-pill"') == 1 and "Re-checked later today at 10:00 CT: 2 map packs" in html
+    scout.cmd_restore(Namespace(date="2026-11-11", html=str(page)))
+    merged = json.loads((tmp_path / "2026-11-11" / "prev_state.json").read_text())
+    milwaukee = merged["markets"]["Milwaukee, WI"]
+    assert [r["median"] for r in milwaukee if r["query"] == "water damage restoration"] == [39, 174]
+    assert sum(1 for r in milwaukee if r["query"] == "snow removal") == 1  # the morning reading is untouched
+    assert scout.latest_readings(merged["markets"])["Milwaukee, WI"][1]["median"] == 174  # the newest reading wins
+    assert merged["bases"]["Elgin | snow removal"] == [{"date": day, "median": 16, "weakness": 1.0, "our_position": None,
+                                                        "top3": [{"name": "Arctic Fox Snow Services", "reviews": 8},
+                                                                 {"name": "Mike's Plowing", "reviews": 26},
+                                                                 {"name": "Great Lakes Snow Systems", "reviews": 16}]}]
+    assert merged["watchlist"]["water damage restoration near me"]["last_pack"]["median_reviews"] == 174
+    assert merged["rechecks"]["count"] == 2 and merged["rechecks"]["when"] == "10:00 CT"

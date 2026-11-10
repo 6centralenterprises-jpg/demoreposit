@@ -260,6 +260,15 @@ is `runs/gbp/D/`.
    refused because the page changed, read it, re-run step 1 and step 8,
    and publish again.
 
+   **Re-checks later in the day** (Terell asks for a live update after the morning run, from another session):
+   never rebuild the page from a partial run folder; `build` without the morning's keyword, signal and kit files
+   blanks those sections. Instead save each OpenRush `inspect_serp` result as
+   `runs/gbp/D/serp/<market-slug>__<query-slug>.json` (or `base__<base-slug>__<query-slug>.json`), read the
+   published page with the Artifact tool, run
+   `python3 scout.py recheck --date D --html <page path> --when "HH:MM CT"`, and publish `runs/gbp/D/brief.html`
+   to the dashboard URL. The page keeps the morning's tables, gains a "Re-checked later today" pill, and the
+   readings go into the page memory, so the next morning ranks on them (the newest reading of a search wins).
+
 10. **Report.** Your final message is the morning report Terell gets by push
     and email. Keep it short:
     - one line: the day's cluster and the dashboard link

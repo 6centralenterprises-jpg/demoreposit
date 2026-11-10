@@ -79,6 +79,8 @@ work. That is lead generation, and it's the Premium Home Service pattern.
 - The register updates itself every day: the daily watch promotes settled medium and high items into the register
   carried in the dashboard state. The repo copy (`research/google/risk_register.json`) is refreshed with
   `python3 scout.py register-sync --date D` from a session with write access (the morning run never commits).
+- Live re-checks later in the day go into the page memory with `python3 scout.py recheck --date D --html <page>`
+  (saved serp files in, republished page out); never rebuild the page from a partial run folder.
 - Terell's rule (2026-10-23): every section of the brief refreshes every day; the page shows an "Updated today" strip.
 
 - **Every profile is the company whose own staff does the work.**
